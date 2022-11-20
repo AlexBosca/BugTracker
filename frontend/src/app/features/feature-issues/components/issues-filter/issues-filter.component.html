@@ -1,0 +1,26 @@
+<div class="container-fluid d-flex p-0 mb-4">
+    <div class="container flex-grow-1 p-0">
+        <h3>Issues</h3>
+        <!-- Caption to add -->
+    </div>
+
+    <div class="input-group w-50">
+        <select class="form-select">
+            <option value="">Filters</option>
+            <option value="createdBy">Created By</option>
+            <option value="issueId">Issue ID</option>
+            <option value="title">Title</option>
+            <option value="version">Version</option>
+            <option value="asignee">Asignee</option>
+            <option value="priority">Priority</option>
+            <option value="status">Status</option>
+            <option value="createdOn">Created On</option>
+        </select>
+        <input type="text" class="form-control w-50" aria-label="Text input with dropdown button">
+    </div>
+
+    <div class="input-group w-auto">
+        <button class="btn bg-white ms-2"><i class="bi bi-search"></i></button>
+        <input class="form-control bg-white border-0" type="search" placeholder="Issue ID" aria-label="Search">
+    </div>
+</div>

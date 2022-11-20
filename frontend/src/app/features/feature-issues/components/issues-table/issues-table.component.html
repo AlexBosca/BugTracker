@@ -1,0 +1,34 @@
+<div class="container-fluid">
+
+  <!-- Table Header -->
+  <div class="row p-2 mb-3 fw-bold">
+    <div class="col-3">Created By</div>
+    <div class="col">Issue ID</div>
+    <div class="col-2">Title</div>
+    <div class="col">Version</div>
+    <div class="col">Asignee</div>
+    <div class="col">Priority</div>
+    <div class="col">Status</div>
+    <div class="col">Created At</div>
+  </div>
+  <!-- End Table Header -->
+
+  <!-- Table Content -->
+  <div *ngFor="let issue of issues" class="row mb-3 rounded bg-white p-2 d-flex align-items-center">
+    <div class="col-3 d-flex">
+      <div class="bg-secondary rounded-circle w-25"></div>
+      <div class="container">
+        <p class="m-0 p-0">{{issue.createdBy}}</p>
+        <p class="m-0 p-0 text-secondary">{{issue.createdBy}}</p>
+      </div>
+    </div>
+    <div class="col">{{issue.issueId}}</div>
+    <div class="col-2">{{issue.title}}</div>
+    <div class="col">{{issue.version}}</div>
+    <div class="col">{{issue.asignee}}</div>
+    <div class="col">{{issue.priority}}</div>
+    <div class="col">{{issue.status}}</div>
+    <div class="col">{{issue.createdOn}}</div>
+  </div>
+  <!-- End Table Content -->
+</div>
