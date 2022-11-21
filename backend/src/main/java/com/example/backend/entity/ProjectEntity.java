@@ -1,10 +1,7 @@
 package com.example.backend.entity;
 
 import com.example.backend.entity.issue.IssueEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -16,6 +13,7 @@ import static javax.persistence.CascadeType.ALL;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 @Table(name = "projects")
 public class ProjectEntity extends BaseEntity {
 

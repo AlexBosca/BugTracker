@@ -100,25 +100,25 @@ public class IssueService {
         commentRepository.save(issueComment);
     }
 
-    private IssueEntity findIssue(String issueId) {
+    public IssueEntity findIssue(String issueId) {
         return issueRepository
                 .findByIssueId(issueId)
                 .orElseThrow(() -> new IssueIdNotFoundException(issueId));
     }
 
-    private UserEntity findUserByUserId(String userId) {
+    public UserEntity findUserByUserId(String userId) {
         return userRepository
                 .findByUserId(userId)
                 .orElseThrow(() -> new UserIdNotFoundException(userId));
     }
 
-    private UserEntity findUserByEmail(String email) {
+    public UserEntity findUserByEmail(String email) {
         return userRepository
                 .findByEmail(email)
                 .orElseThrow(() -> new UserEmailNotFoundException(email));
     }
 
-    private ProjectEntity findProject(String projectId) {
+    public ProjectEntity findProject(String projectId) {
         return projectRepository
                 .findByProjectId(projectId)
                 .orElseThrow(() -> new ProjectIdNotFoundException(projectId));

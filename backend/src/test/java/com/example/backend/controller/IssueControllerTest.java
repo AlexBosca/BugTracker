@@ -2,14 +2,18 @@ package com.example.backend.controller;
 
 import com.example.backend.dto.request.IssueRequest;
 import com.example.backend.dto.response.IssueFullResponse;
+import com.example.backend.entity.ProjectEntity;
+import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.mapper.MapStructMapper;
 import com.example.backend.service.IssueService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -17,8 +21,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.web.servlet.MockMvc;
 import com.google.gson.Gson;
+
+import java.time.Clock;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -43,6 +50,12 @@ class IssueControllerTest {
 
     @MockBean
     private IssueService issueService;
+
+    @MockBean
+    private Clock clock;
+
+    @Mock
+    private Authentication authentication;
 
     @Autowired
     private MockMvc mockMvc;
@@ -71,7 +84,6 @@ class IssueControllerTest {
                         .json(objectMapper.writeValueAsString(expectedIssueResponse)));
     }
 
-    @Ignore
     @Test
     @DisplayName("Should throw an IllegalStateException when issue with issueId doesn't exists")
     void shouldThrowExceptionWhenIssueWithIssueIdDoNotExists() throws Exception {
@@ -96,9 +108,21 @@ class IssueControllerTest {
                         .json(objectMapper.writeValueAsString(expectedIssueResponse)));
     }
 
+
+    @Disabled
     @Test
     @DisplayName("Should create issue when an user creates it on a specific project")
     void shouldCreateIssueWhenItIsCreatedByAnUserOnSpecificProject() throws Exception {
+        String givenEmail = "some.user@mail.com";
+        String givenProjectId = "00001";
+
+        UserEntity user = UserEntity.builder()
+                .email("some.user@mail.com")
+                .build();
+
+        ProjectEntity project = ProjectEntity.builder()
+                .projectId("00001").build();
+
         IssueEntity issue = IssueEntity.builder()
                 .issueId("00001")
                 .title("Title")
@@ -110,9 +134,13 @@ class IssueControllerTest {
                 .priority(LOW)
                 .build();
 
+        when(authentication.getName()).thenReturn(givenEmail);
+        when(issueService.findProject(givenProjectId)).thenReturn(project);
+        when(issueService.findUserByEmail(givenEmail)).thenReturn(user);
+
         IssueRequest issueRequest = mapStructMapper.toRequest(issue);
 
-        mockMvc.perform(post("/createOnProject/{projectId}/byUser/{userId}", "00001", "00001")
+        mockMvc.perform(post("/createOnProject/{projectId}", givenProjectId)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issueRequest)))
                 .andExpect(status().isOk());
