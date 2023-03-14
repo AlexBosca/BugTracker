@@ -1,20 +1,21 @@
 package com.example.backend.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Collection;
-
-import static javax.persistence.CascadeType.ALL;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 @Table(name = "teams")
 public class TeamEntity extends BaseEntity {
 
@@ -24,13 +25,22 @@ public class TeamEntity extends BaseEntity {
     @Column(name = "name", unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "teams", cascade = ALL)
-    private Collection<ProjectEntity> projects;
+    @ManyToMany(
+        mappedBy = "teams",
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.PERSIST
+    )
+    private Set<ProjectEntity> projects = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
             name = "users_in_team",
             joinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
-    private Collection<UserEntity> colleagues;
+    private Set<UserEntity> colleagues;
+
+    public void addProject(ProjectEntity project) {
+        this.projects.add(project);
+        project.getTeams().add(this);
+    }
 }

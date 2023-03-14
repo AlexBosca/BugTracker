@@ -2,18 +2,17 @@ package com.example.backend.entity;
 
 import com.example.backend.entity.issue.IssueCommentEntity;
 import com.example.backend.entity.issue.IssueEntity;
-import com.example.backend.enums.UserPrivilege;
 import com.example.backend.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
 
-import static javax.persistence.CascadeType.ALL;
-import static org.hibernate.annotations.CascadeType.*;
+import static javax.persistence.FetchType.EAGER;
 
 @Entity
 @NoArgsConstructor
@@ -56,19 +55,34 @@ public class UserEntity extends BaseEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"))
     private UserRole role;
 
-    @ManyToMany(mappedBy = "colleagues")
+    @JsonManagedReference
+    @ManyToMany(
+        mappedBy = "colleagues",
+        fetch = EAGER)
     private Collection<TeamEntity> teams;
 
-    @OneToMany(mappedBy = "createdByUser")
+    @JsonManagedReference
+    @OneToMany(
+        mappedBy = "createdByUser",
+        fetch = EAGER)
     private Collection<IssueEntity> issuesCreated;
 
-    @OneToMany(mappedBy = "assignedUser")
+    @JsonManagedReference
+    @OneToMany(
+        mappedBy = "assignedUser",
+        fetch = EAGER)
     private Collection<IssueEntity> issuesAssigned;
 
-    @OneToMany(mappedBy = "closedByUser")
+    @JsonManagedReference
+    @OneToMany(
+        mappedBy = "closedByUser",
+        fetch = EAGER)
     private Collection<IssueEntity> issuesClosed;
 
-    @OneToMany(mappedBy = "createdByUser")
+    @JsonManagedReference
+    @OneToMany(
+        mappedBy = "createdByUser",
+        fetch = EAGER)
     private Collection<IssueCommentEntity> commentsCreated;
 
     public UserEntity(String firstName,
@@ -115,7 +129,6 @@ public class UserEntity extends BaseEntity implements UserDetails {
 
     @PostPersist
     public void setUserIdPostPersist() {
-        // TODO: Refactor method's body
         userId = String.valueOf(firstName.charAt(0)) + String.valueOf(lastName.charAt(0)) + "_" + String.format("%05d", this.getId());
     }
 }

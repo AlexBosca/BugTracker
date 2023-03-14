@@ -5,6 +5,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static javax.persistence.CascadeType.ALL;
 
@@ -26,13 +28,22 @@ public class ProjectEntity extends BaseEntity {
     @Column(name = "description")
     private String description;
 
-    @ManyToMany
+    @ManyToMany(
+        fetch = FetchType.LAZY,
+        cascade = CascadeType.PERSIST
+    )
     @JoinTable(
             name = "teams_on_project",
             joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"))
-    private Collection<TeamEntity> teams;
+    private Set<TeamEntity> teams = new HashSet<>();
 
     @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
     private Collection<IssueEntity> issues;
+
+    public void addTeam(TeamEntity team) {
+        team.getProjects().add(this);
+        this.teams.add(team);
+
+    }
 }
