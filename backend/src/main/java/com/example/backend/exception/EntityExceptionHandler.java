@@ -7,6 +7,7 @@ import com.example.backend.exception.project.ProjectIdNotFoundException;
 import com.example.backend.exception.team.TeamIdNotFoundException;
 import com.example.backend.exception.token.TokenExpiredException;
 import com.example.backend.exception.token.TokenNotFoundException;
+import com.example.backend.exception.user.UserCredentialsNotValidException;
 import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +35,8 @@ public class EntityExceptionHandler {
         return buildErrorResponse(exception, BAD_REQUEST);
     }
 
-    @ExceptionHandler(EmailNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleEmailNotValidException(Exception exception) {
+    @ExceptionHandler(UserCredentialsNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleCredentialsNotValidException(Exception exception) {
         return buildErrorResponse(exception, BAD_REQUEST);
     }
 
@@ -46,11 +47,6 @@ public class EntityExceptionHandler {
 
     @ExceptionHandler(EmailTakenException.class)
     public ResponseEntity<ErrorResponse> handleEmailTakenException(Exception exception) {
-        return buildErrorResponse(exception, BAD_REQUEST);
-    }
-
-    @ExceptionHandler(PasswordNotValidException.class)
-    public ResponseEntity<ErrorResponse> handlePasswordNotValidException(Exception exception) {
         return buildErrorResponse(exception, BAD_REQUEST);
     }
 
