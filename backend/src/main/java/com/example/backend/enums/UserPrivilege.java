@@ -1,5 +1,10 @@
 package com.example.backend.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public enum UserPrivilege {
 
     ISSUE_CREATE("IC"), ISSUE_READ("IR"), ISSUE_UPDATE("IU"), ISSUE_DELETE("ID"),
@@ -9,14 +14,6 @@ public enum UserPrivilege {
     COMMENT_CREATE("CC"), COMMENT_READ("CR"), COMMENT_UPDATE("CU"), COMMENT_DELETE("CD");
 
     private final String code;
-
-    UserPrivilege(String code) {
-        this.code = code;
-    }
-
-    public String getCode() {
-        return code;
-    }
 
     public static UserPrivilege[] getAllPrivileges() {
         return values();
