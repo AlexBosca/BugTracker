@@ -1,46 +1,87 @@
 package com.example.backend.service;
 
-import com.example.backend.dao.ProjectRepository;
-import com.example.backend.dao.TeamRepository;
+import com.example.backend.dao.ProjectDao;
+import com.example.backend.dao.TeamDao;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.TeamEntity;
+import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectIdNotFoundException;
 import com.example.backend.exception.team.TeamIdNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import static com.example.backend.util.project.ProjectUtilities.*;
+
+import java.util.List;
+import java.util.Set;
+
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ProjectService {
 
-//    private final static String PROJECT_NOT_FOUND_MESSAGE = "Project with id %s not found";
-//    private final static String TEAM_NOT_FOUND_MESSAGE = "Team with id %s not found";
+    @Qualifier("project-jpa")
+    private final ProjectDao projectDao;
+    
+    private final TeamDao teamDao;
 
+    public List<ProjectEntity> getAllProjects() {
+        log.info(PROJECT_REQUEST_ALL);
 
-    private final ProjectRepository projectRepository;
-    private final TeamRepository teamRepository;
+        List<ProjectEntity> projects = projectDao.selectAllProjects();
 
-    public ProjectEntity getProjectByProjectId(String projectId) {
-        return projectRepository
-                .findByProjectId(projectId)
-                .orElseThrow(() -> new ProjectIdNotFoundException(projectId));
+        log.info(PROJECT_RETURN_ALL);
+
+        return projects;
     }
 
-    public ProjectEntity saveProject(ProjectEntity project) {
-        return projectRepository.save(project);
+    public ProjectEntity getProjectByProjectId(String projectId) {
+        log.info(PROJECT_REQUEST_BY_ID, projectId);
+        
+        ProjectEntity project = projectDao
+                .selectProjectById(projectId)
+                .orElseThrow(() -> new ProjectIdNotFoundException(projectId));
+
+        log.info(PROJECT_RETURN);
+
+        return project;
+    }
+
+    public void saveProject(ProjectEntity project) {
+        log.info(PROJECT_CREATE);
+
+        boolean isProjectPresent = projectDao
+                .existsProjectWithProjectId(project.getProjectId());
+
+        if(isProjectPresent) {
+            throw new ProjectAlreadyCreatedException(project.getProjectId());
+        }
+
+        projectDao.insertProject(project);
+
+        log.info(PROJECT_CREATED);
     }
 
     public void addTeam(String projectId, String teamId) {
-        ProjectEntity project = projectRepository
-                .findByProjectId(projectId)
+        log.info(PROJECT_ADD_TEAM_BY_ID, teamId, projectId);
+
+        ProjectEntity project = projectDao
+                .selectProjectById(projectId)
                 .orElseThrow(() -> new ProjectIdNotFoundException(projectId));
 
-        TeamEntity team = teamRepository
-                .findByTeamId(teamId)
+        TeamEntity team = teamDao
+                .selectTeamByTeamId(teamId)
                 .orElseThrow(() -> new TeamIdNotFoundException(teamId));
 
-        project.getTeams().add(team);
+        Set<TeamEntity> teams = project.getTeams();
+        teams.add(team);
+        project.setTeams(teams);
 
-        projectRepository.save(project);
+        projectDao.insertProject(project);
+
+        log.info(PROJECT_TEAM_ADDED);
     }
 }

@@ -1,126 +1,171 @@
 package com.example.backend.service;
 
-import com.example.backend.dao.IssueCommentRepository;
-import com.example.backend.dao.IssueRepository;
-import com.example.backend.dao.ProjectRepository;
-import com.example.backend.dao.UserRepository;
+import com.example.backend.dao.IssueCommentDao;
+import com.example.backend.dao.IssueDao;
+import com.example.backend.dao.ProjectDao;
+import com.example.backend.dao.UserDao;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueCommentEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.enums.IssueStatus;
+import com.example.backend.exception.issue.IssueAlreadyCreatedException;
 import com.example.backend.exception.issue.IssueIdNotFoundException;
 import com.example.backend.exception.project.ProjectIdNotFoundException;
 import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.util.List;
 
 import static com.example.backend.enums.IssueStatus.NEW;
+import static com.example.backend.util.issue.IssueUtilities.*;
 import static java.time.LocalDateTime.now;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class IssueService {
 
-//    private final static String ISSUE_NOT_FOUND_MESSAGE = "Issue with id %s not found";
-//    private final static String PROJECT_NOT_FOUND_MESSAGE = "Project with id %s not found";
-//
-//    private final static String USER_WITH_ID_NOT_FOUND_MESSAGE = "User with id %s not found";
-//    private final static String USER_WITH_EMAIL_NOT_FOUND_MESSAGE = "User with email %s not found";
+    @Qualifier("issue-jpa")
+    private final IssueDao issueDao;
 
-    private final IssueRepository issueRepository;
-    private final IssueCommentRepository commentRepository;
-    private final ProjectRepository projectRepository;
-    private final UserRepository userRepository;
+    private final IssueCommentDao commentDao;
+    
+    private final ProjectDao projectDao;
+    
+    private final UserDao userDao;
+    
     private final Clock clock;
 
     public List<IssueEntity> getAllIssues() {
-        log.info("Return all issues");
+        log.info(ISSUE_REQUEST_ALL);
 
-        return issueRepository
-                .findAll();
+        List<IssueEntity> issues = issueDao.selectAllIssues();
+
+        log.info(ISSUE_RETURN_ALL);
+
+        return issues;
     }
     public IssueEntity getIssueByIssueId(String issueId) {
-        log.info("Return issue with id: {}", issueId);
+        log.info(ISSUE_REQUEST_BY_ID, issueId);
 
-        return findIssue(issueId);
+        IssueEntity issue = issueDao
+            .selectIssueByIssueId(issueId)
+            .orElseThrow(() -> new IssueIdNotFoundException(issueId));
+
+        log.info(ISSUE_RETURN);
+
+        return issue;
     }
 
     public void saveIssue(IssueEntity issue, String projectId, String email) {
-        ProjectEntity project = findProject(projectId);
+        log.info(ISSUE_CREATE_ON_PROJECT, projectId);
 
-        UserEntity user = findUserByEmail(email);
+        ProjectEntity project = projectDao
+            .selectProjectById(projectId)
+            .orElseThrow(() -> new ProjectIdNotFoundException(projectId));
+
+        UserEntity user = userDao
+            .selectUserByEmail(email)
+            .orElseThrow(() -> new UserEmailNotFoundException(email));
+
+        boolean isIssuePresent = issueDao
+                .existsIssueWithIssueId(issue.getIssueId());
+
+        if(isIssuePresent) {
+            throw new IssueAlreadyCreatedException(issue.getIssueId());
+        }
 
         issue.setStatus(NEW);
         issue.setProject(project);
         issue.setCreatedByUser(user);
         issue.setCreatedOn(now(clock));
 
-        log.info("Save issue on project with id: {}", projectId);
+        issueDao.insertIssue(issue);
 
-        issueRepository.save(issue);
+        log.info(ISSUE_CREATED);
     }
 
     public void assignToUser(String issueId, String developerId) {
-        IssueEntity issue = findIssue(issueId);
+        log.info(ISSUE_ASSIGN_BY_ID_TO_DEV, issueId, developerId);
 
-        UserEntity developer = findUserByUserId(developerId);
+        IssueEntity issue = issueDao
+            .selectIssueByIssueId(issueId)
+            .orElseThrow(() -> new IssueIdNotFoundException(issueId));
+
+        UserEntity developer = userDao
+            .selectUserByUserId(developerId)
+            .orElseThrow(() -> new UserIdNotFoundException(developerId));
 
         issue.setAssignedUser(developer);
         issue.setAssignedOn(now(clock));
 
         // TODO: com/example/backend/dao/ProjectRepository.java:14
-        issueRepository.save(issue);
+        issueDao.updateIssue(issue);
+
+        log.info(ISSUE_ASSIGNED_TO_DEV);
+    }
+
+    public void closeByUser(String issueId, String developerId) {
+        log.info(ISSUE_CLOSE_BY_ID_BY_DEV, issueId, developerId);
+
+        IssueEntity issue = issueDao
+            .selectIssueByIssueId(issueId)
+            .orElseThrow(() -> new IssueIdNotFoundException(issueId));
+
+        UserEntity developer = userDao
+            .selectUserByUserId(developerId)
+            .orElseThrow(() -> new UserIdNotFoundException(developerId));
+
+        issue.setClosedByUser(developer);
+        issue.setClosedOn(now(clock));
+
+        // TODO: com/example/backend/dao/ProjectRepository.java:14
+        issueDao.updateIssue(issue);
+
+        log.info(ISSUE_CLOSE_BY_DEV);
     }
 
     public void changeIssueStatus(String issueId, IssueStatus status) {
-        IssueEntity issue = findIssue(issueId);
+        log.info(ISSUE_CHANGE_STATUS_BY_ID, issueId, status);
+
+        IssueEntity issue = issueDao
+            .selectIssueByIssueId(issueId)
+            .orElseThrow(() -> new IssueIdNotFoundException(issueId));
+
         IssueStatus currentStatus = issue.getStatus();
 
-        issue.setStatus(currentStatus.getNextState(status));
+        issue.setStatus(currentStatus.transitionTo(status));
 
         // TODO: com/example/backend/dao/ProjectRepository.java:14
-        issueRepository.save(issue);
+        issueDao.updateIssue(issue);
+
+        log.info(ISSUE_CHANGED_STATUS);
     }
 
     public void addComment(IssueCommentEntity issueComment, String issueId, String email) {
-        IssueEntity issue = findIssue(issueId);
-        UserEntity user = findUserByEmail(email);
+        log.info(ISSUE_USER_ADD_COMMENT_BY_ID, email, issueId);
+        
+        IssueEntity issue = issueDao
+            .selectIssueByIssueId(issueId)
+            .orElseThrow(() -> new IssueIdNotFoundException(issueId));
+
+        UserEntity user = userDao
+                .selectUserByEmail(email)
+                .orElseThrow(() -> new UserEmailNotFoundException(email));
 
         issueComment.setCreatedOnIssue(issue);
         issueComment.setCreatedOn(now(clock));
         issueComment.setCreatedByUser(user);
 
-        commentRepository.save(issueComment);
-    }
+        commentDao.insertComment(issueComment);
 
-    public IssueEntity findIssue(String issueId) {
-        return issueRepository
-                .findByIssueId(issueId)
-                .orElseThrow(() -> new IssueIdNotFoundException(issueId));
-    }
-
-    public UserEntity findUserByUserId(String userId) {
-        return userRepository
-                .findByUserId(userId)
-                .orElseThrow(() -> new UserIdNotFoundException(userId));
-    }
-
-    public UserEntity findUserByEmail(String email) {
-        return userRepository
-                .findByEmail(email)
-                .orElseThrow(() -> new UserEmailNotFoundException(email));
-    }
-
-    public ProjectEntity findProject(String projectId) {
-        return projectRepository
-                .findByProjectId(projectId)
-                .orElseThrow(() -> new ProjectIdNotFoundException(projectId));
+        log.info(ISSUE_COMMENT_ADDED);
     }
 }

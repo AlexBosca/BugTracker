@@ -11,12 +11,12 @@ import static java.util.regex.Pattern.compile;
 @Service
 public class PasswordValidatorService implements Predicate<String> {
 
-    private final static int MINIMUM_PASSWORD_LENGTH = 8;
-    private final static String AT_LEAST_ONE_UPPER_CASE_CHAR_REGEX = "(.*[A-Z].*)";
-    private final static String AT_LEAST_ONE_LOWER_CASE_CHAR_REGEX = "(.*[a-z].*)";
-    private final static String AT_LEAST_ONE_DIGIT_REGEX = "(.*[0-9].*)";
-    private final static String AT_LEAST_ONE_SPECIAL_CHAR_REGEX = "(.*[@#$%^&+=].*)";
-    private final static String NO_WHITESPACE_REGEX = "(\\S+$)";
+    private static final int MINIMUM_PASSWORD_LENGTH = 8;
+    private static final String AT_LEAST_ONE_UPPER_CASE_CHAR_REGEX = "(.*[A-Z].*)";
+    private static final String AT_LEAST_ONE_LOWER_CASE_CHAR_REGEX = "(.*[a-z].*)";
+    private static final String AT_LEAST_ONE_DIGIT_REGEX = "(.*[0-9].*)";
+    private static final String AT_LEAST_ONE_SPECIAL_CHAR_REGEX = "(.*[@#$%^&+=].*)";
+    private static final String NO_WHITESPACE_REGEX = "(\\S+$)";
 
     @Override
     public boolean test(String password) {

@@ -1,25 +1,23 @@
 package com.example.backend.service;
 
-import com.example.backend.dao.UserRepository;
+import com.example.backend.dao.UserDao;
 import com.example.backend.entity.UserEntity;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
 
 import static com.example.backend.enums.UserRole.VISITOR;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserDao userDao;
 
-    public UserEntity createUser(UserEntity user) {
+    public void createUser(UserEntity user) {
         if(user.getRole() == null) {
             user.setRole(VISITOR);
         }
 
-        return userRepository.save(user);
+        userDao.insertUser(user);
     }
 }
