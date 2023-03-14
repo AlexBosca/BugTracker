@@ -1,6 +1,5 @@
 package com.example.backend.dto.converter;
 
-import com.example.backend.enums.IssuePriority;
 import com.example.backend.enums.UserPrivilege;
 
 import javax.persistence.AttributeConverter;

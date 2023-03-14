@@ -1,8 +1,6 @@
 package com.example.backend.dto.response;
 
 
-import com.example.backend.enums.IssuePriority;
-import com.example.backend.enums.IssueStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,14 +18,18 @@ public class IssueFullResponse {
     private String issueId;
     private String title;
     private String description;
-    private IssueStatus status;
-    private IssuePriority priority;
+    private String reproducingSteps;
+    private String environment;
+    private String version;
+    private String status;
+    private String priority;
     private UserSlimResponse createdByUser;
     private LocalDateTime createdOn;
     private UserSlimResponse assignedUser;
     private LocalDateTime assignedOn;
     private UserSlimResponse closedByUser;
     private LocalDateTime closedOn;
-    private Collection<IssueCommentSlimResponse> discussion;
+    private UserSlimResponse tester;
+    private Collection<IssueCommentFullResponse> discussion;
     private ProjectSlimResponse project;
 }
