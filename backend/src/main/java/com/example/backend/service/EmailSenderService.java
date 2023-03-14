@@ -1,5 +1,5 @@
 package com.example.backend.service;
 
 public interface EmailSenderService {
-    void send(String to, String email);
+    void send(String recipientName, String recipientEmail, String confirmationLink);
 }
