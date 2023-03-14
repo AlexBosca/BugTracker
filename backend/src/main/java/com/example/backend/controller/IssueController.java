@@ -3,9 +3,10 @@ package com.example.backend.controller;
 import com.example.backend.dto.request.IssueCommentRequest;
 import com.example.backend.dto.request.IssueRequest;
 import com.example.backend.dto.response.IssueFullResponse;
-import com.example.backend.enums.IssueStatus;
 import com.example.backend.mapper.MapStructMapper;
+import com.example.backend.service.AuthenticationService;
 import com.example.backend.service.IssueService;
+import com.example.backend.enums.IssueStatus;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,23 +18,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.example.backend.enums.IssueStatus.*;
+import static com.example.backend.util.issue.IssueUtilities.*;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "issue")
+@RequestMapping(path = "issues")
 @AllArgsConstructor
 public class IssueController {
 
     @Autowired
     private final IssueService issueService;
     @Autowired
+    private final AuthenticationService authenticationService;
+    @Autowired
     private final MapStructMapper mapper;
 
-    @GetMapping(path = "/all")
+    @GetMapping
     public ResponseEntity<List<IssueFullResponse>> getAllIssues(){
-        log.info("Get all issues");
+        log.info(ISSUE_GET_ALL);
 
         return new ResponseEntity<>(
                 mapper.toResponses(issueService.getAllIssues()),
@@ -43,7 +47,7 @@ public class IssueController {
 
     @GetMapping(path = "/{issueId}")
     public ResponseEntity<IssueFullResponse> getIssue(@PathVariable(name = "issueId") String issueId){
-        log.info("Get issue with id: {}", issueId);
+        log.info(ISSUE_GET_BY_ID, issueId);
 
         return new ResponseEntity<>(
                 mapper.toResponse(issueService.getIssueByIssueId(issueId)),
@@ -52,12 +56,15 @@ public class IssueController {
     }
 
     @PostMapping(path = "/createOnProject/{projectId}")
-    public ResponseEntity<Void> createIssue(@RequestBody IssueRequest request,
-                            @PathVariable(name = "projectId") String projectId) {
+    public ResponseEntity<Void> createIssue(
+            // @RequestHeader("Authorization") String authorizationHeader,
+            @RequestBody IssueRequest request,
+            @PathVariable(name = "projectId") String projectId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
+        // String email = authenticationService.getEmailFromAuthorizationHeader(authorizationHeader);
 
-        log.info("Create new issue");
+        log.info(ISSUE_CREATE);
 
         issueService.saveIssue(mapper.toEntity(request), projectId, email);
 
@@ -67,16 +74,17 @@ public class IssueController {
     @PutMapping(path = "/{issueId}/assignToDeveloper/{developerId}")
     public ResponseEntity<Void> assignToDeveloper(@PathVariable(name = "issueId") String issueId,
                                        @PathVariable(name = "developerId") String developerId) {
-        log.info("Assign issue with id: {} to developer with id: {}", issueId, developerId);
+        log.info(ISSUE_ASSIGN_TO_DEV);
 
         issueService.assignToUser(issueId, developerId);
+        issueService.changeIssueStatus(issueId, ASSIGNED);
 
         return new ResponseEntity<>(OK);
     }
 
     @PutMapping(path = "/{issueId}/open")
     public ResponseEntity<Void> open(@PathVariable(name = "issueId") String issueId) {
-        log.info("Open issue with id: {} into state: {}", issueId, OPEN.name());
+        logIssueChangingState(issueId, OPEN);
 
         issueService.changeIssueStatus(issueId, OPEN);
 
@@ -85,7 +93,7 @@ public class IssueController {
 
     @PutMapping(path = "/{issueId}/fix")
     public ResponseEntity<Void> fix(@PathVariable(name = "issueId") String issueId) {
-        log.info("Open issue with id: {} into state: {}", issueId, FIXED.name());
+        logIssueChangingState(issueId, FIXED);
 
         issueService.changeIssueStatus(issueId, FIXED);
 
@@ -94,7 +102,7 @@ public class IssueController {
 
     @PutMapping(path = "/{issueId}/sendToRetest")
     public ResponseEntity<Void> sendToRetest(@PathVariable(name = "issueId") String issueId) {
-        log.info("Open issue with id: {} into state: {}", issueId, PENDING_RETEST.name());
+        logIssueChangingState(issueId, PENDING_RETEST);
 
         issueService.changeIssueStatus(issueId, PENDING_RETEST);
 
@@ -103,7 +111,7 @@ public class IssueController {
 
     @PutMapping(path = "/{issueId}/retest")
     public ResponseEntity<Void> retest(@PathVariable(name = "issueId") String issueId) {
-        log.info("Open issue with id: {} into state: {}", issueId, RETEST.name());
+        logIssueChangingState(issueId, RETEST);
 
         issueService.changeIssueStatus(issueId, RETEST);
 
@@ -112,7 +120,7 @@ public class IssueController {
 
     @PutMapping(path = "/{issueId}/reopen")
     public ResponseEntity<Void> reopen(@PathVariable(name = "issueId") String issueId) {
-        log.info("Open issue with id: {} into state: {}", issueId, REOPENED.name());
+        logIssueChangingState(issueId, REOPENED);
 
         issueService.changeIssueStatus(issueId, REOPENED);
 
@@ -121,17 +129,19 @@ public class IssueController {
 
     @PutMapping(path = "/{issueId}/verify")
     public ResponseEntity<Void> verify(@PathVariable(name = "issueId") String issueId) {
-        log.info("Open issue with id: {} into state: {}", issueId, VERIFIED.name());
+        logIssueChangingState(issueId, VERIFIED);
 
         issueService.changeIssueStatus(issueId, VERIFIED);
 
         return new ResponseEntity<>(OK);
     }
 
-    @PutMapping(path = "/{issueId}/close")
-    public ResponseEntity<Void> close(@PathVariable(name = "issueId") String issueId) {
-        log.info("Open issue with id: {} into state: {}", issueId, CLOSED.name());
+    @PutMapping(path = "/{issueId}/closeByDeveloper/{developerId}")
+    public ResponseEntity<Void> close(@PathVariable(name = "issueId") String issueId,
+                                @PathVariable(name = "developerId") String developerId) {
+        logIssueChangingState(issueId, CLOSED);
 
+        issueService.closeByUser(issueId, developerId);
         issueService.changeIssueStatus(issueId, CLOSED);
 
         return new ResponseEntity<>(OK);
@@ -139,7 +149,7 @@ public class IssueController {
 
     @PutMapping(path = "/{issueId}/duplicate")
     public ResponseEntity<Void> duplicate(@PathVariable(name = "issueId") String issueId) {
-        log.info("Open issue with id: {} into state: {}", issueId, DUPLICATE.name());
+        logIssueChangingState(issueId, DUPLICATE);
 
         issueService.changeIssueStatus(issueId, DUPLICATE);
 
@@ -148,7 +158,7 @@ public class IssueController {
 
     @PutMapping(path = "/{issueId}/reject")
     public ResponseEntity<Void> reject(@PathVariable(name = "issueId") String issueId) {
-        log.info("Open issue with id: {} into state: {}", issueId, REJECTED.name());
+        logIssueChangingState(issueId, REJECTED);
 
         issueService.changeIssueStatus(issueId, REJECTED);
 
@@ -157,7 +167,7 @@ public class IssueController {
 
     @PutMapping(path = "/{issueId}/defer")
     public ResponseEntity<Void> defer(@PathVariable(name = "issueId") String issueId) {
-        log.info("Open issue with id: {} into state: {}", issueId, DEFERRED.name());
+        logIssueChangingState(issueId, DEFERRED);
 
         issueService.changeIssueStatus(issueId, DEFERRED);
 
@@ -166,7 +176,7 @@ public class IssueController {
 
     @PutMapping(path = "/{issueId}/notABug")
     public ResponseEntity<Void> notABug(@PathVariable(name = "issueId") String issueId) {
-        log.info("Open issue with id: {} into state: {}", issueId, NOT_A_BUG.name());
+        logIssueChangingState(issueId, NOT_A_BUG);
 
         issueService.changeIssueStatus(issueId, NOT_A_BUG);
 
@@ -175,14 +185,19 @@ public class IssueController {
 
     @PostMapping(path = "/{issueId}/comment")
     public ResponseEntity<Void> createCommentOnIssue(@RequestBody IssueCommentRequest commentRequest,
-                                                     @PathVariable(name = "issueId") String issueId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
+                                                     @PathVariable(name = "issueId") String issueId,
+                                                     @RequestHeader("Authorization") String authorizationHeader) {
+                                                        
+        String email = authenticationService.getEmailFromAuthorizationHeader(authorizationHeader);
 
         log.info("User with id: {} create a comment on issue with id: {}", email, issueId);
 
         issueService.addComment(mapper.toEntity(commentRequest), issueId, email);
 
         return new ResponseEntity<>(CREATED);
+    }
+
+    private void logIssueChangingState(String issueId, IssueStatus issueStatus) {
+        log.info(ISSUE_CHANGE_STATE_MSG, issueId, issueStatus.name());
     }
 }
