@@ -1,0 +1,127 @@
+<div class="container-fluid p-0 mb-4">
+    <div class="row justify-content-between mb-5">
+        <h3 class="col"><strong>Projects</strong></h3>
+        <!-- Caption to add -->
+        <!-- Button trigger modal -->
+        <button type="button" class="col-1 btn btn-secondary rounded-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Create Project
+        </button>
+    
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-name" id="exampleModalLabel">Create Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                    <form [formGroup]="projectCreationForm" (ngSubmit)="createProject()">
+                        <div class="modal-body">
+                            <div *ngIf="error" class="alert alert-danger alert-dismissible mt-1 mb-3">
+                                {{error.error.message}}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label for="projectId">Project ID</label>
+                                <input type="text" formControlName="projectId" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['projectId'].errors }" />
+                                <div *ngIf="submitted && form['projectId'].errors" class="invalid-feedback">
+                                    <div *ngIf="form['projectId'].errors['required']">Project ID is required</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mt-2">
+                                <label for="name">Name</label>
+                                <input type="text" formControlName="name" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['name'].errors }" />
+                                <div *ngIf="submitted && form['name'].errors" class="invalid-feedback">
+                                    <div *ngIf="form['name'].errors['required']">Name is required</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mt-2">
+                                <label for="description">Description</label>
+                                <input type="text" formControlName="description" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['description'].errors }" />
+                                <div *ngIf="submitted && form['description'].errors" class="invalid-feedback">
+                                    <div *ngIf="form['description'].errors['required']">Description is required</div>
+                                </div>
+                            </div>
+                            
+                            <!-- <div class="form-group mt-2">
+                                <label for="reproducingSteps">Reproducing Steps</label>
+                                <input type="text" formControlName="reproducingSteps" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['reproducingSteps'].errors }" />
+                                <div *ngIf="submitted && form['reproducingSteps'].errors" class="invalid-feedback">
+                                    <div *ngIf="form['reproducingSteps'].errors['required']">Reproducing Steps are required</div>
+                                </div>
+                            </div>
+            
+                            <div class="form-group mt-2">
+                                <label for="environment">Environment</label>
+                                <input type="text" formControlName="environment" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['environment'].errors }" />
+                                <div *ngIf="submitted && form['environment'].errors" class="invalid-feedback">
+                                    <div *ngIf="form['environment'].errors['required']">Environment is required</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label for="version">Version</label>
+                                <input type="text" formControlName="version" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['version'].errors }" />
+                                <div *ngIf="submitted && form['version'].errors" class="invalid-feedback">
+                                    <div *ngIf="form['version'].errors['required']">Version is required</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label for="priority">Priority</label>
+                                <input type="text" formControlName="priority" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['priority'].errors }" />
+                                <div *ngIf="submitted && form['priority'].errors" class="invalid-feedback">
+                                    <div *ngIf="form['priority'].errors['required']">Priority is required</div>
+                                </div>
+                            </div> -->
+                        </div>
+        
+                        <div class="modal-footer">
+                            <button type="button" id="createIssueForm" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            
+                            <button [disabled]="loading" class="btn btn-primary">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                                Create
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card rounded-4">
+        <form class="card-body d-flex justify-content-between">
+            <div class="input-group w-25">
+                <span class="btn bg-white border border-end-0"><i class="bi bi-search"></i></span>
+                <input class="form-control bg-white border" type="search" placeholder="Project ID" aria-label="Search">
+            </div>
+
+            <div class="container d-flex justify-content-end m-0 p-0 w-50">
+                <div class="input-group w-25 mx-5">
+                    <select class="form-select">
+                        <option selected value="">Filters</option>
+                        <option value="createdBy">Created By</option>
+                        <option value="projectId">Project ID</option>
+                        <option value="name">Name</option>
+                        <option value="version">Version</option>
+                        <option value="asignee">Asignee</option>
+                        <option value="priority">Priority</option>
+                        <option value="status">Status</option>
+                        <option value="createdOn">Created On</option>
+                    </select>
+                </div>
+    
+                <div class="input-group w-auto">
+                    <button type="button" class="btn btn-secondary rounded-3 px-5">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
