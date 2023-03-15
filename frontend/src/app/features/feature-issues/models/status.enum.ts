@@ -1,0 +1,15 @@
+export enum Status {
+    NEW = 'NEW',
+    ASSIGNED = 'ASSIGNED',
+    OPEN = 'OPEN',
+    FIXED = 'FIXED',
+    REOPENED = 'REOPENED',
+    PENDING_RETEST = 'PENDING_RETEST',
+    RETEST = 'RETEST',
+    VERIFIED = 'VERIFIED',
+    CLOSED = 'CLOSED',
+    DUPLICATE = 'DUPLICATE',
+    REJECTED = 'REJECTED',
+    DEFERRED = 'DEFERED',
+    NOT_A_BUG = 'NOT_A_BUG'
+}
