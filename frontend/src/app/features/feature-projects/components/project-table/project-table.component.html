@@ -1,0 +1,95 @@
+<div class="card rounded-4">
+
+    <div class="card-body">
+      <!-- Table Header -->
+      <div class="row p-2 mb-3 fw-bold">
+        <div class="col-3">Project ID</div>
+        <div class="col-3">Name</div>
+        <div class="col">Description</div>
+        <!-- <div class="col">Version</div>
+        <div class="col">Asignee</div>
+        <div class="col">Priority</div>
+        <div class="col">Status</div>
+        <div class="col">Creation Date</div> -->
+      </div>
+      <!-- End Table Header -->
+  
+      <!-- Table Content -->
+      <ng-template [ngIf]="projects.length !== 0" [ngIfElse]="no_projects">
+        <div *ngFor="let project of projects" [routerLink]="['details', project.projectId]" class="row mb-3 p-2 d-flex align-items-center">
+          <!-- <div class="col-3 d-flex">
+            <div class="bg-secondary rounded-circle w-25"></div>
+            <div class="container">
+              <p class="m-0 p-0">{{issue.createdByUser.firstName}} {{issue.createdByUser.lastName}}</p>
+              <p class="m-0 p-0 text-secondary">{{issue.createdByUser.email}}</p>
+            </div>
+          </div> -->
+  
+          <div class="col-3">{{project.projectId}}</div>
+  
+          <div class="col-3">{{project.name}}</div>
+  
+          <div class="col">{{project.description}}</div>
+  
+          <!-- <ng-template [ngIf]="issue.assignedUser" [ngIfElse]="no_assignee">
+            <div class="col">
+              {{issue.assignedUser.firstName}} {{issue.assignedUser.lastName}}
+            </div>
+          </ng-template>
+  
+          <ng-template #no_assignee>
+            <div class="col">
+              No Assignee
+            </div>
+          </ng-template> -->
+  
+          <!-- Priority Bagde -->
+          <!-- <div class="col" [ngSwitch]="issue.priority">
+            <span *ngSwitchCase="'HIGHEST'">
+              <i class="bi bi-arrow-up-square-fill text-danger"></i>
+              {{issue.priority}}
+            </span>
+  
+            <span *ngSwitchCase="'HIGH'">
+              <i class="bi bi-arrow-up-square-fill text-warning"></i>
+              {{issue.priority}}
+            </span>
+  
+            <span *ngSwitchCase="'MEDIUM'">
+              <i class="bi bi-arrow-up-square-fill text-warning"></i>
+              {{issue.priority}}
+            </span>
+  
+            <span *ngSwitchCase="'LOW'">
+              <i class="bi bi-arrow-down-square-fill text-primary"></i>
+              {{issue.priority}}
+            </span>
+  
+            <span *ngSwitchCase="'LOWEST'">
+              <i class="bi bi-arrow-down-square-fill text-success"></i>
+              {{issue.priority}}
+            </span>
+          </div> -->
+  
+          <!-- <div class="col">
+            <span class="badge"
+              [ngClass]="{
+                'bg-secondary' : issue.status === IssueStatus.NEW || issue.status === IssueStatus.ASSIGNED || issue.status === IssueStatus.OPEN || issue.status === IssueStatus.REOPENED,
+                'bg-success' : issue.status === IssueStatus.FIXED || issue.status === IssueStatus.VERIFIED || issue.status === IssueStatus.CLOSED,
+                'bg-danger' : issue.status === IssueStatus.DUPLICATE || issue.status === IssueStatus.REJECTED || issue.status === IssueStatus.DEFERRED || issue.status === IssueStatus.NOT_A_BUG,
+                'bg-warning' : issue.status === IssueStatus.PENDING_RETEST || issue.status === IssueStatus.RETEST
+              }">
+              {{issue.status.split('_').join(' ')}}
+            </span>
+          </div> -->
+  
+          <!-- <div class="col">{{issue.createdOn | date}}</div> -->
+        </div>
+      </ng-template>
+  
+      <ng-template #no_projects>
+        <h3 class="text-secondary text-center">No projects to display</h3>
+      </ng-template>
+      <!-- End Table Content -->
+    </div>
+  </div>
