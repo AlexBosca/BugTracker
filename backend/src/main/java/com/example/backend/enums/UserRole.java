@@ -2,7 +2,7 @@ package com.example.backend.enums;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.example.backend.exception.user.RoleNotFoundException;
+import com.example.backend.exception.user.UserRoleNotFoundException;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -73,6 +73,6 @@ public enum UserRole {
         return getAllRoles().stream()
                 .filter(role -> role.code.equals(code))
                 .findFirst()
-                .orElseThrow(() -> new RoleNotFoundException(code));
+                .orElseThrow(() -> new UserRoleNotFoundException(code));
     }
 }

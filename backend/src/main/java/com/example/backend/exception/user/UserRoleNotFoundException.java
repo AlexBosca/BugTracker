@@ -8,9 +8,9 @@ import static com.example.backend.util.ExceptionUtilities.ROLE_WITH_CODE_NOT_FOU
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ResponseStatus(value = NOT_FOUND)
-public class RoleNotFoundException extends BaseRuntimeException {
+public class UserRoleNotFoundException extends BaseRuntimeException {
     
-    public RoleNotFoundException(String code) {
+    public UserRoleNotFoundException(String code) {
         super(ROLE_WITH_CODE_NOT_FOUND, code);
     }
 }
