@@ -47,7 +47,15 @@
 
                 <div class="form-group mt-3">
                     <label for="role">Role</label>
-                    <input type="text" formControlName="role" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['role'].errors }" />
+                    <select class="form-select" aria-label=".form-select-lg example" formControlName="role" [ngClass]="{ 'is-invalid': submitted && form['role'].errors }">
+                        <option value="" selected>Choose your role</option>
+                        <option value="A">Admin</option>
+                        <option value="D">Developer</option>
+                        <option value="T">Tester</option>
+                        <option value="SM">Scrum Master</option>
+                        <option value="PM">Project Manager</option>
+                        <option value="V">Visitor</option>
+                    </select>
                     <div *ngIf="submitted && form['role'].errors" class="invalid-feedback">
                         <div *ngIf="form['role'].errors['required']">Role is required</div>
                     </div>

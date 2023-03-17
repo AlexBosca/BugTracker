@@ -29,7 +29,7 @@ export class RegisterFormComponent implements OnInit {
       lastName: ['', Validators.required],
       email: ['', Validators.required],
       password: ['', Validators.required],
-      role: ['V', Validators.required]
+      role: ['', Validators.required]
     });
   }
 
