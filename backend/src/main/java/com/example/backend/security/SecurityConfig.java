@@ -23,7 +23,7 @@ public class SecurityConfig {
     private final AppAuthenticationProvider authenticationProvider;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authManager) throws Exception {
             http
                 .cors().and()
                 .csrf().disable()
@@ -31,7 +31,8 @@ public class SecurityConfig {
                 .antMatchers("/authentication/**").permitAll()
                 .anyRequest().authenticated()
                 .and().httpBasic()
-                .authenticationEntryPoint(authenticationEntryPoint);
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .and().authenticationManager(authManager);
 
             return http.build();
     }
@@ -54,11 +55,11 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
-    @Bean
-    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = 
-            http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.authenticationProvider(authenticationProvider);
-        return authenticationManagerBuilder.build();
-    }
+    // @Bean
+    // public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+    //     AuthenticationManagerBuilder authenticationManagerBuilder = 
+    //         http.getSharedObject(AuthenticationManagerBuilder.class);
+    //     // authenticationManagerBuilder.authenticationProvider(daoAuthenticationProvider());
+    //     return authenticationManagerBuilder.build();
+    // }
 }
