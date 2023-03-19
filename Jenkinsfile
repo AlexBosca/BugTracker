@@ -23,7 +23,7 @@ pipeline {
         stage('Backend - Run Unit Tests') {
             steps {
                 echo 'Run Backend Unit Tests'
-                bat 'mvn -f backend test -Dspring.profiles.active=dev'
+                bat 'mvn -f backend test -Dspring.profiles.active=test'
             }
         }
 
