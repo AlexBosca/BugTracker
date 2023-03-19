@@ -1,11 +1,15 @@
 #!groovy
 pipeline {
     agent any
+
+    environment {
+        MAIL_CREDS = credentials('mail_credentials')
+    }
     
     stages {
         stage('Pull GitHub Code') {
             steps {
-                git 'https://github.com/AlexBosca/BugTracker.git'
+                git url: 'https://github.com/AlexBosca/BugTracker.git'
             }
         }
         
