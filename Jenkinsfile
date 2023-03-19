@@ -1,11 +1,16 @@
 #!groovy
 pipeline {
     agent any
+
+    environment {
+        MAIL_CREDS = credentials('mail_credentials')
+    }
     
     stages {
         stage('Pull GitHub Code') {
             steps {
-                git 'https://github.com/AlexBosca/BugTracker.git'
+                git branch: 'CU-85zrt8xa4_Add-credentials-using-in-Jenkinsfile',
+                    url: 'https://github.com/AlexBosca/BugTracker.git'
             }
         }
         
