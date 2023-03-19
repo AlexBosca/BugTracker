@@ -9,8 +9,8 @@ pipeline {
     stages {
         stage('Pull GitHub Code') {
             steps {
-                git branch: 'CU-85zrt8xa4_Add-credentials-using-in-Jenkinsfile',
-                    url: 'https://github.com/AlexBosca/BugTracker.git'
+                git url: 'https://github.com/AlexBosca/BugTracker.git',
+                    branch: 'CU-85zrt8xa4_Add-credentials-using-in-Jenkinsfile'
             }
         }
         
