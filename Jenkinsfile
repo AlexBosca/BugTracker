@@ -1,6 +1,10 @@
 #!groovy
 pipeline {
     agent any
+
+    environment {
+        MAIL_CREDS = credentials('mail_credentials')
+    }
     
     stages {
         stage('Pull GitHub Code') {
