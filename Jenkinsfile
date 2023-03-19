@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     environment {
-        MAIL = credentials('MAIL')
+        MAIL_CREDS = credentials('mail_credentials')
     }
     
     stages {
