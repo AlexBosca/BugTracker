@@ -9,7 +9,8 @@ pipeline {
     stages {
         stage('Pull GitHub Code') {
             steps {
-                git([url: 'https://github.com/AlexBosca/BugTracker.git', branch: 'CU-85zrt8xa4_Add-credentials-using-in-Jenkinsfile'])
+                git branch: 'CU-85zrt8xa4_Add-credentials-using-in-Jenkinsfile',
+                    url: 'https://github.com/AlexBosca/BugTracker.git'
             }
         }
         
@@ -22,7 +23,7 @@ pipeline {
         stage('Backend - Run Unit Tests') {
             steps {
                 echo 'Run Backend Unit Tests'
-                bat 'mvn -f backend test -Dspring.profiles.active=test'
+                bat 'mvn -f backend test -Dspring.profiles.active=dev'
             }
         }
 
