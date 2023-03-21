@@ -18,6 +18,7 @@ export class LoginFormComponent implements OnInit {
   loginSubmitted: boolean = false;
   error!: HttpErrorResponse;
   returnUrl: string = '';
+  registrationResponse?: string;
 
   constructor(
     private router: Router,
@@ -28,6 +29,8 @@ export class LoginFormComponent implements OnInit {
       if(authService.isUserLoggedIn()) {
         this.router.navigate(['/']);
       }
+
+      this.registrationResponse = router.getCurrentNavigation()?.extras?.state?.['data'];
     }
 
   ngOnInit(): void {

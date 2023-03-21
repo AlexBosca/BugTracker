@@ -5,7 +5,12 @@
 
             <form [formGroup]="loginForm" (ngSubmit)="login()">
                 <div *ngIf="error" class="alert alert-danger alert-dismissible mt-1 mb-4">
-                    {{error.error.message}}
+                    <i class="bi bi-exclamation-triangle-fill"></i> {{error.error.message}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <div *ngIf="registrationResponse" class="alert alert-primary alert-dismissible mt-1 mb-4">
+                    <i class="bi bi-info-circle-fill"></i> {{registrationResponse}}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 

@@ -54,7 +54,14 @@ export class RegisterFormComponent implements OnInit {
       role: this.form['role'].value,
     }).subscribe({
       next: () => {
-        this.router.navigate(['/login']);
+        this.router.navigate(
+          ['/login'],
+          {
+            state: {
+              data: 'Confirm your email address'
+            }
+          }
+        );
       },
       error: error => {
         this.error = error;
