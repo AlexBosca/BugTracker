@@ -8,6 +8,8 @@ import { ProjectsGridComponent } from './components/projects-grid/projects-grid.
 import { ProjectTableComponent } from './components/project-table/project-table.component';
 import { ProjectFilterComponent } from './components/project-filter/project-filter.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { PageProjectsDetailsComponent } from './pages/page-projects-details/page-projects-details.component';
+import { ProjectDetailsComponent } from './components/project-details/project-details.component';
 
 
 @NgModule({
@@ -16,7 +18,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     ProjectCardComponent,
     ProjectsGridComponent,
     ProjectTableComponent,
-    ProjectFilterComponent
+    ProjectFilterComponent,
+    PageProjectsDetailsComponent,
+    ProjectDetailsComponent
   ],
   imports: [
     CommonModule,
