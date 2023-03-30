@@ -10,6 +10,8 @@ import { ProjectFilterComponent } from './components/project-filter/project-filt
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PageProjectsDetailsComponent } from './pages/page-projects-details/page-projects-details.component';
 import { ProjectDetailsComponent } from './components/project-details/project-details.component';
+import { IssueCardComponent } from '../feature-issues/components/issue-card/issue-card.component';
+import { FeatureIssuesModule } from '../feature-issues/feature-issues.module';
 
 
 @NgModule({
@@ -26,7 +28,8 @@ import { ProjectDetailsComponent } from './components/project-details/project-de
     CommonModule,
     FeatureProjectsRoutingModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FeatureIssuesModule
   ]
 })
 export class FeatureProjectsModule { }
