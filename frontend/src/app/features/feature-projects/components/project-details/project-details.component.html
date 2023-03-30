@@ -27,23 +27,19 @@
     <hr class="row mb-5">
 
     <div class="row h-75">
-        <div class="col mx-3 rounded" style="background-color:rgb(240, 240, 240)">
-            <span class="badge my-3 bg-secondary">TO DO</span>
-            <app-issue-card *ngFor="let issue of project.issues" [issue]="issue"></app-issue-card>
+        <app-issues-board class="col"
+            [status]="'TO DO'"
+            [issues]="project.issues">
+        </app-issues-board>
 
-            <button type="button" class="btn d-block p-0" style="color: rgb(105, 105, 105);">
-                <i class="bi bi-plus-lg"></i> Create
-            </button>
-        </div>
+        <app-issues-board class="col"
+            [status]="'IN PROGRESS'"
+            [issues]="project.issues">
+        </app-issues-board>
 
-        <div class="col mx-3 rounded" style="background-color:rgb(240, 240, 240);">
-            <span class="badge my-3 bg-primary">IN PROGRESS</span>
-            <app-issue-card *ngFor="let issue of project.issues" [issue]="issue"></app-issue-card>
-        </div>
-        
-        <div class="col mx-3 rounded" style="background-color:rgb(240, 240, 240);">
-            <span class="badge my-3 bg-success">DONE</span>
-            <app-issue-card *ngFor="let issue of project.issues" [issue]="issue"></app-issue-card>
-        </div>
+        <app-issues-board class="col"
+            [status]="'DONE'"
+            [issues]="project.issues">
+        </app-issues-board>
     </div>
 </div>

@@ -11,6 +11,7 @@ import { PageIssueDetailsComponent } from './pages/page-issue-details/page-issue
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BasicAuthInterceptor } from 'src/app/core/interceptor/basic-auth.interceptor';
 import { IssueCardComponent } from './components/issue-card/issue-card.component';
+import { IssuesBoardComponent } from './components/issues-board/issues-board.component';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { IssueCardComponent } from './components/issue-card/issue-card.component
     IssuesFilterComponent,
     IssueDetailsComponent,
     PageIssueDetailsComponent,
-    IssueCardComponent
+    IssueCardComponent,
+    IssuesBoardComponent
   ],
   imports: [
     CommonModule,
@@ -30,7 +32,7 @@ import { IssueCardComponent } from './components/issue-card/issue-card.component
     FeatureIssuesRoutingModule
   ],
   exports: [
-    IssueCardComponent
+    IssuesBoardComponent
   ],
   providers: [
     {
