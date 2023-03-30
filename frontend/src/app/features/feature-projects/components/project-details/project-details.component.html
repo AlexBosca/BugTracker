@@ -1,0 +1,49 @@
+<div class="container h-75 p-0">
+    <div class="row my-3 p-0">
+        <img class="col-1 img-thumbnail" alt="...">
+
+        <div class="col">
+            <h3 class="row mx-2 title">{{project.name}}</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <ul class="nav">
+            <li class="nav-item">
+                <a href="#" class="nav-link">Summary</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Board</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">List</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Calendar</a>
+            </li>
+        </ul>
+    </div>
+
+    <hr class="row mb-5">
+
+    <div class="row h-75">
+        <div class="col mx-3 rounded" style="background-color:rgb(240, 240, 240)">
+            <span class="badge my-3 bg-secondary">TO DO</span>
+            <app-issue-card *ngFor="let issue of project.issues" [issue]="issue"></app-issue-card>
+
+            <button type="button" class="btn d-block p-0" style="color: rgb(105, 105, 105);">
+                <i class="bi bi-plus-lg"></i> Create
+            </button>
+        </div>
+
+        <div class="col mx-3 rounded" style="background-color:rgb(240, 240, 240);">
+            <span class="badge my-3 bg-primary">IN PROGRESS</span>
+            <app-issue-card *ngFor="let issue of project.issues" [issue]="issue"></app-issue-card>
+        </div>
+        
+        <div class="col mx-3 rounded" style="background-color:rgb(240, 240, 240);">
+            <span class="badge my-3 bg-success">DONE</span>
+            <app-issue-card *ngFor="let issue of project.issues" [issue]="issue"></app-issue-card>
+        </div>
+    </div>
+</div>
