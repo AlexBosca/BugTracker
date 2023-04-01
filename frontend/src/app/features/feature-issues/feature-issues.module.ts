@@ -22,7 +22,7 @@ import { IssuesBoardComponent } from './components/issues-board/issues-board.com
     IssuesFilterComponent,
     IssueDetailsComponent,
     PageIssueDetailsComponent,
-    IssueModalComponent
+    IssueModalComponent,
     IssueCardComponent,
     IssuesBoardComponent
   ],
