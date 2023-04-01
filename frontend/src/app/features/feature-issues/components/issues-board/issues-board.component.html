@@ -9,7 +9,9 @@
     </span>
     <app-issue-card *ngFor="let issue of issues" [issue]="issue"></app-issue-card>
 
-    <button *ngIf="status === 'TO DO'" type="button" class="btn d-block p-0" style="color: rgb(105, 105, 105);">
+    <button *ngIf="status === 'TO DO'" type="button" class="btn d-block p-0" data-bs-toggle="modal" data-bs-target="#issueModal" style="color: rgb(105, 105, 105);">
         <i class="bi bi-plus-lg"></i> Create
     </button>
+
+    <app-issue-modal></app-issue-modal>
 </div>
