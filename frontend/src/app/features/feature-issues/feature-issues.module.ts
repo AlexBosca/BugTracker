@@ -10,6 +10,7 @@ import { IssueDetailsComponent } from './components/issue-details/issue-details.
 import { PageIssueDetailsComponent } from './pages/page-issue-details/page-issue-details.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BasicAuthInterceptor } from 'src/app/core/interceptor/basic-auth.interceptor';
+import { IssueModalComponent } from './components/issue-modal/issue-modal.component';
 
 
 @NgModule({
@@ -18,7 +19,8 @@ import { BasicAuthInterceptor } from 'src/app/core/interceptor/basic-auth.interc
     PageIssuesComponent,
     IssuesFilterComponent,
     IssueDetailsComponent,
-    PageIssueDetailsComponent
+    PageIssueDetailsComponent,
+    IssueModalComponent
   ],
   imports: [
     CommonModule,
