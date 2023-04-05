@@ -1,8 +1,10 @@
 package com.example.backend.controller;
 
 import com.example.backend.dto.request.ProjectRequest;
+import com.example.backend.dto.response.IssueFullResponse;
 import com.example.backend.dto.response.ProjectFullResponse;
 import com.example.backend.entity.ProjectEntity;
+import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.mapper.MapStructMapper;
 import com.example.backend.service.ProjectService;
 import lombok.AllArgsConstructor;
@@ -68,5 +70,21 @@ public class ProjectController {
         projectService.addTeam(projectId, teamId);
 
         return new ResponseEntity<>(OK);
+    }
+
+    @GetMapping(path = "/{projectId}/issues")
+    public ResponseEntity<List<IssueFullResponse>> getAllIssuesOnProject(@PathVariable(name = "projectId") String projectId) {
+        log.info("Get issues on project with id: {}", projectId);
+
+        List<IssueEntity> entities = projectService.getAllIssuesOnProjectById(projectId);
+
+        List<IssueFullResponse> responses = entities.stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            responses,
+            OK
+        );
     }
 }
