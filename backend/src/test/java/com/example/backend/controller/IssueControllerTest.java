@@ -5,7 +5,9 @@ import com.example.backend.dto.response.IssueFullResponse;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueEntity;
+import com.example.backend.enums.IssueStatus;
 import com.example.backend.exception.issue.IssueIdNotFoundException;
+import com.example.backend.exception.issue.IssueStatusInvalidTransitionException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 import com.example.backend.mapper.MapStructMapper;
 import com.example.backend.service.IssueService;
@@ -39,7 +41,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import static com.example.backend.enums.IssuePriority.LOW;
+import static com.example.backend.enums.IssueStatus.FIXED;
 import static com.example.backend.enums.IssueStatus.NEW;
+import static com.example.backend.enums.IssueStatus.ASSIGNED;
 
 import static com.example.backend.util.ExceptionUtilities.ISSUE_WITH_ID_NOT_FOUND;
 import static com.example.backend.util.ExceptionUtilities.USER_WITH_ID_NOT_FOUND;
@@ -75,6 +79,9 @@ public class IssueControllerTest {
 
     @Captor
     private ArgumentCaptor<String> developerIdCaptor;
+
+    @Captor
+    private ArgumentCaptor<IssueStatus> issueStatusCaptor;
 
     @Disabled
     @Test
@@ -164,8 +171,8 @@ public class IssueControllerTest {
     }
 
     @Test
-    @DisplayName("Should return an OK Response when no exception was thrown")
-    public void assignToDeveloper_NoExceptionThrown_OkResponse() throws Exception {
+    @DisplayName("Should return an OK Response when no exception was thrown when calling the assignToDeveloper endpoint")
+    void assignToDeveloper_NoExceptionThrown_OkResponse() throws Exception {
         String expectedIssueId = "FI_00001";
         String expectedDeveloperId = "FU_00001";
 
@@ -185,8 +192,8 @@ public class IssueControllerTest {
     }
 
     @Test
-    @DisplayName("Should return a NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown")
-    public void assignToDeveloper_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
+    @DisplayName("Should return a NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the assignToDeveloper endpoint")
+    void assignToDeveloper_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FI_00001";
         String expectedDeveloperId = "FU_00001";
 
@@ -210,8 +217,8 @@ public class IssueControllerTest {
     }
 
     @Test
-    @DisplayName("Should return a NOT FOUND Response and resolve exception when UserIdNotFoundException was thrown")
-    public void assignToDeveloper_UserIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
+    @DisplayName("Should return a NOT FOUND Response and resolve exception when UserIdNotFoundException was thrown when calling the assignToDeveloper endpoint")
+    void assignToDeveloper_UserIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FI_00001";
         String expectedDeveloperId = "FU_00001";
 
@@ -232,5 +239,78 @@ public class IssueControllerTest {
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
+    }
+
+    @Test
+    @DisplayName("Should return an OK Response when no exception was thrown when calling the open endpoint")
+    void open_NoExceptionThrown_OkResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        IssueStatus expectedStatus = IssueStatus.OPEN;
+
+		mockMvc.perform(put("/issues/{issueId}/open", expectedIssueId))
+			.andExpect(status().isOk());
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture()
+        );
+
+        String actualIssueId = issueIdCaptor.getValue();
+        IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+
+        assertThat(actualIssueId).isEqualTo(expectedIssueId);
+        assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+    }
+
+    @Test
+    @DisplayName("Should return a NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the open endpoint")
+    void open_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        IssueStatus expectedStatus = IssueStatus.OPEN;
+
+        doThrow(new IssueIdNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+
+		mockMvc.perform(put("/issues/{issueId}/open", expectedIssueId))
+			.andExpect(status().isNotFound())
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueIdNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_WITH_ID_NOT_FOUND, expectedIssueId)));
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture()
+        );
+
+        String actualIssueId = issueIdCaptor.getValue();
+        IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+
+        assertThat(actualIssueId).isEqualTo(expectedIssueId);
+        assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+    }
+
+    @Disabled("Cannot throw IssueStatusInvalidTransitionException in changeIssueStatus method")
+    @Test
+    @DisplayName("Should return a BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the open endpoint")
+    void open_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        IssueStatus expectedStatus = FIXED;
+        IssueStatus currentStatus = ASSIGNED;
+
+		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+
+		mockMvc.perform(put("/issues/{issueId}/open", expectedIssueId))
+			.andExpect(status().isBadRequest())
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueStatusInvalidTransitionException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_WITH_ID_NOT_FOUND, expectedIssueId)));
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture()
+        );
+
+        String actualIssueId = issueIdCaptor.getValue();
+        IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+
+        assertThat(actualIssueId).isEqualTo(expectedIssueId);
+        assertThat(actualIssueStatus).isEqualTo(expectedStatus);
     }
 }
