@@ -102,8 +102,8 @@ public class IssueControllerTest {
     private ArgumentCaptor<IssueStatus> issueStatusCaptor;
 
     @Test
-    @DisplayName("Should return a specific issue by its issueId when it exists")
-    void shouldReturnIssueByIssueIdWhenExists() throws Exception {
+    @DisplayName("Should return OK Response when no exception was thrown when calling the getIssue endpoint")
+    void getIssue_NoExceptionThrown_OkResponse() throws Exception {
         IssueEntity issue = IssueEntity.builder()
             .issueId("FI_00001")
             .title("Title")
@@ -126,27 +126,16 @@ public class IssueControllerTest {
     }
 
     @Test
-    @DisplayName("Should throw an IllegalStateException when issue with issueId doesn't exists")
-    void shouldThrowExceptionWhenIssueWithIssueIdDoNotExists() throws Exception {
-        IssueEntity issue = IssueEntity.builder()
-            .issueId("FI_00001")
-            .title("Title")
-            .description("Issue description")
-            .reproducingSteps("Some steps to reproduce the issue")
-            .environment("Environment")
-            .version("v1.0")
-            .status(NEW)
-            .priority(LOW)
-            .build();
+    @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the getIssue endpoint")
+    void getIssue_IssueIdNotFoundExceptionThrown_ResolvedExceptionAndNotFoundResponse() throws Exception {
+        String expectedIssueId = "FI_00005";
 
-        IssueFullResponse expectedIssueResponse = mapStructMapper.toResponse(issue);
+        doThrow(new IssueIdNotFoundException(expectedIssueId)).when(issueService).getIssueByIssueId(expectedIssueId);
 
-        when(issueService.getIssueByIssueId("00001")).thenReturn(issue);
-
-        mockMvc.perform(get("/issues/{issueId}", "00001"))
-            .andExpect(status().isOk())
-            .andExpect(content()
-                .json(objectMapper.writeValueAsString(expectedIssueResponse)));
+        mockMvc.perform(get("/issues/{issueId}", expectedIssueId))
+            .andExpect(status().isNotFound())
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueIdNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(ISSUE_WITH_ID_NOT_FOUND, expectedIssueId));
     }
 
     @Test
