@@ -49,6 +49,7 @@ import static com.example.backend.enums.IssueStatus.FIXED;
 import static com.example.backend.enums.IssueStatus.NEW;
 import static com.example.backend.enums.IssueStatus.OPEN;
 import static com.example.backend.enums.IssueStatus.PENDING_RETEST;
+import static com.example.backend.enums.IssueStatus.REOPENED;
 import static com.example.backend.enums.IssueStatus.RETEST;
 import static com.example.backend.enums.IssueStatus.ASSIGNED;
 
@@ -729,4 +730,77 @@ public class IssueControllerTest {
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
     }
+
+    @Test
+    @DisplayName("Should return OK Response when no exception was thrown when calling the reopen endpoint")
+    void reopen_NoExceptionThrown_OkResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        IssueStatus expectedStatus = REOPENED;
+
+		mockMvc.perform(put("/issues/{issueId}/reopen", expectedIssueId))
+			.andExpect(status().isOk());
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture()
+        );
+
+        String actualIssueId = issueIdCaptor.getValue();
+        IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+
+        assertThat(actualIssueId).isEqualTo(expectedIssueId);
+        assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+    }
+
+    @Test
+    @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the reopen endpoint")
+    void reopen_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        IssueStatus expectedStatus = REOPENED;
+
+        doThrow(new IssueIdNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+
+		mockMvc.perform(put("/issues/{issueId}/reopen", expectedIssueId))
+			.andExpect(status().isNotFound())
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueIdNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_WITH_ID_NOT_FOUND, expectedIssueId)));
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture()
+        );
+
+        String actualIssueId = issueIdCaptor.getValue();
+        IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+
+        assertThat(actualIssueId).isEqualTo(expectedIssueId);
+        assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+    }
+
+    @Test
+    @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the reopen endpoint")
+    void reopen_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        IssueStatus expectedStatus = REOPENED;
+        IssueStatus currentStatus = RETEST;
+
+		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+
+		mockMvc.perform(put("/issues/{issueId}/reopen", expectedIssueId))
+			.andExpect(status().isBadRequest())
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueStatusInvalidTransitionException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_STATUS_INVALID_TRANSITION, currentStatus, expectedStatus)));
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture()
+        );
+
+        String actualIssueId = issueIdCaptor.getValue();
+        IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+
+        assertThat(actualIssueId).isEqualTo(expectedIssueId);
+        assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+    }
+
 }
