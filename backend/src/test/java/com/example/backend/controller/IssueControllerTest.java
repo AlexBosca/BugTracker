@@ -535,7 +535,7 @@ public class IssueControllerTest {
     }
 
     @Test
-    @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the open endpoint")
+    @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the fix endpoint")
     void fix_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FI_00001";
         IssueStatus expectedStatus = FIXED;
@@ -560,7 +560,7 @@ public class IssueControllerTest {
     }
 
     @Test
-    @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the open endpoint")
+    @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the fix endpoint")
     void fix_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FI_00001";
         IssueStatus expectedStatus = FIXED;
