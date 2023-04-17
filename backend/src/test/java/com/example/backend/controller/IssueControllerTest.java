@@ -53,7 +53,7 @@ import static com.example.backend.enums.IssueStatus.REOPENED;
 import static com.example.backend.enums.IssueStatus.RETEST;
 import static com.example.backend.enums.IssueStatus.VERIFIED;
 import static com.example.backend.enums.IssueStatus.ASSIGNED;
-
+import static com.example.backend.enums.IssueStatus.DUPLICATE;
 import static com.example.backend.util.ExceptionUtilities.ISSUE_WITH_ID_NOT_FOUND;
 import static com.example.backend.util.ExceptionUtilities.ISSUE_ALREADY_CREATED;
 import static com.example.backend.util.ExceptionUtilities.USER_WITH_ID_NOT_FOUND;
@@ -860,6 +860,78 @@ public class IssueControllerTest {
 		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
 
 		mockMvc.perform(put("/issues/{issueId}/verify", expectedIssueId))
+			.andExpect(status().isBadRequest())
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueStatusInvalidTransitionException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_STATUS_INVALID_TRANSITION, currentStatus, expectedStatus)));
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture()
+        );
+
+        String actualIssueId = issueIdCaptor.getValue();
+        IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+
+        assertThat(actualIssueId).isEqualTo(expectedIssueId);
+        assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+    }
+
+    @Test
+    @DisplayName("Should return OK Response when no exception was thrown when calling the duplicate endpoint")
+    void duplicate_NoExceptionThrown_OkResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        IssueStatus expectedStatus = DUPLICATE;
+
+		mockMvc.perform(put("/issues/{issueId}/duplicate", expectedIssueId))
+			.andExpect(status().isOk());
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture()
+        );
+
+        String actualIssueId = issueIdCaptor.getValue();
+        IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+
+        assertThat(actualIssueId).isEqualTo(expectedIssueId);
+        assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+    }
+
+    @Test
+    @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the duplicate endpoint")
+    void duplicate_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        IssueStatus expectedStatus = DUPLICATE;
+
+        doThrow(new IssueIdNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+
+		mockMvc.perform(put("/issues/{issueId}/duplicate", expectedIssueId))
+			.andExpect(status().isNotFound())
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueIdNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_WITH_ID_NOT_FOUND, expectedIssueId)));
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture()
+        );
+
+        String actualIssueId = issueIdCaptor.getValue();
+        IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+
+        assertThat(actualIssueId).isEqualTo(expectedIssueId);
+        assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+    }
+
+    @Test
+    @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the duplicate endpoint")
+    void duplicate_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        IssueStatus expectedStatus = DUPLICATE;
+        IssueStatus currentStatus = PENDING_RETEST;
+
+		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+
+		mockMvc.perform(put("/issues/{issueId}/duplicate", expectedIssueId))
 			.andExpect(status().isBadRequest())
             .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueStatusInvalidTransitionException.class))
             .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_STATUS_INVALID_TRANSITION, currentStatus, expectedStatus)));
