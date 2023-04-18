@@ -55,6 +55,7 @@ import static com.example.backend.enums.IssueStatus.REOPENED;
 import static com.example.backend.enums.IssueStatus.RETEST;
 import static com.example.backend.enums.IssueStatus.VERIFIED;
 import static com.example.backend.enums.IssueStatus.ASSIGNED;
+import static com.example.backend.enums.IssueStatus.CLOSED;
 import static com.example.backend.enums.IssueStatus.DEFERRED;
 import static com.example.backend.enums.IssueStatus.DUPLICATE;
 import static com.example.backend.util.ExceptionUtilities.ISSUE_WITH_ID_NOT_FOUND;
@@ -877,6 +878,153 @@ public class IssueControllerTest {
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+    }
+
+    @Test
+    @DisplayName("Should return OK Response when no exception was thrown when calling the closeByDeveloper endpoint")
+    void close_NoExceptionThrown_OkResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        String expectedDeveloperId = "FD_00001";
+        IssueStatus expectedStatus = CLOSED;
+
+		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper/{developerId}", expectedIssueId, expectedDeveloperId))
+			.andExpect(status().isOk());
+
+        verify(issueService).closeByUser(
+            issueIdCaptor.capture(),
+            developerIdCaptor.capture()
+        );
+
+        String actualIssueIdCloseByUser = issueIdCaptor.getValue();
+        String actualDeveloperId = developerIdCaptor.getValue();
+
+        assertThat(actualIssueIdCloseByUser).isEqualTo(expectedIssueId);
+        assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture()
+        );
+
+        String actualIssueIdChangeStatus = issueIdCaptor.getValue();
+        IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+
+        assertThat(actualIssueIdChangeStatus).isEqualTo(expectedIssueId);
+        assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+    }
+
+    @Test
+    @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the closeByDeveloper endpoint")
+    void close_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        String expectedDeveloperId = "FD_00001";
+        IssueStatus expectedStatus = CLOSED;
+        IssueStatus currentStatus = RETEST;
+
+        doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).closeByUser(expectedIssueId, expectedDeveloperId);
+
+		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper/{developerId}", expectedIssueId, expectedDeveloperId))
+			.andExpect(status().isBadRequest())
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueStatusInvalidTransitionException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_STATUS_INVALID_TRANSITION, currentStatus, expectedStatus)));
+
+        verify(issueService).closeByUser(
+            issueIdCaptor.capture(),
+            developerIdCaptor.capture()
+        );
+
+        String actualIssueIdCloseByUser = issueIdCaptor.getValue();
+        String actualDeveloperId = developerIdCaptor.getValue();
+
+        assertThat(actualIssueIdCloseByUser).isEqualTo(expectedIssueId);
+        assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
+    }
+
+    @Test
+    @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown in changeIssueStatus when calling the closeByDeveloper endpoint")
+    void close_IssueIdNotFoundExceptionThrownInChangeIssueStatus_ResolveExceptionAndNotFoundResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        String expectedDeveloperId = "FD_00001";
+        IssueStatus expectedStatus = CLOSED;
+
+        doThrow(new IssueIdNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+
+		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper/{developerId}", expectedIssueId, expectedDeveloperId))
+			.andExpect(status().isNotFound())
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueIdNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_WITH_ID_NOT_FOUND, expectedIssueId)));
+
+        verify(issueService).closeByUser(
+            issueIdCaptor.capture(),
+            developerIdCaptor.capture()
+        );
+
+        String actualIssueIdCloseByUser = issueIdCaptor.getValue();
+        String actualDeveloperId = developerIdCaptor.getValue();
+
+        assertThat(actualIssueIdCloseByUser).isEqualTo(expectedIssueId);
+        assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture()
+        );
+
+        String actualIssueId = issueIdCaptor.getValue();
+        IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+
+        assertThat(actualIssueId).isEqualTo(expectedIssueId);
+        assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+    }
+
+    @Test
+    @DisplayName("Should return NOT FOUND Response and resolve exception when UserIdNotFoundException was thrown when calling the closeByDeveloper endpoint")
+    void close_UserIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        String expectedDeveloperId = "FD_00001";
+
+        doThrow(new UserIdNotFoundException(expectedDeveloperId)).when(issueService).closeByUser(expectedIssueId, expectedDeveloperId);
+
+		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper/{developerId}", expectedIssueId, expectedDeveloperId))
+			.andExpect(status().isNotFound())
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(UserIdNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(USER_WITH_ID_NOT_FOUND, expectedDeveloperId)));
+
+        verify(issueService).closeByUser(
+            issueIdCaptor.capture(),
+            developerIdCaptor.capture()
+        );
+
+        String actualIssueIdCloseByUser = issueIdCaptor.getValue();
+        String actualDeveloperId = developerIdCaptor.getValue();
+
+        assertThat(actualIssueIdCloseByUser).isEqualTo(expectedIssueId);
+        assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
+    }
+
+    @Test
+    @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown in closeByUser when calling the closeByDeveloper endpoint")
+    void close_IssueIdNotFoundExceptionThrownInCloseByUser_ResolveExceptionAndNotFoundResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        String expectedDeveloperId = "FD_00001";
+
+        doThrow(new IssueIdNotFoundException(expectedIssueId)).when(issueService).closeByUser(expectedIssueId, expectedDeveloperId);
+
+		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper/{developerId}", expectedIssueId, expectedDeveloperId))
+			.andExpect(status().isNotFound())
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueIdNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_WITH_ID_NOT_FOUND, expectedIssueId)));
+
+        verify(issueService).closeByUser(
+            issueIdCaptor.capture(),
+            developerIdCaptor.capture()
+        );
+
+        String actualIssueIdCloseByUser = issueIdCaptor.getValue();
+        String actualDeveloperId = developerIdCaptor.getValue();
+
+        assertThat(actualIssueIdCloseByUser).isEqualTo(expectedIssueId);
+        assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
     }
 
     @Test
