@@ -369,6 +369,7 @@ public class IssueControllerTest {
     void assignToDeveloper_NoExceptionThrown_OkResponse() throws Exception {
         String expectedIssueId = "FI_00001";
         String expectedDeveloperId = "FU_00001";
+        IssueStatus expectedStatus = ASSIGNED;
 
 		mockMvc.perform(put("/issues/{issueId}/assignToDeveloper/{developerId}", expectedIssueId, expectedDeveloperId))
 			.andExpect(status().isOk());
@@ -378,16 +379,27 @@ public class IssueControllerTest {
             developerIdCaptor.capture()
         );
 
-        String actualIssueId = issueIdCaptor.getValue();
+        String actualIssueIdAssignToUser = issueIdCaptor.getValue();
         String actualDeveloperId = developerIdCaptor.getValue();
 
-        assertThat(actualIssueId).isEqualTo(expectedIssueId);
+        assertThat(actualIssueIdAssignToUser).isEqualTo(expectedIssueId);
         assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture()
+        );
+
+        String actualIssueIdChangeIssueStatus = issueIdCaptor.getValue();
+        IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+
+        assertThat(actualIssueIdChangeIssueStatus).isEqualTo(expectedIssueId);
+        assertThat(actualIssueStatus).isEqualTo(expectedStatus);
     }
 
     @Test
-    @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the assignToDeveloper endpoint")
-    void assignToDeveloper_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
+    @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown in assignToUser when calling the assignToDeveloper endpoint")
+    void assignToDeveloper_IssueIdNotFoundExceptionThrownInAssignToUser_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FI_00001";
         String expectedDeveloperId = "FU_00001";
 
@@ -408,19 +420,6 @@ public class IssueControllerTest {
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
-        
-
-        // Same thing for changeIssueStatus call:
-        // verify(issueService).assignToUser(
-        //     issueIdCaptor.capture(),
-        //     developerIdCaptor.capture()
-        // );
-
-        // String actualIssueId = issueIdCaptor.getValue();
-        // String actualDeveloperId = developerIdCaptor.getValue();
-
-        // assertThat(actualIssueId).isEqualTo(expectedIssueId);
-        // assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
     }
 
     @Test
@@ -446,6 +445,83 @@ public class IssueControllerTest {
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
+    }
+
+    @Test
+    @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown in changeIssueStatus when calling the assignToDeveloper endpoint")
+    void assignToDeveloper_IssueIdNotFoundExceptionThrownInChangeIssueStatus_ResolveExceptionAndNotFoundResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        String expectedDeveloperId = "FU_00001";
+        IssueStatus expectedStatus = ASSIGNED;
+
+        doThrow(new IssueIdNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+
+        mockMvc.perform(put("/issues/{issueId}/assignToDeveloper/{developerId}", expectedIssueId, expectedDeveloperId))
+			.andExpect(status().isNotFound())
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueIdNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_WITH_ID_NOT_FOUND, expectedIssueId)));
+
+        verify(issueService).assignToUser(
+            issueIdCaptor.capture(),
+            developerIdCaptor.capture()
+        );
+
+        String actualIssueIdAssignToUser = issueIdCaptor.getValue();
+        String actualDeveloperId = developerIdCaptor.getValue();
+
+        assertThat(actualIssueIdAssignToUser).isEqualTo(expectedIssueId);
+        assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
+        
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture()
+        );
+
+        String actualIssueIdChangeIssueStatus = issueIdCaptor.getValue();
+        IssueStatus actualIsueStatus = issueStatusCaptor.getValue();
+
+        assertThat(actualIssueIdChangeIssueStatus).isEqualTo(expectedIssueId);
+        assertThat(actualIsueStatus).isEqualTo(expectedStatus);
+    }
+
+    @Test
+    @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the assignToDeveloper endpoint")
+    void assignToDeveloper_IssueStatusInvalidTransitionException_ResolveExceptionAndNotFoundResponse() throws Exception {
+        String expectedIssueId = "FI_00001";
+        String expectedDeveloperId = "FU_00001";
+        IssueStatus expectedStatus = ASSIGNED;
+        IssueStatus currentStatus = OPEN;
+
+        doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+
+        mockMvc.perform(put("/issues/{issueId}/assignToDeveloper/{developerId}", expectedIssueId, expectedDeveloperId))
+			.andExpect(status().isBadRequest())
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueStatusInvalidTransitionException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_STATUS_INVALID_TRANSITION, currentStatus, expectedStatus)));
+
+        verify(issueService).assignToUser(
+            issueIdCaptor.capture(),
+            developerIdCaptor.capture()
+        );
+
+        String actualIssueIdAssignToUser = issueIdCaptor.getValue();
+        String actualDeveloperId = developerIdCaptor.getValue();
+
+        assertThat(actualIssueIdAssignToUser).isEqualTo(expectedIssueId);
+        assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
+        
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture()
+        );
+
+        String actualIssueIdChangeIssueStatus = issueIdCaptor.getValue();
+        IssueStatus actualIsueStatus = issueStatusCaptor.getValue();
+
+        assertThat(actualIssueIdChangeIssueStatus).isEqualTo(expectedIssueId);
+        assertThat(actualIsueStatus).isEqualTo(expectedStatus);
     }
 
     @Test
