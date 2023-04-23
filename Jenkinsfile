@@ -35,7 +35,7 @@ pipeline {
         stage('Backend - SonarQube Analysis') {
             steps {
                 withSonarQubeEnv(credentialsId: 'SONARQUBE_TOKEN', installationName: 'SonarQube') {
-                    bat 'mvn -f backend clean install sonar:sonar -Dsonar.sources=src/main/java/ -Dsonar.java.binaries=target/classes -Dsonar.analysis.mode=publish'
+                    bat 'mvn -f backend clean install sonar:sonar -Dsonar.analysis.mode=publish'
                 }
             }
         }
