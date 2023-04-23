@@ -33,6 +33,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Clock;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -109,6 +110,67 @@ public class IssueControllerTest {
 
     @Captor
     private ArgumentCaptor<IssueStatus> issueStatusCaptor;
+
+    @Test
+    @DisplayName("Should return OK Response when there are issues to return when calling the getAllIssues endpoint")
+    void getAllIssues_ExistingIssues_OkResponse() throws Exception {
+        IssueEntity firstExpectedIssue = IssueEntity.builder()
+            .issueId("FI_00001")
+            .title("Title")
+            .description("Issue description")
+            .reproducingSteps("Some steps to reproduce the issue")
+            .environment("Environment")
+            .version("v1.0")
+            .status(NEW)
+            .priority(LOW)
+            .build();
+
+        IssueEntity secondExpectedIssue = IssueEntity.builder()
+            .issueId("SI_00001")
+            .title("Title")
+            .description("Issue description")
+            .reproducingSteps("Some steps to reproduce the issue")
+            .environment("Environment")
+            .version("v1.0")
+            .status(NEW)
+            .priority(LOW)
+            .build();
+
+        IssueFullResponse firstExpectedIssueResponse = mapStructMapper.toResponse(firstExpectedIssue);
+        IssueFullResponse secondExpectedIssueResponse = mapStructMapper.toResponse(secondExpectedIssue);
+
+        List<IssueEntity> expectedIssues = List.of(
+            firstExpectedIssue,
+            secondExpectedIssue
+        );
+
+        when(issueService.getAllIssues()).thenReturn(expectedIssues);
+
+        List<IssueFullResponse> expectedIssuesResponses = List.of(
+            firstExpectedIssueResponse,
+            secondExpectedIssueResponse
+        );
+
+        mockMvc.perform(get("/issues"))
+            .andExpect(status().isOk())
+            .andExpect(content()
+                .json(objectMapper.writeValueAsString(expectedIssuesResponses)));
+    }
+
+    @Test
+    @DisplayName("Should return OK Response when there no are issues to return when calling the getAllIssues endpoint")
+    void getAllIssues_NoIssues_OkResponse() throws Exception {
+        List<IssueEntity> expectedIssues = List.of();
+
+        when(issueService.getAllIssues()).thenReturn(expectedIssues);
+
+        List<IssueFullResponse> expectedIssuesResponses = List.of();
+
+        mockMvc.perform(get("/issues"))
+            .andExpect(status().isOk())
+            .andExpect(content()
+                .json(objectMapper.writeValueAsString(expectedIssuesResponses)));
+    }
 
     @Test
     @DisplayName("Should return OK Response when no exception was thrown when calling the getIssue endpoint")
