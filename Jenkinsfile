@@ -35,7 +35,7 @@ pipeline {
         stage('Backend - SonarQube Analysis') {
             steps {
                 withSonarQubeEnv(credentialsId: 'SONARQUBE_TOKEN', installationName: 'SonarQube') {
-                    bat 'mvn -f backend clean install sonar:sonar -Dsonar.projectKey -Dsonar.analysis.mode=publish'
+                    bat 'mvn -f backend clean install sonar:sonar -Dsonar.projectKey=ro.alexportfolio:backend -Dsonar.analysis.mode=publish'
                 }
             }
         }
