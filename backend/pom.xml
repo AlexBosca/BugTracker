@@ -220,7 +220,6 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<mainClass>com.example.backend.BackendApplication</mainClass>
-<!--					<finalName>${artifactId}-${version}-${classifier}.${type}</finalName>-->
 					<finalName>${project.artifactId}</finalName>
 					<excludes>
 						<exclude>
