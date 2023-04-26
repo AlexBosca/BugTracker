@@ -39,7 +39,7 @@ import static com.example.backend.util.ExceptionUtilities.USER_WITH_ID_NOT_FOUND
 @Profile("test")
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-public class TeamServiceTest {
+class TeamServiceTest {
 
     @Mock
     private TeamDao teamDao;

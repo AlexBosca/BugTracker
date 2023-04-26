@@ -39,7 +39,7 @@ import static com.example.backend.util.ExceptionUtilities.TEAM_WITH_ID_NOT_FOUND
 @Profile("test")
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-public class ProjectServiceTest {
+class ProjectServiceTest {
 
     @Mock
     private ProjectDao projectDao;
@@ -71,7 +71,7 @@ public class ProjectServiceTest {
 
     @Test
     @DisplayName("Should return a not empty list when there are projects")
-    public void shouldGetAllProjectsWhenThereAreProjects() {
+    void shouldGetAllProjectsWhenThereAreProjects() {
         ProjectEntity firstExpectedProject = ProjectEntity.builder()
             .projectId("PROJECT1")
             .name("First Project")
@@ -101,7 +101,7 @@ public class ProjectServiceTest {
 
     @Test
     @DisplayName("Should return an empty list when there are no projects")
-    public void shouldGetEmptyWhenThereAreNoProjects() {
+    void shouldGetEmptyWhenThereAreNoProjects() {
         when(projectDao.selectAllProjects()).thenReturn(List.of());
 
         assertThat(projectService.getAllProjects()).isEmpty();
@@ -109,7 +109,7 @@ public class ProjectServiceTest {
 
     @Test
     @DisplayName("Should return a project by projectId if exists")
-    public void shouldFindProjectByProjectId() {
+    void shouldFindProjectByProjectId() {
         ProjectEntity expectedProject = ProjectEntity.builder()
             .projectId("PROJECT1")
             .name("First Project")
@@ -123,7 +123,7 @@ public class ProjectServiceTest {
 
     @Test
     @DisplayName("Should throw an exception when try to return a project by projectId that doesn't exists")
-    public void shouldThrowExceptionWhenProjectToReturnByProjectIdDoesNotExist() {
+    void shouldThrowExceptionWhenProjectToReturnByProjectIdDoesNotExist() {
         when(projectDao.selectProjectById("PROJECT1")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
@@ -134,7 +134,7 @@ public class ProjectServiceTest {
 
     @Test
     @DisplayName("Should save project when it doesn't exist")
-    public void shouldSaveProjectWhenProjectDoesNotExist() {
+    void shouldSaveProjectWhenProjectDoesNotExist() {
         ProjectEntity expectedProject = ProjectEntity.builder()
             .projectId("PROJECT1")
             .name("First Project")
@@ -156,7 +156,7 @@ public class ProjectServiceTest {
 
     @Test
     @DisplayName("Should throw an exception when try to save a project that already exists")
-    public void shouldThrowExceptionWhenProjectToSaveAlreadyExists() {
+    void shouldThrowExceptionWhenProjectToSaveAlreadyExists() {
         ProjectEntity existingProject = ProjectEntity.builder()
             .projectId("PROJECT1")
             .name("First Project")
@@ -173,7 +173,7 @@ public class ProjectServiceTest {
 
     @Test
     @DisplayName("Should add existing team to existing project")
-    public void shouldAddExistingTeamToExistingProject() {
+    void shouldAddExistingTeamToExistingProject() {
         ProjectEntity existingProject = ProjectEntity.builder()
             .projectId("PROJECT1")
             .name("First Project")
@@ -207,7 +207,7 @@ public class ProjectServiceTest {
 
     @Test
     @DisplayName("Should throw exception when add non-existent team to existing project")
-    public void shouldThrowExceptionWhenTeamToAddToProjectDoesNotExist() {
+    void shouldThrowExceptionWhenTeamToAddToProjectDoesNotExist() {
         ProjectEntity existingProject = ProjectEntity.builder()
             .projectId("PROJECT1")
             .name("First Project")
@@ -226,7 +226,7 @@ public class ProjectServiceTest {
 
     @Test
     @DisplayName("Should throw exception when add existing team to non-existent project")
-    public void shouldThrowExceptionWhenAddTeamToProjectThatDoesNotExist() {
+    void shouldThrowExceptionWhenAddTeamToProjectThatDoesNotExist() {
         when(projectDao.selectProjectById("PROJECT1")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {

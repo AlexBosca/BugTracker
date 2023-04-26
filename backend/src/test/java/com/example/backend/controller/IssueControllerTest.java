@@ -73,7 +73,7 @@ import static com.example.backend.util.ExceptionUtilities.ISSUE_STATUS_INVALID_T
 @Import(IssueController.class)
 @ComponentScan({"com.example.backend.mapper"})
 @WithMockUser(username = "test.user@domain.com")
-public class IssueControllerTest {
+class IssueControllerTest {
 
     @Autowired
     private MapStructMapper mapStructMapper;
