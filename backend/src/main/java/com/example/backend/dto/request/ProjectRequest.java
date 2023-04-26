@@ -14,6 +14,4 @@ public class ProjectRequest {
     private String projectId;
     private String name;
     private String description;
-//    private String teamId;
-//    private Collection<String> issuesIds;
 }
