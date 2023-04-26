@@ -14,9 +14,4 @@ public class UserRequest {
     private String firstName;
     private String lastName;
     private String email;
-//    private Collection<TeamResponse> teams;
-//    private Collection<String> issuesCreatedIds;
-//    private Collection<IssueRequest> issuesAssignedIds;
-//    private Collection<IssueRequest> issuesClosed;
-//    private Collection<IssueCommentRequest> commentsCreated;
 }
