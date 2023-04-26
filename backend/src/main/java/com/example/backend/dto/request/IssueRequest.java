@@ -18,11 +18,4 @@ public class IssueRequest {
     private String environment;
     private String version;
     private String priority;
-//    private UserRequest createdByUser;
-//    private LocalDateTime createdOn;
-//    private UserRequest assignedUser;
-//    private LocalDateTime assignedOn;
-//    private UserRequest closedByUser;
-//    private LocalDateTime closedOn;
-//    private Collection<IssueCommentRequest> discussion;
 }
