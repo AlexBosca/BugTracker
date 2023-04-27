@@ -3,6 +3,7 @@ package com.example.backend.controller;
 import com.example.backend.dto.request.IssueCommentRequest;
 import com.example.backend.dto.request.IssueRequest;
 import com.example.backend.dto.response.IssueFullResponse;
+import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.mapper.MapStructMapper;
 import com.example.backend.service.AuthenticationService;
 import com.example.backend.service.IssueService;
@@ -66,7 +67,9 @@ public class IssueController {
 
         log.info(ISSUE_CREATE);
 
-        issueService.saveIssue(mapper.toEntity(request), projectId, email);
+        IssueEntity entity = mapper.toEntity(request);
+
+        issueService.saveIssue(entity, projectId, email);
 
         return new ResponseEntity<>(CREATED);
     }

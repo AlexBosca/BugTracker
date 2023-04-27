@@ -39,7 +39,7 @@ import static com.example.backend.util.ExceptionUtilities.USER_WITH_ID_NOT_FOUND
 @Profile("test")
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-public class TeamServiceTest {
+class TeamServiceTest {
 
     @Mock
     private TeamDao teamDao;
@@ -71,7 +71,7 @@ public class TeamServiceTest {
 
     @Test
     @DisplayName("Should return a not empty list when there are teams")
-    public void shouldGetAllTeamsWhenThereAreProjects() {
+    void shouldGetAllTeamsWhenThereAreProjects() {
         TeamEntity firstExpectedTeam = TeamEntity.builder()
             .teamId("TEAM1")
             .name("First Team")
@@ -99,7 +99,7 @@ public class TeamServiceTest {
 
     @Test
     @DisplayName("Should return an empty list when there are no teams")
-    public void souldGetEmptyListWhenThereAreNoTeams() {
+    void souldGetEmptyListWhenThereAreNoTeams() {
         when(teamDao.selectAllTeams()).thenReturn(List.of());
 
         assertThat(teamService.getAllTeams()).isEmpty();
@@ -107,7 +107,7 @@ public class TeamServiceTest {
 
     @Test
     @DisplayName("Should return a team by teamId when it exist")
-    public void shouldFindTeamByTeamId() {
+    void shouldFindTeamByTeamId() {
         TeamEntity expectedTeam = TeamEntity.builder()
             .teamId("TEAM1")
             .name("First Team")
@@ -120,7 +120,7 @@ public class TeamServiceTest {
 
     @Test
     @DisplayName("Should throw an exception then try to return a team by teamId that doesn't exists")
-    public void shouldThrowExceptionWhenTeamToReturnByTeamIdDoesNotExists() {
+    void shouldThrowExceptionWhenTeamToReturnByTeamIdDoesNotExists() {
         when(teamDao.selectTeamByTeamId("TEAM1")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
@@ -131,7 +131,7 @@ public class TeamServiceTest {
 
     @Test
     @DisplayName("Should save team when it doesn't exist")
-    public void shouldSaveTeamWhenTeamDoesNotExists() {
+    void shouldSaveTeamWhenTeamDoesNotExists() {
         TeamEntity expectedTeam = TeamEntity.builder()
             .teamId("TEAM1")
             .name("First Team")
@@ -151,7 +151,7 @@ public class TeamServiceTest {
 
     @Test
     @DisplayName("Should throw an exception when try to save a team that already exists")
-    public void shouldThrowExceptionWhenTeamToSaveAlreadyExists() {
+    void shouldThrowExceptionWhenTeamToSaveAlreadyExists() {
         TeamEntity existingTeam = TeamEntity.builder()
             .teamId("TEAM1")
             .name("First Team")
@@ -167,7 +167,7 @@ public class TeamServiceTest {
 
     @Test
     @DisplayName("Should add existing user to existing team")
-    public void shouldAddExistingUserToExistingTeam() {
+    void shouldAddExistingUserToExistingTeam() {
         TeamEntity existingTeam = TeamEntity.builder()
             .teamId("TEAM1")
             .name("First Team")
@@ -201,7 +201,7 @@ public class TeamServiceTest {
 
     @Test
     @DisplayName("Should throw exception when add non-existent user to existing team")
-    public void shouldThrowExceptionWhenUserToAddToExistingTeamDowsNotExist() {
+    void shouldThrowExceptionWhenUserToAddToExistingTeamDowsNotExist() {
         TeamEntity existingTeam = TeamEntity.builder()
             .teamId("TEAM1")
             .name("First Team")
@@ -219,7 +219,7 @@ public class TeamServiceTest {
 
     @Test
     @DisplayName("Should throw exception when add existing user to non-existent team")
-    public void shouldThrowExceptionWhenAddUserToProjectThatDoesNotExixst() {
+    void shouldThrowExceptionWhenAddUserToProjectThatDoesNotExixst() {
         when(teamDao.selectTeamByTeamId("TEAM1")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {

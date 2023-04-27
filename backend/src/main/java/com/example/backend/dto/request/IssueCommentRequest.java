@@ -12,7 +12,4 @@ import lombok.NoArgsConstructor;
 public class IssueCommentRequest {
 
     private String comment;
-//    private LocalDateTime createdOn;
-//    private String createdByUserWithId;
-//    private String createdOnIssueWithId;
 }

@@ -13,6 +13,4 @@ public class TeamRequest {
 
     private String teamId;
     private String name;
-//    private Collection<String> projectsIds;
-//    private Collection<String> colleaguesIds;
 }

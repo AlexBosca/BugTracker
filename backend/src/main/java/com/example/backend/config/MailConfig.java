@@ -6,7 +6,6 @@ import static org.thymeleaf.templatemode.TemplateMode.HTML;
 
 import java.util.Properties;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -18,14 +17,10 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 @Configuration
-// @PropertySource("classpath:application-${spring.profiles.active}.yml")
 public class MailConfig {
 
-    @Autowired
-    private Environment environment;
-
     @Bean
-    public JavaMailSenderImpl javaMailSender() {
+    public JavaMailSenderImpl javaMailSender(Environment environment) {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(environment.getProperty("spring.mail.host"));
         mailSender.setPort(Integer.valueOf(environment.getProperty("spring.mail.port")));
@@ -36,7 +31,6 @@ public class MailConfig {
         properties.put("mail.transport.protocol", "smtp");
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
-        // properties.put("mail.debug", "true");
 
         return mailSender;
     }
