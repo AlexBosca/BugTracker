@@ -35,7 +35,7 @@ pipeline {
         stage('Backend - SonarQube Analysis') {
             steps {
                 withSonarQubeEnv(credentialsId: 'SONARQUBE_TOKEN', installationName: 'SonarQube') {
-                    bat 'mvn -f backend clean install -Dspring.profiles.active=dev sonar:sonar -Dsonar.sources=src/main/java/ -Dsonar.java.binaries=target/classes'
+                    bat 'mvn -f backend clean verify sonar:sonar -Dsonar.projectKey=ro.alexportfolio:backend -Dsonar.analysis.mode=publish'
                 }
             }
         }
@@ -60,9 +60,11 @@ pipeline {
 
         stage('Frontend - SonarQube Analysis') {
             steps {
-                withSonarQubeEnv(credentialsId: 'SONARQUBE_TOKEN', installationName: 'SonarQube') {
-                    bat 'mvn -f backend clean install -Dspring.profiles.active=dev sonar:sonar -Dsonar.sources=src/main/java/ -Dsonar.java.binaries=target/classes'
-                }
+                // withSonarQubeEnv(credentialsId: 'SONARQUBE_TOKEN', installationName: 'SonarQube') {
+                //     bat 'mvn -f backend clean install -Dspring.profiles.active=dev sonar:sonar -Dsonar.sources=src/main/java/ -Dsonar.java.binaries=target/classes'
+                // }
+
+                echo 'Run SonarQube Analysis on Frontend'
             }
         }
 

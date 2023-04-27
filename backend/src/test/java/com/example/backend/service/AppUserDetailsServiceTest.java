@@ -34,7 +34,7 @@ import static com.example.backend.util.ExceptionUtilities.*;
 @Profile("test")
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-public class AppUserDetailsServiceTest {
+class AppUserDetailsServiceTest {
 
     @Mock
     private UserDao userDao;
@@ -65,7 +65,7 @@ public class AppUserDetailsServiceTest {
 
     @Test
     @DisplayName("Should load user by email")
-    public void shouldLoadUserByEmail() {
+    void shouldLoadUserByEmail() {
         UserEntity expectedUser = UserEntity.builder()
             .firstName("John")
             .lastName("Doe")
@@ -79,7 +79,7 @@ public class AppUserDetailsServiceTest {
 
     @Test
     @DisplayName("Should throw an exception when try to load user by email that doesn't exist")
-    public void shouldThrowExceptionWhenLoadUserByEmailWhenUserDoesNotExist() {
+    void shouldThrowExceptionWhenLoadUserByEmailWhenUserDoesNotExist() {
         when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
