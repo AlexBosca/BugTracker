@@ -10,6 +10,11 @@ const routes: Routes = [
     component: PageProjectsDetailsComponent,
     children: [
       {
+        path: '',
+        redirectTo: 'board',
+        pathMatch: 'full'
+      },
+      {
         path: 'board',
         component: ProjectsIssuesBoardComponent
       }
