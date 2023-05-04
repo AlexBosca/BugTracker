@@ -12,6 +12,8 @@ import { PageProjectsDetailsComponent } from './pages/page-projects-details/page
 import { ProjectDetailsComponent } from './components/project-details/project-details.component';
 import { IssueCardComponent } from '../feature-issues/components/issue-card/issue-card.component';
 import { FeatureIssuesModule } from '../feature-issues/feature-issues.module';
+import { ProjectsIssuesBoardComponent } from './components/projects-issues-board/projects-issues-board.component';
+import { ProjectNavigationComponent } from './components/project-navigation/project-navigation.component';
 
 
 @NgModule({
@@ -22,7 +24,9 @@ import { FeatureIssuesModule } from '../feature-issues/feature-issues.module';
     ProjectTableComponent,
     ProjectFilterComponent,
     PageProjectsDetailsComponent,
-    ProjectDetailsComponent
+    ProjectDetailsComponent,
+    ProjectsIssuesBoardComponent,
+    ProjectNavigationComponent
   ],
   imports: [
     CommonModule,

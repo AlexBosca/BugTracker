@@ -6,40 +6,11 @@
             <h3 class="row mx-2 title">{{project.name}}</h3>
         </div>
     </div>
-
-    <div class="row">
-        <ul class="nav">
-            <li class="nav-item">
-                <a href="#" class="nav-link">Summary</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">Board</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">List</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">Calendar</a>
-            </li>
-        </ul>
-    </div>
+    
+    <app-project-navigation></app-project-navigation>
 
     <hr class="row mb-5">
 
-    <div class="row h-75">
-        <app-issues-board class="col"
-            [status]="'TO DO'"
-            [issues]="issues">
-        </app-issues-board>
-
-        <app-issues-board class="col"
-            [status]="'IN PROGRESS'"
-            [issues]="issues">
-        </app-issues-board>
-
-        <app-issues-board class="col"
-            [status]="'DONE'"
-            [issues]="issues">
-        </app-issues-board>
-    </div>
+    
+    <router-outlet></router-outlet>
 </div>
