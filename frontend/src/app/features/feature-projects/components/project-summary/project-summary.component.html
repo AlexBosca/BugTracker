@@ -1,0 +1,121 @@
+<div class="row">
+    <div class="col-11">
+        <div class="accordion accordion-flush mb-3 mt-3" id="mainAccordion">
+            <div class="accordion-item mb-5 text-small">
+                <h5 class="accordion-header" id="detailsHeading">
+                    <button class="accordion-button p-0 bg-white text-small" type="button" data-bs-toggle="collapse" data-bs-target="#detailsCollapse" aria-expanded="true" aria-controls="detailsCollapse">
+                        Details
+                    </button>
+                </h5>
+
+                <div id="detailsCollapse" class="accordion-collapse collapse show" aria-labelledby="detailsHeading">
+                    <div class="accordion-body p-0 mt-2 mb-4">
+                        <div class="row mb-2">
+                            <div class="col text-secondary">
+                                Type:
+                            </div>
+
+                            <div class="col">
+                                Project Type
+                            </div>
+
+                            <div class="col text-secondary">
+                                Status: 
+                            </div>
+
+                            <div class="col">
+                                Project Type
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item mb-5 text-small">
+                <h5 class="accordion-header" id="descriptionHeading">
+                    <button class="accordion-button p-0 bg-white text-small" type="button" data-bs-toggle="collapse" data-bs-target="#descriptionCollapse" aria-expanded="true" aria-controls="descriptionCollapse">
+                        Description
+                    </button>
+                </h5>
+
+                <div id="descriptionCollapse" class="accordion-collapse collapse show" aria-labelledby="descriptionHeading">
+                    <div class="accordion-body p-0 mt-2 mb-4">
+                        {{project.description}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item mb-5">
+                <h5 class="accordion-header" id="issuesHeading">
+                    <button class="accordion-button p-0 bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#issuesCollapse" aria-expanded="true" aria-controls="issuesCollapse">
+                        Issues
+                    </button>
+                </h5>
+
+                <div id="issuesCollapse" class="accordion-collapse collapse show" aria-labelledby="issuesHeading">
+                    <div class="accordion-body p-0 mt-2 mb-4 rounded">
+                        <div class="row row-cols-auto justify-content-between mt-4">
+                            <div class="card col m-2">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <i class="bi bi-check-lg text-success bg-success bg-opacity-25 rounded-circle issuesDone"></i>
+                                    </div>
+                                    <div class="col">
+                                        <div class="card-body">
+                                            <h6 class="card-title">12 done</h6>
+                                            <p class="card-subtitle text-muted">in the last 7 days</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <div class="card col m-2">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <span class="text-primary bg-primary bg-opacity-25 rounded-circle issuesUpdated">
+                                            <i class="bi bi-pencil"></i>
+                                        </span>
+                                    </div>
+                                    <div class="col">
+                                        <div class="card-body">
+                                            <h6 class="card-title">10 updated</h6>
+                                            <p class="card-subtitle text-muted">in the last 7 days</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card col m-2">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <i class="bi bi-plus text-warning bg-warning bg-opacity-25 rounded-circle issuesCreated"></i>
+                                    </div>
+                                    <div class="col">
+                                        <div class="card-body">
+                                            <h6 class="card-title">4 created</h6>
+                                            <p class="card-subtitle text-muted">in the last 7 days</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <div class="card col m-2">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <i class="bi bi-calendar2-week text-danger bg-danger bg-opacity-25 rounded-circle issuesDue"></i>
+                                    </div>
+                                    <div class="col">
+                                        <div class="card-body">
+                                            <h6 class="card-title">3 done</h6>
+                                            <p class="card-subtitle text-muted">in the last 7 days</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
