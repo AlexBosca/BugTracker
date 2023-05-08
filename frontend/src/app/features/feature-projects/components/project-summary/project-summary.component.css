@@ -1,6 +1,6 @@
-/* :not(h3, h4, h5, h6, span.issuesDone, span.issuesUpdated, i, span.badge) {
+:not(h3, h4, h5, h6, strong, span.issuesDone, span.issuesUpdated, i, span.badge) {
     font-size: small;
-} */
+}
 
 /* span.badge {
     font-size: smaller;
