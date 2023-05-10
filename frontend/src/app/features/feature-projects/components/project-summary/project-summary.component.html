@@ -54,7 +54,7 @@
 
                 <div id="statisticsCollapse" class="accordion-collapse collapse show" aria-labelledby="statisticsHeading">
                     <div class="accordion-body p-0 mt-2 mb-4 rounded">
-                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-2 mt-4">
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2 mt-4">
                             <div class="col">
                                 <div class="card">
                                     <div class="row">
@@ -120,7 +120,7 @@
                             </div>
                         </div>
 
-                        <div class="row row-cols-1 row-cols-sm-2 g-2 mt-4">
+                        <div class="row row-cols-1 row-cols-xl-2 g-2 mt-4">
                             <div class="col">
                                 <div class="card">
                                     <div class="card-body">
@@ -129,6 +129,10 @@
                                             <p class="text-secondary">Last 7 days</p>
                                         </h5>
                                         <p class="card-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde similique earum aperiam nostrum minima neque, quaerat quo! Doloribus, amet distinctio porro deserunt quam magni molestias laboriosam optio veritatis pariatur? Ipsam?</p>
+                                        <canvas baseChart class="chart"
+                                                [data]="doughnutChartData"
+                                                [type]="doughnutChartType">
+                                        </canvas>
                                     </div>
                                 </div>
                             </div>
@@ -141,6 +145,12 @@
                                             <p class="text-secondary">Last 7 days</p>
                                         </h5>
                                         <p class="card-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde similique earum aperiam nostrum minima neque, quaerat quo! Doloribus, amet distinctio porro deserunt quam magni molestias laboriosam optio veritatis pariatur? Ipsam?</p>
+                                        <canvas baseChart
+                                                [data]="barChartData"
+                                                [plugins]="barChartPlugins"
+                                                [legend]="barChartLegend"
+                                                [type]="'bar'">
+                                        </canvas>
                                     </div>
                                 </div>
                             </div>

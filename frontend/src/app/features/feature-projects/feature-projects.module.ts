@@ -8,6 +8,7 @@ import { ProjectsGridComponent } from './components/projects-grid/projects-grid.
 import { ProjectTableComponent } from './components/project-table/project-table.component';
 import { ProjectFilterComponent } from './components/project-filter/project-filter.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgChartsModule } from 'ng2-charts';
 import { PageProjectsDetailsComponent } from './pages/page-projects-details/page-projects-details.component';
 import { ProjectDetailsComponent } from './components/project-details/project-details.component';
 import { IssueCardComponent } from '../feature-issues/components/issue-card/issue-card.component';
@@ -34,6 +35,7 @@ import { ProjectSummaryComponent } from './components/project-summary/project-su
     CommonModule,
     FeatureProjectsRoutingModule,
     FormsModule,
+    NgChartsModule,
     ReactiveFormsModule,
     FeatureIssuesModule
   ]
