@@ -128,11 +128,16 @@
                                             <strong>Status overview</strong>
                                             <p class="text-secondary">Last 7 days</p>
                                         </h5>
-                                        <p class="card-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde similique earum aperiam nostrum minima neque, quaerat quo! Doloribus, amet distinctio porro deserunt quam magni molestias laboriosam optio veritatis pariatur? Ipsam?</p>
-                                        <canvas baseChart class="chart"
+                                        <p class="card-text">View your project's overall progress based on the statuses in your workflow. To see your team's progress in more detail,
+                                            <a routerLink="../board" href="#" class="link-primary" style="text-decoration: none;">go to the board view</a>.
+                                        </p>
+                                        <div class="container">
+                                            <canvas baseChart class="chart"
                                                 [data]="doughnutChartData"
-                                                [type]="doughnutChartType">
-                                        </canvas>
+                                                [options]="doughnutChartOptions"
+                                                [type]="'doughnut'">
+                                            </canvas>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -144,13 +149,20 @@
                                             <strong>Priority breakdown</strong>
                                             <p class="text-secondary">Last 7 days</p>
                                         </h5>
-                                        <p class="card-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde similique earum aperiam nostrum minima neque, quaerat quo! Doloribus, amet distinctio porro deserunt quam magni molestias laboriosam optio veritatis pariatur? Ipsam?</p>
-                                        <canvas baseChart
+                                        <p class="card-text">
+                                            View the priority of items within your project.
+                                            It's helpful to priortitize work so you can ensure that your team is focusing on the most important work first.
+                                            To prioritize your work,
+                                            <a routerLink="../list" href="#" class="link-primary" style="text-decoration: none;">go to the list view</a>.
+                                        </p>
+                                        <div class="container">
+                                            <canvas baseChart
                                                 [data]="barChartData"
                                                 [plugins]="barChartPlugins"
                                                 [legend]="barChartLegend"
                                                 [type]="'bar'">
-                                        </canvas>
+                                            </canvas>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

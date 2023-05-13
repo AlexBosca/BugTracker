@@ -30,6 +30,14 @@ export class ProjectSummaryComponent implements OnInit {
       }
     ]
   };
+  
+  public doughnutChartOptions: ChartConfiguration<'doughnut'>['options'] = {
+    plugins: {
+      legend: {
+        position: 'right'
+      }
+    }
+  }
   public doughnutChartType: ChartType = 'doughnut';
 
   // Bar Chart
