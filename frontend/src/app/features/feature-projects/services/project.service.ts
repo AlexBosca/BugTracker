@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ProjectModel } from '../models/ProjectModel';
 import { ProjectRequestModel } from '../models/ProjectRequestModel';
+import { IssueModel } from '../../feature-issues/models/IssueModel';
 
 @Injectable({
   providedIn: 'root'
@@ -28,10 +29,14 @@ export class ProjectService {
       );
   }
 
-  addTeamToProjects(projectId: string, teamId: string) {
+  addTeamToProjects(projectId: string, teamId: string): Observable<void> {
     return this.http.put<void>(
       `${this.projectsUrl}/${projectId}/addTeam/${teamId}`,
       null
     );
+  }
+
+  getIssuesOnProjects(projectId: string): Observable<IssueModel[]> {
+    return this.http.get<IssueModel[]>(`${this.projectsUrl}/${projectId}/issues`);
   }
 }

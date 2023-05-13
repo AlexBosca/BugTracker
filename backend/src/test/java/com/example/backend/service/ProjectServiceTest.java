@@ -21,6 +21,7 @@ import com.example.backend.dao.ProjectDao;
 import com.example.backend.dao.TeamDao;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.TeamEntity;
+import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectIdNotFoundException;
 import com.example.backend.exception.team.TeamIdNotFoundException;
@@ -233,5 +234,40 @@ class ProjectServiceTest {
             projectService.addTeam("PROJECT1", "TEAM1");
         }).isInstanceOf(ProjectIdNotFoundException.class)
         .hasMessage(String.format(PROJECT_WITH_ID_NOT_FOUND, "PROJECT1"));
+    }
+
+    @Test
+    @DisplayName("Should return a not empty list when there are issues created on given project")
+    public void shouldGetAllIssuesOnProjectWhenThereAreIssuesOnGivenProject() {
+        IssueEntity firstExpectedIssue = IssueEntity.builder()
+            .issueId("00001")
+            .title("First Issue Title")
+            .description("First Issue Description")
+            .build();
+
+        IssueEntity secondExpectedIssue = IssueEntity.builder()
+            .issueId("00002")
+            .title("Second Issue Title")
+            .description("Second Issue Description")
+            .build();
+
+        List<IssueEntity> issuesOnProject = List.of(
+            firstExpectedIssue,
+            secondExpectedIssue
+        );
+
+        ProjectEntity existingProject = ProjectEntity.builder()
+            .projectId("PROJECT1")
+            .name("First Project")
+            .description("First Project Description")
+            .issues(issuesOnProject)
+            .build();
+
+
+        when(projectDao.selectProjectById("PROJECT1")).thenReturn(Optional.of(existingProject));
+
+        List<IssueEntity> actualIssues = projectService.getAllIssuesOnProjectById("PROJECT1");
+
+        assertThat(actualIssues).isEqualTo(issuesOnProject);
     }
 }

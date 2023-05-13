@@ -4,6 +4,7 @@ import com.example.backend.dao.ProjectDao;
 import com.example.backend.dao.TeamDao;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.TeamEntity;
+import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectIdNotFoundException;
 import com.example.backend.exception.team.TeamIdNotFoundException;
@@ -17,6 +18,7 @@ import static com.example.backend.util.project.ProjectUtilities.*;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -83,5 +85,20 @@ public class ProjectService {
         projectDao.insertProject(project);
 
         log.info(PROJECT_TEAM_ADDED);
+    }
+
+    public List<IssueEntity> getAllIssuesOnProjectById(String projectId) {
+        log.info("Request all issues on project with id: {}", projectId);
+
+        ProjectEntity project = projectDao
+                .selectProjectById(projectId)
+                .orElseThrow(() -> new ProjectIdNotFoundException(projectId));
+
+        List<IssueEntity> issuesOnProject = project.getIssues().stream()
+                .collect(Collectors.toList());
+
+        log.info("Return all issues on project with id: {}", projectId);
+
+        return issuesOnProject;
     }
 }

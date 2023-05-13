@@ -10,6 +10,9 @@ import { IssueDetailsComponent } from './components/issue-details/issue-details.
 import { PageIssueDetailsComponent } from './pages/page-issue-details/page-issue-details.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BasicAuthInterceptor } from 'src/app/core/interceptor/basic-auth.interceptor';
+import { IssueModalComponent } from './components/issue-modal/issue-modal.component';
+import { IssueCardComponent } from './components/issue-card/issue-card.component';
+import { IssuesBoardComponent } from './components/issues-board/issues-board.component';
 
 
 @NgModule({
@@ -18,7 +21,10 @@ import { BasicAuthInterceptor } from 'src/app/core/interceptor/basic-auth.interc
     PageIssuesComponent,
     IssuesFilterComponent,
     IssueDetailsComponent,
-    PageIssueDetailsComponent
+    PageIssueDetailsComponent,
+    IssueModalComponent,
+    IssueCardComponent,
+    IssuesBoardComponent
   ],
   imports: [
     CommonModule,
@@ -26,6 +32,9 @@ import { BasicAuthInterceptor } from 'src/app/core/interceptor/basic-auth.interc
     FormsModule,
     ReactiveFormsModule,
     FeatureIssuesRoutingModule
+  ],
+  exports: [
+    IssuesBoardComponent
   ],
   providers: [
     {
