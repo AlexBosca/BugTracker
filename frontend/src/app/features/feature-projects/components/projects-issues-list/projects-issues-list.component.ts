@@ -1,19 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
-import { IssueModel } from 'src/app/features/feature-issues/models/IssueModel';
-import { ProjectService } from '../../services/project.service';
 import { ProjectModel } from '../../models/ProjectModel';
+import { IssueModel } from 'src/app/features/feature-issues/models/IssueModel';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ProjectService } from '../../services/project.service';
 
 @Component({
-  selector: 'app-projects-issues-board',
-  templateUrl: './projects-issues-board.component.html',
-  styleUrls: ['./projects-issues-board.component.css']
+  selector: 'app-projects-issues-list',
+  templateUrl: './projects-issues-list.component.html',
+  styleUrls: ['./projects-issues-list.component.css']
 })
-export class ProjectsIssuesBoardComponent implements OnInit {
+export class ProjectsIssuesListComponent implements OnInit {
   private projectId!: string | null;
   project!: ProjectModel;
-  issues!: IssueModel[];
+  issues: IssueModel[] = [];
   error!: HttpErrorResponse;
 
   constructor(
@@ -27,17 +27,17 @@ export class ProjectsIssuesBoardComponent implements OnInit {
         this.projectId = params.get('id');
       }
     );
-    
+
     this.fetchIssuesOnProject();
   }
 
   fetchIssuesOnProject(): void {
     if(this.projectId) {
       this.projectService.getIssuesOnProject(this.projectId)
-        .subscribe({
-          next: data => this.issues = data,
-          error: error => this.error = error
-        });
+          .subscribe({
+            next: data => this.issues = data,
+            error: error => this.error = error
+          });
     }
   }
 }

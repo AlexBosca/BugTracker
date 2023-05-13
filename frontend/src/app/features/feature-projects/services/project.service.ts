@@ -36,7 +36,7 @@ export class ProjectService {
     );
   }
 
-  getIssuesOnProjects(projectId: string): Observable<IssueModel[]> {
+  getIssuesOnProject(projectId: string): Observable<IssueModel[]> {
     return this.http.get<IssueModel[]>(`${this.projectsUrl}/${projectId}/issues`);
   }
 }
