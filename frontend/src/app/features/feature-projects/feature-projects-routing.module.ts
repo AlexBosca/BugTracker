@@ -4,6 +4,7 @@ import { PageProjectsDetailsComponent } from './pages/page-projects-details/page
 import { PageProjectsComponent } from './pages/page-projects/page-projects.component';
 import { ProjectsIssuesBoardComponent } from './components/projects-issues-board/projects-issues-board.component';
 import { ProjectSummaryComponent } from './components/project-summary/project-summary.component';
+import { ProjectsIssuesListComponent } from './components/projects-issues-list/projects-issues-list.component';
 
 const routes: Routes = [
   {
@@ -22,6 +23,10 @@ const routes: Routes = [
       {
         path: 'summary',
         component: ProjectSummaryComponent
+      },
+      {
+        path: 'list',
+        component: ProjectsIssuesListComponent
       }
     ]
   },
