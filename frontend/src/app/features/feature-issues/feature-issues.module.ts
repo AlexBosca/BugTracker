@@ -34,7 +34,9 @@ import { IssuesBoardComponent } from './components/issues-board/issues-board.com
     FeatureIssuesRoutingModule
   ],
   exports: [
-    IssuesBoardComponent
+    IssuesBoardComponent,
+    IssuesFilterComponent,
+    IssuesTableComponent
   ],
   providers: [
     {
