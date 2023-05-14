@@ -23,17 +23,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authManager) throws Exception {
-            http
-                .cors().and()
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/authentication/**").permitAll()
-                .anyRequest().authenticated()
-                .and().httpBasic()
-                .authenticationEntryPoint(authenticationEntryPoint)
-                .and().authenticationManager(authManager);
-
-            return http.build();
+            return http.authorizeHttpRequests(auth -> {
+                auth.antMatchers("/authentication/**").permitAll();
+                auth.anyRequest().authenticated();
+            })
+            .cors(cors -> cors.disable())
+            .csrf(csrf -> csrf.disable())
+            .authenticationManager(authManager)
+            .authenticationProvider(authenticationProvider)
+            .httpBasic(httpConf -> httpConf.authenticationEntryPoint(authenticationEntryPoint))
+            .build();
     }
 
     @Bean
