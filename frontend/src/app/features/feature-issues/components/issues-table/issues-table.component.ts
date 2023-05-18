@@ -1,6 +1,6 @@
 import { formatDate } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/features/feature-auth/services/auth.service';
 import { IssueModel } from '../../models/IssueModel';
@@ -14,24 +14,11 @@ import { IssueService } from '../../services/issue.service';
 })
 export class IssuesTableComponent implements OnInit {
   readonly IssueStatus = Status;
-  issues: IssueModel[] = [];
+  @Input() issues!: IssueModel[];
   error!: HttpErrorResponse;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private issueService: IssueService
-    ) { }
+  constructor() { }
 
   ngOnInit(): void {
-    this.fetchIssues();
-  }
-
-  fetchIssues(): void {
-    this.issueService.getIssues()
-        .subscribe({
-          next: data => this.issues = data,
-          error: error => this.error = error
-        });
   }
 }

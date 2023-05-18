@@ -11,11 +11,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgChartsModule } from 'ng2-charts';
 import { PageProjectsDetailsComponent } from './pages/page-projects-details/page-projects-details.component';
 import { ProjectDetailsComponent } from './components/project-details/project-details.component';
-import { IssueCardComponent } from '../feature-issues/components/issue-card/issue-card.component';
 import { FeatureIssuesModule } from '../feature-issues/feature-issues.module';
 import { ProjectsIssuesBoardComponent } from './components/projects-issues-board/projects-issues-board.component';
 import { ProjectNavigationComponent } from './components/project-navigation/project-navigation.component';
 import { ProjectSummaryComponent } from './components/project-summary/project-summary.component';
+import { ProjectsIssuesListComponent } from './components/projects-issues-list/projects-issues-list.component';
+import { ProjectCalendarComponent } from './components/project-calendar/project-calendar.component';
 
 
 @NgModule({
@@ -29,7 +30,9 @@ import { ProjectSummaryComponent } from './components/project-summary/project-su
     ProjectDetailsComponent,
     ProjectsIssuesBoardComponent,
     ProjectNavigationComponent,
-    ProjectSummaryComponent
+    ProjectSummaryComponent,
+    ProjectsIssuesListComponent,
+    ProjectCalendarComponent
   ],
   imports: [
     CommonModule,
