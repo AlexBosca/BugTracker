@@ -3,10 +3,9 @@ import { ProjectModel } from '../../models/ProjectModel';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChartData, ChartEvent, ChartType, ChartConfiguration, Chart } from 'chart.js';
+import { ChartEvent, Chart } from 'chart.js';
 import { IssueModel } from 'src/app/features/feature-issues/models/IssueModel';
 import { Status } from 'src/app/features/feature-issues/models/status.enum';
-import { IssueStatusRequest } from 'src/app/features/feature-issues/models/IssueStatusRequest';
 
 @Component({
   selector: 'app-project-summary',
@@ -19,40 +18,13 @@ export class ProjectSummaryComponent implements OnInit {
   issues: IssueModel[] = [];
   doneIssues: IssueModel[] = [];
   updatedIssues: IssueModel[] = [];
-  createdIssues: IssueModel[] = [];
   dueIssues: IssueModel[] = [];
   todoIssues: IssueModel[] = [];
   inProgressIssues: IssueModel[] =[];
   error!: HttpErrorResponse;
   issuesStatusOverviewChart!: Chart<'doughnut'>;
   issuesPriorityBreakdownChart!: Chart<'bar'>;
-
-
-  // Bar Chart
-  // public barChartLegend = false;
-  // public barChartPlugins = [];
-
-  // public barChartData: ChartConfiguration<'bar'>['data'] = {
-  //   labels: ['None', 'Lowest', 'Low', 'Medium', 'High', 'Highest', 'Others'],
-  //   datasets: [
-  //     { 
-  //       data: [65, 59, 80, 81, 56, 55, 40],
-  //       backgroundColor: [
-  //         '#9FA6B2',
-  //         '#14A44D',
-  //         '#3B71CA',
-  //         '#DC4C64',
-  //         '#E4A11B',
-  //         '#54B4D3',
-  //         '#332D2D'
-  //       ]
-  //     }
-  //   ]
-  // };
-
-  // public barChartOptions: ChartConfiguration<'bar'>['options'] = {
-  //   responsive: false,
-  // };
+  createdIssues: number = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -89,6 +61,13 @@ export class ProjectSummaryComponent implements OnInit {
             this.doneIssues = data.filter(issue => [Status.VERIFIED, Status.CLOSED, Status.DEFERRED, Status.DUPLICATE, Status.REJECTED, Status.NOT_A_BUG].includes(issue.status));    // verify DONE states
             this.todoIssues = data.filter(issue => [Status.NEW, Status.ASSIGNED, Status.OPEN, Status.REOPENED].includes(issue.status));    // verify TODO states
             this.inProgressIssues = data.filter(issue => [Status.PENDING_RETEST, Status.RETEST, Status.FIXED].includes(issue.status));    // verify IN PROGRESS states
+
+            this.createdIssues = data.filter(issue => {
+              let currentTime = new Date().getTime();
+              let issueCreationTime = new Date(issue.createdOn).getTime();
+              let diff = Math.abs(currentTime - issueCreationTime) / (1000 * 60 * 60 * 24);
+              return diff <= 7;
+            }).length;
 
             this.issuesStatusOverviewChartInit();
             this.issuesPriorityBreakdownChartInit();
