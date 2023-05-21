@@ -16,13 +16,13 @@ public class ProjectJPADataAccessService implements ProjectDao {
     private final ProjectRepository projectRepository;
 
     @Override
-    public void deleteProjectByProjectId(String projectId) {
-        projectRepository.deleteByProjectId(projectId);
+    public void deleteProjectByProjectKey(String projectKey) {
+        projectRepository.deleteByProjectKey(projectKey);
     }
 
     @Override
-    public boolean existsProjectWithProjectId(String projectId) {
-        return projectRepository.existsByProjectId(projectId);
+    public boolean existsProjectWithProjectKey(String projectKey) {
+        return projectRepository.existsByProjectKey(projectKey);
     }
 
     @Override
@@ -36,8 +36,8 @@ public class ProjectJPADataAccessService implements ProjectDao {
     }
 
     @Override
-    public Optional<ProjectEntity> selectProjectById(String projectId) {
-        return projectRepository.findByProjectId(projectId);
+    public Optional<ProjectEntity> selectProjectByKey(String projectKey) {
+        return projectRepository.findByProjectKey(projectKey);
     }
 
     @Override

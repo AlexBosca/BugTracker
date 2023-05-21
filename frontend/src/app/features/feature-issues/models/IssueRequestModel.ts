@@ -1,5 +1,4 @@
 export interface IssueRequestModel {
-    issueId: string;
     title: string;
     description: string;
     reproducingSteps: string;

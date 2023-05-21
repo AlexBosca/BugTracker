@@ -22,7 +22,6 @@ export class IssueModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.issueCreationForm = this.formBuilder.group({
-      issueId: ['', Validators.required],
       title: ['', Validators.required],
       description: ['', Validators.required],
       reproducingSteps: ['', Validators.required],
@@ -47,7 +46,6 @@ export class IssueModalComponent implements OnInit {
     this.loading = true;
 
     this.issueService.createIssue({
-      issueId: this.form['issueId'].value,
       title: this.form['title'].value,
       description: this.form['description'].value,
       reproducingSteps: this.form['reproducingSteps'].value,

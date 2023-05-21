@@ -6,7 +6,7 @@ import com.example.backend.dto.response.ProjectFullResponse;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueEntity;
-import com.example.backend.exception.project.ProjectIdNotFoundException;
+import com.example.backend.exception.project.ProjectNotFoundException;
 import com.example.backend.mapper.MapStructMapper;
 import com.example.backend.service.IssueService;
 import com.example.backend.service.ProjectService;
@@ -74,13 +74,13 @@ public class ProjectControllerTest {
     @DisplayName("Should return OK status and a not empty list when there are projects")
     public void shouldGetAllProjectsAndOkStatusWhenThereAreProjects() throws Exception {
         ProjectEntity firstExpectedProject = ProjectEntity.builder()
-            .projectId("PROJECT1")
+            .projectKey("PROJECT1")
             .name("First Project")
             .description("First Project Description")
             .build();
 
         ProjectEntity secondExpectedProject = ProjectEntity.builder()
-            .projectId("PROJECT2")
+            .projectKey("PROJECT2")
             .name("Second Project")
             .description("Second Project Description")
             .build();
@@ -123,29 +123,29 @@ public class ProjectControllerTest {
 
     @Test
     @DisplayName("Should return OK status and an empty list when there are no projects")
-    public void shouldGetProjectByProjectIdAndOkStatusWhenProjectExists() throws Exception {
-        String givenProjectId = "PROJECT1";
+    public void shouldGetProjectByProjectKeyAndOkStatusWhenProjectExists() throws Exception {
+        String givenProjectKey = "PROJECT1";
 
         ProjectEntity expectedProject = ProjectEntity.builder()
-            .projectId("PROJECT1")
+            .projectKey("PROJECT1")
             .name("First Project")
             .description("First Project Description")
             .build();
 
-        when(projectService.getProjectByProjectId(givenProjectId)).thenReturn(expectedProject);
+        when(projectService.getProjectByProjectKey(givenProjectKey)).thenReturn(expectedProject);
 
         ProjectFullResponse expectedProjectResponse = mapStructMapper.toResponse(expectedProject);
 
-        mockMvc.perform(get("/projects/{projectId}", givenProjectId))
+        mockMvc.perform(get("/projects/{projectKey}", givenProjectKey))
             .andExpect(status().isOk())
             .andExpect(content()
                 .json(objectMapper.writeValueAsString(expectedProjectResponse)));
     }
 
     @Test
-    @DisplayName("Should return OK status and a not empty list when there are issues on project by given projectId")
-    public void shouldGetAllIssuesOnProjectByProjectIdAndOkStatusWhenProjectExistsAndThereAreIssues() throws Exception {
-        String givenProjectId = "PROJECT1";
+    @DisplayName("Should return OK status and a not empty list when there are issues on project by given projectKey")
+    public void shouldGetAllIssuesOnProjectByProjectKeyAndOkStatusWhenProjectExistsAndThereAreIssues() throws Exception {
+        String givenProjectKey = "PROJECT1";
 
         IssueEntity firstExpectedIssue = IssueEntity.builder()
             .issueId("00001")
@@ -168,53 +168,53 @@ public class ProjectControllerTest {
         );
 
         ProjectEntity expectedProject = ProjectEntity.builder()
-            .projectId("PROJECT1")
+            .projectKey("PROJECT1")
             .name("First Project")
             .description("First Project Description")
             .issues(expectedIssues)
             .build();
 
-        when(projectService.getProjectByProjectId(givenProjectId)).thenReturn(expectedProject);
-        when(projectService.getAllIssuesOnProjectById(givenProjectId)).thenReturn(expectedIssues);
+        when(projectService.getProjectByProjectKey(givenProjectKey)).thenReturn(expectedProject);
+        when(projectService.getAllIssuesOnProjectById(givenProjectKey)).thenReturn(expectedIssues);
 
         List<IssueFullResponse> expectesIssuesResponses = List.of(
             firstExpectedIssueResponse,
             secondExpectedIssueResponse
         );
 
-        mockMvc.perform(get("/projects/{projectId}/issues", givenProjectId))
+        mockMvc.perform(get("/projects/{projectKey}/issues", givenProjectKey))
             .andExpect(status().isOk())
             .andExpect(content()
                 .json(objectMapper.writeValueAsString(expectesIssuesResponses)));
     }
 
     @Test
-    @DisplayName("Should return OK status and an empty list when there are no issues on project by given projectId")
-    public void shouldGetAllIssuesOnProjectByProjectIdAndOkStatusWhenProjectExistsAndThereAreNoIssues() throws Exception {
-        String givenProjectId = "PROJECT1";
+    @DisplayName("Should return OK status and an empty list when there are no issues on project by given projectKey")
+    public void shouldGetAllIssuesOnProjectByProjectKeyAndOkStatusWhenProjectExistsAndThereAreNoIssues() throws Exception {
+        String givenProjectKey = "PROJECT1";
 
         List<IssueEntity> expectedIssues = List.of();
         
-        when(projectService.getAllIssuesOnProjectById(givenProjectId)).thenReturn(expectedIssues);
+        when(projectService.getAllIssuesOnProjectById(givenProjectKey)).thenReturn(expectedIssues);
 
         List<IssueFullResponse> expectesIssuesResponses = List.of();
 
-        mockMvc.perform(get("/projects/{projectId}/issues", givenProjectId))
+        mockMvc.perform(get("/projects/{projectKey}/issues", givenProjectKey))
             .andExpect(status().isOk())
             .andExpect(content()
                 .json(objectMapper.writeValueAsString(expectesIssuesResponses)));
     }
 
     @Test
-    @DisplayName("Should return NOT_FOUND status and throw ProjectIdNotFoundException when the project to return the issues created on does not exist")
-    public void shouldThrowProjectIdNotFoundExceptionndNotFoundStatusWhenProjectDoesNotExist() throws Exception {
-        String givenProjectId = "PROJECT1";
+    @DisplayName("Should return NOT_FOUND status and throw ProjectNotFoundException when the project to return the issues created on does not exist")
+    public void shouldThrowProjectNotFoundExceptionndNotFoundStatusWhenProjectDoesNotExist() throws Exception {
+        String givenProjectKey = "PROJECT1";
 
-        when(projectService.getAllIssuesOnProjectById(givenProjectId)).thenThrow(new ProjectIdNotFoundException(givenProjectId));
+        when(projectService.getAllIssuesOnProjectById(givenProjectKey)).thenThrow(new ProjectNotFoundException(givenProjectKey));
 
-        mockMvc.perform(get("/projects/{projectId}/issues", givenProjectId))
+        mockMvc.perform(get("/projects/{projectKey}/issues", givenProjectKey))
             .andExpect(status().isNotFound())
-            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(ProjectIdNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(ProjectNotFoundException.class))
             .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(PROJECT_WITH_ID_NOT_FOUND, "PROJECT1")));
     }
 }
