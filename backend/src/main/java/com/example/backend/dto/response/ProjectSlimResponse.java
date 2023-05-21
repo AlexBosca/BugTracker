@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ProjectSlimResponse {
 
-    private String projectId;
+    private String projectKey;
     private String name;
 }

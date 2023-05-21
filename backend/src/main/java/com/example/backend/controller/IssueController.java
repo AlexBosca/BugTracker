@@ -56,11 +56,11 @@ public class IssueController {
         );
     }
 
-    @PostMapping(path = "/createOnProject/{projectId}")
+    @PostMapping(path = "/createOnProject/{projectKey}")
     public ResponseEntity<Void> createIssue(
             // @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody IssueRequest request,
-            @PathVariable(name = "projectId") String projectId) {
+            @PathVariable(name = "projectKey") String projectKey) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         // String email = authenticationService.getEmailFromAuthorizationHeader(authorizationHeader);
@@ -69,7 +69,7 @@ public class IssueController {
 
         IssueEntity entity = mapper.toEntity(request);
 
-        issueService.saveIssue(entity, projectId, email);
+        issueService.saveIssue(entity, projectKey, email);
 
         return new ResponseEntity<>(CREATED);
     }

@@ -7,7 +7,7 @@ import com.example.backend.enums.IssueStatus;
 import com.example.backend.exception.issue.IssueAlreadyCreatedException;
 import com.example.backend.exception.issue.IssueIdNotFoundException;
 import com.example.backend.exception.issue.IssueStatusInvalidTransitionException;
-import com.example.backend.exception.project.ProjectIdNotFoundException;
+import com.example.backend.exception.project.ProjectNotFoundException;
 import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 import com.example.backend.mapper.MapStructMapper;
@@ -100,7 +100,7 @@ class IssueControllerTest {
     private ArgumentCaptor<String> issueIdCaptor;
 
     @Captor
-    private ArgumentCaptor<String> projectIdCaptor;
+    private ArgumentCaptor<String> projectKeyCaptor;
 
     @Captor
     private ArgumentCaptor<String> developerIdCaptor;
@@ -212,7 +212,7 @@ class IssueControllerTest {
     @Test
     @DisplayName("Should return CREATED Response when no exception was thrown when calling the createIssue endpoint")
     void createIssue_NoExceptionThrown_CreatedResponse() throws Exception {
-        String expectedProjectId = "FP_00001";
+        String expectedProjectKey = "FP_00001";
 
         IssueEntity expectedIssue = IssueEntity.builder()
             .issueId("FI_00001")
@@ -226,19 +226,19 @@ class IssueControllerTest {
 
         IssueRequest issueRequest = mapStructMapper.toRequest(expectedIssue);
 
-        mockMvc.perform(post("/issues/createOnProject/{projectId}", expectedProjectId)
+        mockMvc.perform(post("/issues/createOnProject/{projectKey}", expectedProjectKey)
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(issueRequest)))
             .andExpect(status().isCreated());
 
         verify(issueService).saveIssue(
             issueCaptor.capture(),
-            projectIdCaptor.capture(),
+            projectKeyCaptor.capture(),
             userEmailCaptor.capture()
         );
 
         IssueEntity actualIssue = issueCaptor.getValue();
-        String actualProjectId = projectIdCaptor.getValue();
+        String actualProjectKey = projectKeyCaptor.getValue();
         String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssue.getIssueId()).isEqualTo(expectedIssue.getIssueId());
@@ -249,15 +249,15 @@ class IssueControllerTest {
         assertThat(actualIssue.getVersion()).isEqualTo(expectedIssue.getVersion());
         assertThat(actualIssue.getPriority()).isEqualTo(expectedIssue.getPriority());
 
-        assertThat(actualProjectId).isEqualTo(expectedProjectId);
+        assertThat(actualProjectKey).isEqualTo(expectedProjectKey);
 
         assertThat(actualUserEmail).isEqualTo("test.user@domain.com");
     }
 
     @Test
-    @DisplayName("Should return NOT FOUND Response and resolve exception when ProjectIdNotFoundException was thrown when calling the createIssue endpopint")
-    void createIssue_ProjectIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
-        String expectedProjectId = "FP_00001";
+    @DisplayName("Should return NOT FOUND Response and resolve exception when ProjectNotFoundException was thrown when calling the createIssue endpopint")
+    void createIssue_ProjectNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
+        String expectedProjectKey = "FP_00001";
 
         IssueEntity expectedIssue = IssueEntity.builder()
             .issueId("FI_00001")
@@ -279,23 +279,23 @@ class IssueControllerTest {
             .priority("LOW")
             .build();
 
-        doThrow(new ProjectIdNotFoundException(expectedProjectId)).when(issueService).saveIssue(any(), eq(expectedProjectId), eq("test.user@domain.com"));
+        doThrow(new ProjectNotFoundException(expectedProjectKey)).when(issueService).saveIssue(any(), eq(expectedProjectKey), eq("test.user@domain.com"));
 
-        mockMvc.perform(post("/issues/createOnProject/{projectId}", expectedProjectId)
+        mockMvc.perform(post("/issues/createOnProject/{projectKey}", expectedProjectKey)
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(issueRequest)))
             .andExpect(status().isNotFound())
-            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(ProjectIdNotFoundException.class))
-            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(PROJECT_WITH_ID_NOT_FOUND, expectedProjectId)));
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(ProjectNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(PROJECT_WITH_ID_NOT_FOUND, expectedProjectKey)));
 
         verify(issueService).saveIssue(
             issueCaptor.capture(),
-            projectIdCaptor.capture(),
+            projectKeyCaptor.capture(),
             userEmailCaptor.capture()
         );
 
         IssueEntity actualIssue = issueCaptor.getValue();
-        String actualProjectId = projectIdCaptor.getValue();
+        String actualProjectKey = projectKeyCaptor.getValue();
         String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssue.getIssueId()).isEqualTo(expectedIssue.getIssueId());
@@ -306,7 +306,7 @@ class IssueControllerTest {
         assertThat(actualIssue.getVersion()).isEqualTo(expectedIssue.getVersion());
         assertThat(actualIssue.getPriority()).isEqualTo(expectedIssue.getPriority());
 
-        assertThat(actualProjectId).isEqualTo(expectedProjectId);
+        assertThat(actualProjectKey).isEqualTo(expectedProjectKey);
 
         assertThat(actualUserEmail).isEqualTo("test.user@domain.com");
     }
@@ -314,7 +314,7 @@ class IssueControllerTest {
     @Test
     @DisplayName("Should return NOT FOUND Response and resolve exception when UserEmailNotFoundException was thrown when calling the createIssue endpopint")
     void createIssue_UserEmailNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
-        String expectedProjectId = "FP_00001";
+        String expectedProjectKey = "FP_00001";
 
         IssueEntity expectedIssue = IssueEntity.builder()
             .issueId("FI_00001")
@@ -336,9 +336,9 @@ class IssueControllerTest {
             .priority("LOW")
             .build();
 
-        doThrow(new UserEmailNotFoundException("test.user@domain.com")).when(issueService).saveIssue(any(), eq(expectedProjectId), eq("test.user@domain.com"));
+        doThrow(new UserEmailNotFoundException("test.user@domain.com")).when(issueService).saveIssue(any(), eq(expectedProjectKey), eq("test.user@domain.com"));
 
-        mockMvc.perform(post("/issues/createOnProject/{projectId}", expectedProjectId)
+        mockMvc.perform(post("/issues/createOnProject/{projectKey}", expectedProjectKey)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issueRequest)))
                 .andExpect(status().isNotFound())
@@ -347,12 +347,12 @@ class IssueControllerTest {
     
         verify(issueService).saveIssue(
             issueCaptor.capture(),
-            projectIdCaptor.capture(),
+            projectKeyCaptor.capture(),
             userEmailCaptor.capture()
         );
 
         IssueEntity actualIssue = issueCaptor.getValue();
-        String actualProjectId = projectIdCaptor.getValue();
+        String actualProjectKey = projectKeyCaptor.getValue();
         String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssue.getIssueId()).isEqualTo(expectedIssue.getIssueId());
@@ -363,7 +363,7 @@ class IssueControllerTest {
         assertThat(actualIssue.getVersion()).isEqualTo(expectedIssue.getVersion());
         assertThat(actualIssue.getPriority()).isEqualTo(expectedIssue.getPriority());
 
-        assertThat(actualProjectId).isEqualTo(expectedProjectId);
+        assertThat(actualProjectKey).isEqualTo(expectedProjectKey);
 
         assertThat(actualUserEmail).isEqualTo("test.user@domain.com");
     }
@@ -371,7 +371,7 @@ class IssueControllerTest {
     @Test
     @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueAlreadyCreatedException was thrown when calling the createIssue endpopint")
     void createIssue_IssueAlreadyCreatedExceptionThrown_ResolveExceptionAndBadRequestResponse() throws Exception {
-        String expectedProjectId = "FP_00001";
+        String expectedProjectKey = "FP_00001";
         String expectedIssueId = "FI_00001";
 
         IssueEntity expectedIssue = IssueEntity.builder()
@@ -394,9 +394,9 @@ class IssueControllerTest {
             .priority("LOW")
             .build();
 
-        doThrow(new IssueAlreadyCreatedException(expectedIssueId)).when(issueService).saveIssue(any(), eq(expectedProjectId), eq("test.user@domain.com"));
+        doThrow(new IssueAlreadyCreatedException(expectedIssueId)).when(issueService).saveIssue(any(), eq(expectedProjectKey), eq("test.user@domain.com"));
 
-        mockMvc.perform(post("/issues/createOnProject/{projectId}", expectedProjectId)
+        mockMvc.perform(post("/issues/createOnProject/{projectKey}", expectedProjectKey)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(issueRequest)))
                 .andExpect(status().isBadRequest())
@@ -405,12 +405,12 @@ class IssueControllerTest {
     
         verify(issueService).saveIssue(
             issueCaptor.capture(),
-            projectIdCaptor.capture(),
+            projectKeyCaptor.capture(),
             userEmailCaptor.capture()
         );
 
         IssueEntity actualIssue = issueCaptor.getValue();
-        String actualProjectId = projectIdCaptor.getValue();
+        String actualProjectKey = projectKeyCaptor.getValue();
         String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssue.getIssueId()).isEqualTo(expectedIssue.getIssueId());
@@ -421,7 +421,7 @@ class IssueControllerTest {
         assertThat(actualIssue.getVersion()).isEqualTo(expectedIssue.getVersion());
         assertThat(actualIssue.getPriority()).isEqualTo(expectedIssue.getPriority());
 
-        assertThat(actualProjectId).isEqualTo(expectedProjectId);
+        assertThat(actualProjectKey).isEqualTo(expectedProjectKey);
 
         assertThat(actualUserEmail).isEqualTo("test.user@domain.com");
     }

@@ -44,12 +44,12 @@ public class ProjectController {
         );
     }
 
-    @GetMapping(path = "/{projectId}")
-    public ResponseEntity<ProjectFullResponse> getProject(@PathVariable(name = "projectId") String projectId) {
-        log.info(PROJECT_GET_BY_ID, projectId);
+    @GetMapping(path = "/{projectKey}")
+    public ResponseEntity<ProjectFullResponse> getProject(@PathVariable(name = "projectKey") String projectKey) {
+        log.info(PROJECT_GET_BY_ID, projectKey);
         
         return new ResponseEntity<>(
-                mapper.toResponse(projectService.getProjectByProjectId(projectId)),
+                mapper.toResponse(projectService.getProjectByProjectKey(projectKey)),
                 OK
         );
     }
@@ -63,20 +63,20 @@ public class ProjectController {
         return new ResponseEntity<>(CREATED);
     }
 
-    @PutMapping(path = "/{projectId}/addTeam/{teamId}")
-    public ResponseEntity<Void> addTeamToProject(@PathVariable(name = "projectId") String projectId, @PathVariable(name = "teamId") String teamId) {
+    @PutMapping(path = "/{projectKey}/addTeam/{teamId}")
+    public ResponseEntity<Void> addTeamToProject(@PathVariable(name = "projectKey") String projectKey, @PathVariable(name = "teamId") String teamId) {
         log.info(PROJECT_ADD_TEAM);
         
-        projectService.addTeam(projectId, teamId);
+        projectService.addTeam(projectKey, teamId);
 
         return new ResponseEntity<>(OK);
     }
 
-    @GetMapping(path = "/{projectId}/issues")
-    public ResponseEntity<List<IssueFullResponse>> getAllIssuesOnProject(@PathVariable(name = "projectId") String projectId) {
-        log.info("Get issues on project with id: {}", projectId);
+    @GetMapping(path = "/{projectKey}/issues")
+    public ResponseEntity<List<IssueFullResponse>> getAllIssuesOnProject(@PathVariable(name = "projectKey") String projectKey) {
+        log.info("Get issues on project with id: {}", projectKey);
 
-        List<IssueEntity> entities = projectService.getAllIssuesOnProjectById(projectId);
+        List<IssueEntity> entities = projectService.getAllIssuesOnProjectById(projectKey);
 
         List<IssueFullResponse> responses = entities.stream()
                 .map(mapper::toResponse)

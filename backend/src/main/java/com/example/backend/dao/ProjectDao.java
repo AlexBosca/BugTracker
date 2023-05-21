@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface ProjectDao {
     List<ProjectEntity> selectAllProjects();
-    Optional<ProjectEntity> selectProjectById(String projectId);
+    Optional<ProjectEntity> selectProjectByKey(String projectKey);
     void insertProject(ProjectEntity project);
-    boolean existsProjectWithProjectId(String projectId);
-    void deleteProjectByProjectId(String projectId);
+    boolean existsProjectWithProjectKey(String projectKey);
+    void deleteProjectByProjectKey(String projectKey);
     void updateProject(ProjectEntity project);
 }
