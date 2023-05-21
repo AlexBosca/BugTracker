@@ -30,7 +30,7 @@ import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.enums.IssueStatus;
 import com.example.backend.exception.issue.IssueAlreadyCreatedException;
-import com.example.backend.exception.issue.IssueIdNotFoundException;
+import com.example.backend.exception.issue.IssueNotFoundException;
 import com.example.backend.exception.project.ProjectNotFoundException;
 import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
@@ -145,13 +145,13 @@ class IssueServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw an exception when try to return an isssue by issueId that doesn't exist")
+    @DisplayName("Should throw an exception when try to return an issue by issueId that doesn't exist")
     void shouldThrowExceptionIfIssueToReturnByIssueIdDoesNotExists() {
         when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
             issueService.getIssueByIssueId("00001");
-        }).isInstanceOf(IssueIdNotFoundException.class)
+        }).isInstanceOf(IssueNotFoundException.class)
         .hasMessage(String.format(ISSUE_WITH_ID_NOT_FOUND, "00001"));
     }
 
@@ -316,7 +316,7 @@ class IssueServiceTest {
 
         assertThatThrownBy(() -> {
             issueService.assignToUser("00001", "JD_00001");
-        }).isInstanceOf(IssueIdNotFoundException.class)
+        }).isInstanceOf(IssueNotFoundException.class)
         .hasMessage(ISSUE_WITH_ID_NOT_FOUND, "00001");
     }
 
@@ -383,7 +383,7 @@ class IssueServiceTest {
 
         assertThatThrownBy(() -> {
             issueService.closeByUser("00001", "JD_00001");
-        }).isInstanceOf(IssueIdNotFoundException.class)
+        }).isInstanceOf(IssueNotFoundException.class)
         .hasMessage(ISSUE_WITH_ID_NOT_FOUND, "00001");
     }
 
@@ -437,7 +437,7 @@ class IssueServiceTest {
 
         assertThatThrownBy(() -> {
             issueService.changeIssueStatus("00001", IssueStatus.ASSIGNED);
-        }).isInstanceOf(IssueIdNotFoundException.class)
+        }).isInstanceOf(IssueNotFoundException.class)
         .hasMessage(ISSUE_WITH_ID_NOT_FOUND, "00001");
     }
 }

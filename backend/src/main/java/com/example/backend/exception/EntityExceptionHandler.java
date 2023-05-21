@@ -3,7 +3,7 @@ package com.example.backend.exception;
 import com.example.backend.exception.issue.IssueStatusInvalidTransitionException;
 import com.example.backend.exception.registration.*;
 import com.example.backend.exception.issue.IssueAlreadyCreatedException;
-import com.example.backend.exception.issue.IssueIdNotFoundException;
+import com.example.backend.exception.issue.IssueNotFoundException;
 import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectNotFoundException;
 import com.example.backend.exception.team.TeamAlreadyCreatedException;
@@ -55,7 +55,7 @@ public class EntityExceptionHandler {
         return buildErrorResponse(exception, BAD_REQUEST);
     }
 
-    @ExceptionHandler(IssueIdNotFoundException.class)
+    @ExceptionHandler(IssueNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleIssueIdNotFoundException(Exception exception) {
         return buildErrorResponse(exception, NOT_FOUND);
     }

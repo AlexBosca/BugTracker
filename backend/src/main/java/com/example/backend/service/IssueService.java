@@ -10,7 +10,7 @@ import com.example.backend.entity.issue.IssueCommentEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.enums.IssueStatus;
 import com.example.backend.exception.issue.IssueAlreadyCreatedException;
-import com.example.backend.exception.issue.IssueIdNotFoundException;
+import com.example.backend.exception.issue.IssueNotFoundException;
 import com.example.backend.exception.project.ProjectNotFoundException;
 import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
@@ -57,7 +57,7 @@ public class IssueService {
 
         IssueEntity issue = issueDao
             .selectIssueByIssueId(issueId)
-            .orElseThrow(() -> new IssueIdNotFoundException(issueId));
+            .orElseThrow(() -> new IssueNotFoundException(issueId));
 
         log.info(ISSUE_RETURN);
 
@@ -97,7 +97,7 @@ public class IssueService {
 
         IssueEntity issue = issueDao
             .selectIssueByIssueId(issueId)
-            .orElseThrow(() -> new IssueIdNotFoundException(issueId));
+            .orElseThrow(() -> new IssueNotFoundException(issueId));
 
         UserEntity developer = userDao
             .selectUserByUserId(developerId)
@@ -117,7 +117,7 @@ public class IssueService {
 
         IssueEntity issue = issueDao
             .selectIssueByIssueId(issueId)
-            .orElseThrow(() -> new IssueIdNotFoundException(issueId));
+            .orElseThrow(() -> new IssueNotFoundException(issueId));
 
         UserEntity developer = userDao
             .selectUserByUserId(developerId)
@@ -137,7 +137,7 @@ public class IssueService {
 
         IssueEntity issue = issueDao
             .selectIssueByIssueId(issueId)
-            .orElseThrow(() -> new IssueIdNotFoundException(issueId));
+            .orElseThrow(() -> new IssueNotFoundException(issueId));
 
         IssueStatus currentStatus = issue.getStatus();
 
@@ -154,7 +154,7 @@ public class IssueService {
         
         IssueEntity issue = issueDao
             .selectIssueByIssueId(issueId)
-            .orElseThrow(() -> new IssueIdNotFoundException(issueId));
+            .orElseThrow(() -> new IssueNotFoundException(issueId));
 
         UserEntity user = userDao
                 .selectUserByEmail(email)
