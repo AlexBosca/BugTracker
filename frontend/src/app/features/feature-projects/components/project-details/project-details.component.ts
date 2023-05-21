@@ -11,7 +11,7 @@ import { IssueModel } from 'src/app/features/feature-issues/models/IssueModel';
   styleUrls: ['./project-details.component.css']
 })
 export class ProjectDetailsComponent implements OnInit {
-  private projectId!: string | null;
+  private projectKey!: string | null;
   project!: ProjectModel;
   issues!: IssueModel[];
   error!: HttpErrorResponse;
@@ -24,7 +24,7 @@ export class ProjectDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(
       (params: ParamMap) => {
-        this.projectId = params.get('id');
+        this.projectKey = params.get('id');
       }
     );
 
@@ -32,8 +32,8 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   fetchProject(): void {
-    if(this.projectId) {
-      this.projectService.getProject(this.projectId)
+    if(this.projectKey) {
+      this.projectService.getProject(this.projectKey)
         .subscribe({
           next: data => this.project = data,
           error: error => this.error = error

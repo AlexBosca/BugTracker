@@ -13,7 +13,7 @@ import { Status } from 'src/app/features/feature-issues/models/status.enum';
   styleUrls: ['./project-summary.component.css']
 })
 export class ProjectSummaryComponent implements OnInit {
-  private projectId!: string| null;
+  private projectKey!: string| null;
   project!: ProjectModel;
   issues: IssueModel[] = [];
   doneIssues: IssueModel[] = [];
@@ -34,7 +34,7 @@ export class ProjectSummaryComponent implements OnInit {
   ngOnInit(): void {
     this.route.parent!.paramMap.subscribe(
       (params: ParamMap) => {
-        this.projectId = params.get('id');
+        this.projectKey = params.get('id');
       }
     );
 
@@ -43,8 +43,8 @@ export class ProjectSummaryComponent implements OnInit {
   }
 
   fetchProject(): void {
-    if(this.projectId) {
-      this.projectService.getProject(this.projectId)
+    if(this.projectKey) {
+      this.projectService.getProject(this.projectKey)
         .subscribe({
           next: data => this.project = data,
           error: error => this.error = error
@@ -53,8 +53,8 @@ export class ProjectSummaryComponent implements OnInit {
   }
 
   fetchIssuesOnProject(): void {
-    if(this.projectId) {
-      this.projectService.getIssuesOnProject(this.projectId)
+    if(this.projectKey) {
+      this.projectService.getIssuesOnProject(this.projectKey)
         .subscribe({
           next: data => {
             this.issues = data;

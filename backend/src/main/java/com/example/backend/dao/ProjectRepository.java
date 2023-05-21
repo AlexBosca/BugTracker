@@ -8,12 +8,12 @@ import java.util.Optional;
 
 public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
 
-    Optional<ProjectEntity> findByProjectId(String projectId);
+    Optional<ProjectEntity> findByProjectKey(String projectKey);
 
-    boolean existsByProjectId(String projectId);
+    boolean existsByProjectKey(String projectKey);
 
     @Modifying
-    void deleteByProjectId(String projectId);
+    void deleteByProjectKey(String projectKey);
 
     // TODO: Implement an update method
 }

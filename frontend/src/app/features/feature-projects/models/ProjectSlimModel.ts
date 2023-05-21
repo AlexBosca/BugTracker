@@ -1,4 +1,4 @@
 export interface ProjectSlimModel {
-    projectId: string;
+    projectKey: string;
     name: string;
 }
