@@ -31,7 +31,7 @@ import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.enums.IssueStatus;
 import com.example.backend.exception.issue.IssueAlreadyCreatedException;
 import com.example.backend.exception.issue.IssueIdNotFoundException;
-import com.example.backend.exception.project.ProjectIdNotFoundException;
+import com.example.backend.exception.project.ProjectNotFoundException;
 import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 
@@ -165,7 +165,7 @@ class IssueServiceTest {
             .build();
 
         ProjectEntity existingProject = ProjectEntity.builder()
-            .projectId("FP_00001")
+            .projectKey("FP_00001")
             .name("First Project")
             .description("First project description")
             .build();
@@ -179,7 +179,7 @@ class IssueServiceTest {
         when(clock.getZone()).thenReturn(NOW.getZone());
         when(clock.instant()).thenReturn(NOW.toInstant());
         
-        when(projectDao.selectProjectById("FP_00001")).thenReturn(Optional.of(existingProject));
+        when(projectDao.selectProjectByKey("FP_00001")).thenReturn(Optional.of(existingProject));
         when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.of(registeredUser));
 
         issueService.saveIssue(issueToSave, "FP_00001", "john.doe@gmail.com");
@@ -194,7 +194,7 @@ class IssueServiceTest {
         assertThat(capturedIssue.getCreatedByUser().getEmail()).isEqualTo(registeredUser.getEmail());
         assertThat(capturedIssue.getCreatedByUser().getFirstName()).isEqualTo(registeredUser.getFirstName());
         assertThat(capturedIssue.getCreatedByUser().getLastName()).isEqualTo(registeredUser.getLastName());
-        assertThat(capturedIssue.getProject().getProjectId()).isEqualTo(existingProject.getProjectId());
+        assertThat(capturedIssue.getProject().getProjectKey()).isEqualTo(existingProject.getProjectKey());
         assertThat(capturedIssue.getProject().getName()).isEqualTo(existingProject.getName());
         assertThat(capturedIssue.getProject().getDescription()).isEqualTo(existingProject.getDescription());
     }
@@ -209,7 +209,7 @@ class IssueServiceTest {
             .build();
 
         ProjectEntity existingProject = ProjectEntity.builder()
-            .projectId("FP_00001")
+            .projectKey("FP_00001")
             .name("First Project")
             .description("First project description")
             .build();
@@ -220,7 +220,7 @@ class IssueServiceTest {
             .lastName("Doe")
             .build();
 
-        when(projectDao.selectProjectById("FP_00001")).thenReturn(Optional.of(existingProject));
+        when(projectDao.selectProjectByKey("FP_00001")).thenReturn(Optional.of(existingProject));
         when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.of(registeredUser));
         when(issueDao.existsIssueWithIssueId("00001")).thenReturn(true);
 
@@ -239,11 +239,11 @@ class IssueServiceTest {
             .description("First Issue Description")
             .build();
 
-        when(projectDao.selectProjectById("FP_00001")).thenReturn(Optional.empty());
+        when(projectDao.selectProjectByKey("FP_00001")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
             issueService.saveIssue(existingIssue, "FP_00001", "john.doe@gmail.com");
-        }).isInstanceOf(ProjectIdNotFoundException.class)
+        }).isInstanceOf(ProjectNotFoundException.class)
         .hasMessage(String.format(PROJECT_WITH_ID_NOT_FOUND, "FP_00001"));
     }
 
@@ -257,12 +257,12 @@ class IssueServiceTest {
             .build();
 
         ProjectEntity existingProject = ProjectEntity.builder()
-            .projectId("FP_00001")
+            .projectKey("FP_00001")
             .name("First Project")
             .description("First project description")
             .build();
 
-            when(projectDao.selectProjectById("FP_00001")).thenReturn(Optional.of(existingProject));
+            when(projectDao.selectProjectByKey("FP_00001")).thenReturn(Optional.of(existingProject));
             when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> {

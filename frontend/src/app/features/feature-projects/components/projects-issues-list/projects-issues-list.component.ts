@@ -11,7 +11,7 @@ import { ProjectService } from '../../services/project.service';
   styleUrls: ['./projects-issues-list.component.css']
 })
 export class ProjectsIssuesListComponent implements OnInit {
-  private projectId!: string | null;
+  private projectKey!: string | null;
   project!: ProjectModel;
   issues: IssueModel[] = [];
   error!: HttpErrorResponse;
@@ -24,7 +24,7 @@ export class ProjectsIssuesListComponent implements OnInit {
   ngOnInit(): void {
     this.route.parent!.paramMap.subscribe(
       (params: ParamMap) => {
-        this.projectId = params.get('id');
+        this.projectKey = params.get('id');
       }
     );
 
@@ -32,8 +32,8 @@ export class ProjectsIssuesListComponent implements OnInit {
   }
 
   fetchIssuesOnProject(): void {
-    if(this.projectId) {
-      this.projectService.getIssuesOnProject(this.projectId)
+    if(this.projectKey) {
+      this.projectService.getIssuesOnProject(this.projectKey)
           .subscribe({
             next: data => this.issues = data,
             error: error => this.error = error

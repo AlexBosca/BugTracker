@@ -11,7 +11,7 @@ import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.enums.IssueStatus;
 import com.example.backend.exception.issue.IssueAlreadyCreatedException;
 import com.example.backend.exception.issue.IssueIdNotFoundException;
-import com.example.backend.exception.project.ProjectIdNotFoundException;
+import com.example.backend.exception.project.ProjectNotFoundException;
 import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -64,12 +64,12 @@ public class IssueService {
         return issue;
     }
 
-    public void saveIssue(IssueEntity issue, String projectId, String email) {
-        log.info(ISSUE_CREATE_ON_PROJECT, projectId);
+    public void saveIssue(IssueEntity issue, String projectKey, String email) {
+        log.info(ISSUE_CREATE_ON_PROJECT, projectKey);
 
         ProjectEntity project = projectDao
-            .selectProjectById(projectId)
-            .orElseThrow(() -> new ProjectIdNotFoundException(projectId));
+            .selectProjectByKey(projectKey)
+            .orElseThrow(() -> new ProjectNotFoundException(projectKey));
 
         UserEntity user = userDao
             .selectUserByEmail(email)
