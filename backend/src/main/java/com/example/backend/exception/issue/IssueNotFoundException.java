@@ -7,9 +7,9 @@ import static com.example.backend.util.ExceptionUtilities.ISSUE_WITH_ID_NOT_FOUN
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ResponseStatus(value = NOT_FOUND)
-public class IssueIdNotFoundException extends BaseRuntimeException {
+public class IssueNotFoundException extends BaseRuntimeException {
 
-    public IssueIdNotFoundException(String id) {
+    public IssueNotFoundException(String id) {
         super(ISSUE_WITH_ID_NOT_FOUND, id);
     }
 }

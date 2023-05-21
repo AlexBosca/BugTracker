@@ -83,6 +83,6 @@ public class IssueEntity extends BaseEntity {
 
     @PostPersist
     public void setIssueIdPostPersist() {
-        issueId = String.format("%s%05d", this.getTitle().substring(0, 2), this.getId());
+        issueId = String.format("%s-%04d", this.getProject().getProjectKey(), this.getId());
     }
 }
