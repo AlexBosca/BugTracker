@@ -25,6 +25,20 @@ export class ProjectSummaryComponent implements OnInit {
   issuesStatusOverviewChart!: Chart<'doughnut'>;
   issuesPriorityBreakdownChart!: Chart<'bar'>;
   createdIssues: number = 0;
+  colors = [
+    '#0D47A1',
+    '#1565C0',
+    '#E4A11B',
+    '#EF6C00',
+    '#DD2C00'
+  ];
+  labels = [
+    '\uF27E Lowest',
+    '\uF282 Low',
+    '\uF63B Medium',
+    '\uF286 High',
+    '\uF281 Highest'
+  ];
 
   constructor(
     private route: ActivatedRoute,
@@ -37,6 +51,9 @@ export class ProjectSummaryComponent implements OnInit {
         this.projectKey = params.get('id');
       }
     );
+
+    Chart.defaults.font.family = "'Bootstrap-icons'";
+    Chart.defaults.font.size = 13;
 
     this.fetchProject();
     this.fetchIssuesOnProject();
@@ -109,22 +126,30 @@ export class ProjectSummaryComponent implements OnInit {
       {
         type: 'bar',
         data: {
-          labels: ['None', 'Lowest', 'Low', 'Medium', 'High', 'Highest', 'Others'],
+          labels: ['\uF27E Lowest', '\uF282 Low', '\uF63B Medium', '\uF286 High', '\uF281 Highest'],
           datasets: [
             { 
               data: [65, 59, 80, 81, 56, 55, 40],
-              backgroundColor: [
-                '#9FA6B2',
-                '#14A44D',
-                '#3B71CA',
-                '#DC4C64',
-                '#E4A11B',
-                '#54B4D3',
-                '#332D2D'
-              ]
+              backgroundColor: this.colors
             }
           ]
         },
+        options: {
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: (c) => {
+                  return this.colors[c.index % this.colors.length];
+                } 
+              }
+            }
+          }
+        }
       }
     );
   }
