@@ -1,7 +1,10 @@
 # BugTracker
 
-> This is an issue tracker web application, developed using Spring Boot, Angular and PostgreSQL.
-> Live demo [_here_](https://www.example.com). <!-- If you have the project hosted somewhere, include the link here. -->
+This is an issue tracker web application, developed using Spring Boot, Angular and PostgreSQL.
+<!-- Live demo [_here_](https://www.example.com). If you have the project hosted somewhere, include the link here. -->
+
+![badge](https://img.shields.io/badge/license-MIT_License-brightgreen)
+![badge](https://img.shields.io/badge/project_status-In_Progress-blue)
 
 ## Table of Contents
 
@@ -11,7 +14,6 @@
 * [Screenshots](#screenshots)
 * [Setup](#setup)
 * [Usage](#usage)
-* [Project Status](#project-status)
 * [Contact](#contact)
 * [License](#license)
 
@@ -19,7 +21,6 @@
 
 * The BugTracker is a light-weight clone of JIRA
 * The purpose of this application is to help a team during the development process of a project
-<!-- You don't have to answer all the questions - just the ones relevant to your project. -->
 
 ## Technologies Used
 
@@ -29,20 +30,49 @@
 
 ## Features
 
-List the ready features here:
+### Authentication and Authorization Features
 
-* Awesome feature 1
-* Awesome feature 2
-* Awesome feature 3
+* User Registration
+* Confirmation email sending
+* User Login
+* Role-based authorization
+
+<!-- * User Registration is done by completing the registration form with valid inputs and confirming the account via email
+* User Login is done by completing the login form with credentials corresponding to an account that was confirmed via email
+* Role-based authorization is done by assigning to each role a well-defined set of priviledges -->
+
+### Project Opertions Features
+
+* Create a new project
+* Retrieve an existing project
+* Retrieve all existing projects
+* Add an existing team to an existing project
+<!-- * Delete a project - this feature would be implemented in future -->
+
+### Issue Operations Features
+
+* Create a new issue on an existing project
+* Retrieve an existing issue
+* Retrieve all existing issues
+* Change status of an existing issue
+* Create a comment on an existing issue
+<!-- * Delete an issue - this feature would be implemented in future -->
+
+### Team Operations Features
+
+* Create a new team
+* Retrieve an existing team
+* Retrieve all existing teams
+* Add an existing user on an existing team
+
+<!-- * Delete a team - this feature would be implemented in future -->
 
 ## Screenshots
 
-![Example screenshot](./img/screenshot.png)
-<!-- If you have screenshots you'd like to share, include them here. -->
+Screenshots should be added here
+<!-- ![Example screenshot](./img/screenshot.png) -->
 
 ## Setup
-
-What are the project requirements/dependencies? Where are they listed? A requirements.txt or a Pipfile.lock file perhaps? Where is it located?
 
 Proceed to describe how to install / setup one's local environment / get started with the project.
 
@@ -53,14 +83,12 @@ Provide various use cases and code examples here.
 
 `write-your-code-here`
 
-## Project Status
-
-Project is: _in progress_.
-
 ## Contact
 
 Created by [Bosca Alexandru-Nicolae](https://www.linkedin.com/in/bo%C8%99ca-alexandru-nicolae-0402131a0) - feel free to contact me!
 
 ## License
 
-[License](LICENSE)
+_This application has the MIT License._
+
+For more information please view the [license description](https://choosealicense.com/licenses/mit/)
