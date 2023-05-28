@@ -74,12 +74,15 @@ public class IssueController {
         return new ResponseEntity<>(CREATED);
     }
 
-    @PutMapping(path = "/{issueId}/assignToDeveloper/{developerId}")
+    @PutMapping(path = "/{issueId}/assignToDeveloper/{assigneeId}")
     public ResponseEntity<Void> assignToDeveloper(@PathVariable(name = "issueId") String issueId,
-                                       @PathVariable(name = "developerId") String developerId) {
+                                       @PathVariable(name = "assigneeId") String assigneeId) {
         log.info(ISSUE_ASSIGN_TO_DEV);
 
-        issueService.assignToUser(issueId, developerId);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String assignerEmail = auth.getName();
+
+        issueService.assignToUser(issueId, assigneeId, assignerEmail);
         issueService.changeIssueStatus(issueId, ASSIGNED);
 
         return new ResponseEntity<>(OK);

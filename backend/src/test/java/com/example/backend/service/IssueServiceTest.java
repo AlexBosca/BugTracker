@@ -280,20 +280,28 @@ class IssueServiceTest {
             .description("First Issue Description")
             .build();
 
-        UserEntity registeredUser =  UserEntity.builder()
+        UserEntity assigneeUser =  UserEntity.builder()
             .userId("JD_00001")
             .email("john.doe@gmail.com")
             .firstName("John")
             .lastName("Doe")
             .build();
 
+        UserEntity assignerUser =  UserEntity.builder()
+            .userId("ML_00001")
+            .email("martin.luther@gmail.com")
+            .firstName("Martin")
+            .lastName("Luther")
+            .build();
+
         when(clock.getZone()).thenReturn(NOW.getZone());
         when(clock.instant()).thenReturn(NOW.toInstant());
 
         when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.of(existingIssue));
-        when(userDao.selectUserByUserId("JD_00001")).thenReturn(Optional.of(registeredUser));
+        when(userDao.selectUserByUserId("JD_00001")).thenReturn(Optional.of(assigneeUser));
+        when(userDao.selectUserByEmail("martin.luther@gmail.com")).thenReturn(Optional.of(assignerUser));
 
-        issueService.assignToUser("00001", "JD_00001");
+        issueService.assignToUser("00001", "JD_00001", "martin.luther@gmail.com");
 
         verify(issueDao, times(1)).updateIssue(issueArgumentCaptor.capture());
 
@@ -303,10 +311,15 @@ class IssueServiceTest {
         assertThat(capturedIssue.getTitle()).isEqualTo(existingIssue.getTitle());
         assertThat(capturedIssue.getDescription()).isEqualTo(existingIssue.getDescription());
         assertThat(capturedIssue.getAssignedOn()).isEqualTo(now(clock));
-        assertThat(capturedIssue.getAssignedUser().getUserId()).isEqualTo(registeredUser.getUserId());
-        assertThat(capturedIssue.getAssignedUser().getFirstName()).isEqualTo(registeredUser.getFirstName());
-        assertThat(capturedIssue.getAssignedUser().getLastName()).isEqualTo(registeredUser.getLastName());
-        assertThat(capturedIssue.getAssignedUser().getEmail()).isEqualTo(registeredUser.getEmail());
+        assertThat(capturedIssue.getAssignedUser().getUserId()).isEqualTo(assigneeUser.getUserId());
+        assertThat(capturedIssue.getAssignedUser().getFirstName()).isEqualTo(assigneeUser.getFirstName());
+        assertThat(capturedIssue.getAssignedUser().getLastName()).isEqualTo(assigneeUser.getLastName());
+        assertThat(capturedIssue.getAssignedUser().getEmail()).isEqualTo(assigneeUser.getEmail());
+        assertThat(capturedIssue.getModifiedOn()).isEqualTo(now(clock));
+        assertThat(capturedIssue.getModifiedByUser().getUserId()).isEqualTo(assignerUser.getUserId());
+        assertThat(capturedIssue.getModifiedByUser().getFirstName()).isEqualTo(assignerUser.getFirstName());
+        assertThat(capturedIssue.getModifiedByUser().getLastName()).isEqualTo(assignerUser.getLastName());
+        assertThat(capturedIssue.getModifiedByUser().getEmail()).isEqualTo(assignerUser.getEmail());
     }
 
     @Test
@@ -315,7 +328,7 @@ class IssueServiceTest {
         when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
-            issueService.assignToUser("00001", "JD_00001");
+            issueService.assignToUser("00001", "JD_00001", "martin.luther@gmail.com");
         }).isInstanceOf(IssueNotFoundException.class)
         .hasMessage(ISSUE_WITH_ID_NOT_FOUND, "00001");
     }
@@ -329,11 +342,37 @@ class IssueServiceTest {
             .description("First Issue Description")
             .build();
 
+        UserEntity assigneeUser =  UserEntity.builder()
+            .userId("JD_00001")
+            .email("john.doe@gmail.com")
+            .firstName("John")
+            .lastName("Doe")
+            .build();
+
+        when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.of(existingIssue));
+        when(userDao.selectUserByUserId("JD_00001")).thenReturn(Optional.of(assigneeUser));
+        when(userDao.selectUserByEmail("martin.luther@gmail.com")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> {
+            issueService.assignToUser("00001", "JD_00001", "martin.luther@gmail.com");
+        }).isInstanceOf(UserEmailNotFoundException.class)
+        .hasMessage(USER_WITH_EMAIL_NOT_FOUND, "martin.luther@gmail.com");
+    }
+
+    @Test
+    @DisplayName("Should throw exception when try to assign an existing issue to a not registered user")
+    void shouldThrowExceptionWhenAssignIssueNotRegisteredUser() {
+        IssueEntity existingIssue = IssueEntity.builder()
+            .issueId("00001")
+            .title("First Issue Title")
+            .description("First Issue Description")
+            .build();
+
         when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.of(existingIssue));
         when(userDao.selectUserByUserId("JD_00001")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
-            issueService.assignToUser("00001", "JD_00001");
+            issueService.assignToUser("00001", "JD_00001", "martin.luther@gmail.com");
         }).isInstanceOf(UserIdNotFoundException.class)
         .hasMessage(USER_WITH_ID_NOT_FOUND, "JD_00001");
     }

@@ -92,19 +92,26 @@ public class IssueService {
         log.info(ISSUE_CREATED);
     }
 
-    public void assignToUser(String issueId, String developerId) {
-        log.info(ISSUE_ASSIGN_BY_ID_TO_DEV, issueId, developerId);
+    public void assignToUser(String issueId, String assigneeId, String assignerEmail) {
+        log.info(ISSUE_ASSIGN_BY_ID_TO_DEV, issueId, assigneeId);
 
         IssueEntity issue = issueDao
             .selectIssueByIssueId(issueId)
             .orElseThrow(() -> new IssueNotFoundException(issueId));
 
-        UserEntity developer = userDao
-            .selectUserByUserId(developerId)
-            .orElseThrow(() -> new UserIdNotFoundException(developerId));
+        UserEntity assignee = userDao
+            .selectUserByUserId(assigneeId)
+            .orElseThrow(() -> new UserIdNotFoundException(assigneeId));
 
-        issue.setAssignedUser(developer);
+        UserEntity assigner = userDao
+            .selectUserByEmail(assignerEmail)
+            .orElseThrow(() -> new UserEmailNotFoundException(assignerEmail));
+
+        issue.setAssignedUser(assignee);
         issue.setAssignedOn(now(clock));
+
+        issue.setModifiedByUser(assigner);
+        issue.setModifiedOn(now(clock));
 
         // TODO: com/example/backend/dao/ProjectRepository.java:14
         issueDao.updateIssue(issue);
@@ -125,6 +132,9 @@ public class IssueService {
 
         issue.setClosedByUser(developer);
         issue.setClosedOn(now(clock));
+
+        issue.setModifiedByUser(developer);
+        issue.setModifiedOn(now(clock));
 
         // TODO: com/example/backend/dao/ProjectRepository.java:14
         issueDao.updateIssue(issue);
