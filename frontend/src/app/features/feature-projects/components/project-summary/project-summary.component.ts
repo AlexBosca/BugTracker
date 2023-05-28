@@ -6,6 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChartEvent, Chart } from 'chart.js';
 import { IssueModel } from 'src/app/features/feature-issues/models/IssueModel';
 import { Status } from 'src/app/features/feature-issues/models/status.enum';
+import { StatusCategory } from 'src/app/features/feature-issues/models/StatusCategory';
 
 @Component({
   selector: 'app-project-summary',
@@ -25,6 +26,25 @@ export class ProjectSummaryComponent implements OnInit {
   issuesStatusOverviewChart!: Chart<'doughnut'>;
   issuesPriorityBreakdownChart!: Chart<'bar'>;
   createdIssues: number = 0;
+  colors = [
+    '#0D47A1',
+    '#1565C0',
+    '#E4A11B',
+    '#EF6C00',
+    '#DD2C00'
+  ];
+  labels = [
+    '\uF27E Lowest',
+    '\uF282 Low',
+    '\uF63B Medium',
+    '\uF286 High',
+    '\uF281 Highest'
+  ];
+  // issueStatusCategories= {
+  //     'ToDo': [Status.NEW, Status.ASSIGNED],
+  //     'InProgress': [Status.OPEN, Status.REOPENED, Status.PENDING_RETEST, Status.RETEST, Status.FIXED],
+  //     'Done': [Status.VERIFIED, Status.CLOSED, Status.DEFERRED, Status.DUPLICATE, Status.REJECTED, Status.NOT_A_BUG]
+  // };
 
   constructor(
     private route: ActivatedRoute,
@@ -37,6 +57,9 @@ export class ProjectSummaryComponent implements OnInit {
         this.projectKey = params.get('id');
       }
     );
+
+    Chart.defaults.font.family = "'Bootstrap-icons'";
+    Chart.defaults.font.size = 13;
 
     this.fetchProject();
     this.fetchIssuesOnProject();
@@ -58,9 +81,9 @@ export class ProjectSummaryComponent implements OnInit {
         .subscribe({
           next: data => {
             this.issues = data;
-            this.doneIssues = data.filter(issue => [Status.VERIFIED, Status.CLOSED, Status.DEFERRED, Status.DUPLICATE, Status.REJECTED, Status.NOT_A_BUG].includes(issue.status));    // verify DONE states
-            this.todoIssues = data.filter(issue => [Status.NEW, Status.ASSIGNED, Status.OPEN, Status.REOPENED].includes(issue.status));    // verify TODO states
-            this.inProgressIssues = data.filter(issue => [Status.PENDING_RETEST, Status.RETEST, Status.FIXED].includes(issue.status));    // verify IN PROGRESS states
+            this.doneIssues = data.filter(issue => StatusCategory.DONE.includes(issue.status));    // verify DONE states
+            this.todoIssues = data.filter(issue => StatusCategory.TO_DO.includes(issue.status));    // verify TODO states
+            this.inProgressIssues = data.filter(issue => StatusCategory.IN_PROGRESS.includes(issue.status));    // verify IN PROGRESS states
 
             this.createdIssues = data.filter(issue => {
               let currentTime = new Date().getTime();
@@ -83,7 +106,7 @@ export class ProjectSummaryComponent implements OnInit {
       {
         type: 'doughnut',
         data: {
-          labels: ['Done', 'To do', 'In progress'],
+          labels: [' Done', ' To do', ' In progress'],
           datasets: [
             {
               label: '',
@@ -109,22 +132,30 @@ export class ProjectSummaryComponent implements OnInit {
       {
         type: 'bar',
         data: {
-          labels: ['None', 'Lowest', 'Low', 'Medium', 'High', 'Highest', 'Others'],
+          labels: ['\uF27E Lowest', '\uF282 Low', '\uF63B Medium', '\uF286 High', '\uF281 Highest'],
           datasets: [
             { 
               data: [65, 59, 80, 81, 56, 55, 40],
-              backgroundColor: [
-                '#9FA6B2',
-                '#14A44D',
-                '#3B71CA',
-                '#DC4C64',
-                '#E4A11B',
-                '#54B4D3',
-                '#332D2D'
-              ]
+              backgroundColor: this.colors
             }
           ]
         },
+        options: {
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: (c) => {
+                  return this.colors[c.index % this.colors.length];
+                } 
+              }
+            }
+          }
+        }
       }
     );
   }
