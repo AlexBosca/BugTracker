@@ -6,6 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChartEvent, Chart } from 'chart.js';
 import { IssueModel } from 'src/app/features/feature-issues/models/IssueModel';
 import { Status } from 'src/app/features/feature-issues/models/status.enum';
+import { StatusCategory } from 'src/app/features/feature-issues/models/StatusCategory';
 
 @Component({
   selector: 'app-project-summary',
@@ -39,6 +40,11 @@ export class ProjectSummaryComponent implements OnInit {
     '\uF286 High',
     '\uF281 Highest'
   ];
+  // issueStatusCategories= {
+  //     'ToDo': [Status.NEW, Status.ASSIGNED],
+  //     'InProgress': [Status.OPEN, Status.REOPENED, Status.PENDING_RETEST, Status.RETEST, Status.FIXED],
+  //     'Done': [Status.VERIFIED, Status.CLOSED, Status.DEFERRED, Status.DUPLICATE, Status.REJECTED, Status.NOT_A_BUG]
+  // };
 
   constructor(
     private route: ActivatedRoute,
@@ -75,9 +81,9 @@ export class ProjectSummaryComponent implements OnInit {
         .subscribe({
           next: data => {
             this.issues = data;
-            this.doneIssues = data.filter(issue => [Status.VERIFIED, Status.CLOSED, Status.DEFERRED, Status.DUPLICATE, Status.REJECTED, Status.NOT_A_BUG].includes(issue.status));    // verify DONE states
-            this.todoIssues = data.filter(issue => [Status.NEW, Status.ASSIGNED, Status.OPEN, Status.REOPENED].includes(issue.status));    // verify TODO states
-            this.inProgressIssues = data.filter(issue => [Status.PENDING_RETEST, Status.RETEST, Status.FIXED].includes(issue.status));    // verify IN PROGRESS states
+            this.doneIssues = data.filter(issue => StatusCategory.DONE.includes(issue.status));    // verify DONE states
+            this.todoIssues = data.filter(issue => StatusCategory.TO_DO.includes(issue.status));    // verify TODO states
+            this.inProgressIssues = data.filter(issue => StatusCategory.IN_PROGRESS.includes(issue.status));    // verify IN PROGRESS states
 
             this.createdIssues = data.filter(issue => {
               let currentTime = new Date().getTime();
@@ -100,7 +106,7 @@ export class ProjectSummaryComponent implements OnInit {
       {
         type: 'doughnut',
         data: {
-          labels: ['Done', 'To do', 'In progress'],
+          labels: [' Done', ' To do', ' In progress'],
           datasets: [
             {
               label: '',
