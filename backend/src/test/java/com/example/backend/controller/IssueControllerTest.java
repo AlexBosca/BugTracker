@@ -434,28 +434,28 @@ class IssueControllerTest {
 
         verify(issueService).assignToUser(
             issueIdCaptor.capture(),
-            assigneeIdCaptor.capture(),
-            assignerEmailCaptor.capture()
+            assigneeIdCaptor.capture()
         );
 
         String actualIssueIdAssignToUser = issueIdCaptor.getValue();
         String actualAssigneeId = assigneeIdCaptor.getValue();
-        String actualAssignerEmail = assignerEmailCaptor.getValue();
 
         assertThat(actualIssueIdAssignToUser).isEqualTo(expectedIssueId);
         assertThat(actualAssigneeId).isEqualTo(expectedAssigneeId);
-        assertThat(actualAssignerEmail).isEqualTo(expectedAssignerEmail);
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            assignerEmailCaptor.capture()
         );
 
         String actualIssueIdChangeIssueStatus = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualAssignerEmail = assignerEmailCaptor.getValue();
 
         assertThat(actualIssueIdChangeIssueStatus).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualAssignerEmail).isEqualTo(expectedAssignerEmail);
     }
 
     @Test
@@ -463,9 +463,8 @@ class IssueControllerTest {
     void assignToDeveloper_IssueIdNotFoundExceptionThrownInAssignToUser_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
         String expectedAssigneeId = "FU_00001";
-        String expectedAssignerEmail = "test.user@domain.com";
 
-        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).assignToUser(expectedIssueId, expectedAssigneeId, expectedAssignerEmail);
+        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).assignToUser(expectedIssueId, expectedAssigneeId);
 
         mockMvc.perform(put("/issues/{issueId}/assignToDeveloper/{developerId}", expectedIssueId, expectedAssigneeId))
 			.andExpect(status().isNotFound())
@@ -474,17 +473,14 @@ class IssueControllerTest {
 
         verify(issueService).assignToUser(
             issueIdCaptor.capture(),
-            assigneeIdCaptor.capture(),
-            assignerEmailCaptor.capture()
+            assigneeIdCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         String actualDeveloperId = assigneeIdCaptor.getValue();
-        String actualAssignerEmail = assignerEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualDeveloperId).isEqualTo(expectedAssigneeId);
-        assertThat(actualAssignerEmail).isEqualTo(expectedAssignerEmail);
     }
 
     @Test
@@ -492,9 +488,8 @@ class IssueControllerTest {
     void assignToDeveloper_UserIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
         String expectedAssigneeId = "FU_00001";
-        String expectedAssignerEmail = "test.user@domain.com";
 
-        doThrow(new UserIdNotFoundException(expectedAssigneeId)).when(issueService).assignToUser(expectedIssueId, expectedAssigneeId, expectedAssignerEmail);
+        doThrow(new UserIdNotFoundException(expectedAssigneeId)).when(issueService).assignToUser(expectedIssueId, expectedAssigneeId);
 
         mockMvc.perform(put("/issues/{issueId}/assignToDeveloper/{developerId}", expectedIssueId, expectedAssigneeId))
 			.andExpect(status().isNotFound())
@@ -503,27 +498,24 @@ class IssueControllerTest {
 
         verify(issueService).assignToUser(
             issueIdCaptor.capture(),
-            assigneeIdCaptor.capture(),
-            assignerEmailCaptor.capture()
+            assigneeIdCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         String actualAssigneeId = assigneeIdCaptor.getValue();
-        String actualAssignerEmail = assignerEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualAssigneeId).isEqualTo(expectedAssigneeId);
-        assertThat(actualAssignerEmail).isEqualTo(expectedAssignerEmail);
     }
 
     @Test
-    @DisplayName("Should return NOT FOUND Response and resolve exception when UserEmailNotFoundException was thrown when calling the assignToDeveloper endpoint")
-    void assignToDeveloper_UserEmailNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
+    @DisplayName("Should return NOT FOUND Response and resolve exception when UserEmailNotFoundException was thrown in changeIssueStatus when calling the assignToDeveloper endpoint")
+    void assignToDeveloper_UserEmailNotFoundExceptionThrownInChangeIssueStatus_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
         String expectedAssigneeId = "FU_00001";
         String expectedAssignerEmail = "test.user@domain.com";
 
-        doThrow(new UserEmailNotFoundException(expectedAssignerEmail)).when(issueService).assignToUser(expectedIssueId, expectedAssigneeId, expectedAssignerEmail);
+        doThrow(new UserEmailNotFoundException(expectedAssignerEmail)).when(issueService).changeIssueStatus(expectedIssueId, ASSIGNED, expectedAssignerEmail);
 
         mockMvc.perform(put("/issues/{issueId}/assignToDeveloper/{developerId}", expectedIssueId, expectedAssigneeId))
 			.andExpect(status().isNotFound())
@@ -532,16 +524,27 @@ class IssueControllerTest {
 
         verify(issueService).assignToUser(
             issueIdCaptor.capture(),
-            assigneeIdCaptor.capture(),
+            assigneeIdCaptor.capture()
+        );
+
+        String actualIssueIdAssignToUser = issueIdCaptor.getValue();
+        String actualAssigneeId = assigneeIdCaptor.getValue();
+
+        assertThat(actualIssueIdAssignToUser).isEqualTo(expectedIssueId);
+        assertThat(actualAssigneeId).isEqualTo(expectedAssigneeId);
+
+        verify(issueService).changeIssueStatus(
+            issueIdCaptor.capture(),
+            issueStatusCaptor.capture(),
             assignerEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
-        String actualAssigneeId = assigneeIdCaptor.getValue();
+        IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
         String actualAssignerEmail = assignerEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
-        assertThat(actualAssigneeId).isEqualTo(expectedAssigneeId);
+        assertThat(actualIssueStatus).isEqualTo(ASSIGNED);
         assertThat(actualAssignerEmail).isEqualTo(expectedAssignerEmail);
     }
 
@@ -553,7 +556,7 @@ class IssueControllerTest {
         String expectedAssignerEmail = "test.user@domain.com";
         IssueStatus expectedStatus = ASSIGNED;
 
-        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedAssignerEmail);
 
         mockMvc.perform(put("/issues/{issueId}/assignToDeveloper/{developerId}", expectedIssueId, expectedAssigneeId))
 			.andExpect(status().isNotFound())
@@ -562,29 +565,29 @@ class IssueControllerTest {
 
         verify(issueService).assignToUser(
             issueIdCaptor.capture(),
-            assigneeIdCaptor.capture(),
-            assignerEmailCaptor.capture()
+            assigneeIdCaptor.capture()
         );
 
         String actualIssueIdAssignToUser = issueIdCaptor.getValue();
         String actualAssigneeId = assigneeIdCaptor.getValue();
-        String actualAssignerEmail = assignerEmailCaptor.getValue();
 
         assertThat(actualIssueIdAssignToUser).isEqualTo(expectedIssueId);
         assertThat(actualAssigneeId).isEqualTo(expectedAssigneeId);
-        assertThat(actualAssignerEmail).isEqualTo(expectedAssignerEmail);
         
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            assignerEmailCaptor.capture()
         );
 
         String actualIssueIdChangeIssueStatus = issueIdCaptor.getValue();
         IssueStatus actualIsueStatus = issueStatusCaptor.getValue();
+        String actualAssignerEmail = assignerEmailCaptor.getValue();
 
         assertThat(actualIssueIdChangeIssueStatus).isEqualTo(expectedIssueId);
         assertThat(actualIsueStatus).isEqualTo(expectedStatus);
+        assertThat(actualAssignerEmail).isEqualTo(expectedAssignerEmail);
     }
 
     @Test
@@ -596,7 +599,7 @@ class IssueControllerTest {
         IssueStatus expectedStatus = ASSIGNED;
         IssueStatus currentStatus = OPEN;
 
-        doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+        doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedAssignerEmail);
 
         mockMvc.perform(put("/issues/{issueId}/assignToDeveloper/{developerId}", expectedIssueId, expectedDeveloperId))
 			.andExpect(status().isBadRequest())
@@ -605,35 +608,36 @@ class IssueControllerTest {
 
         verify(issueService).assignToUser(
             issueIdCaptor.capture(),
-            assigneeIdCaptor.capture(),
-            assignerEmailCaptor.capture()
+            assigneeIdCaptor.capture()
         );
 
         String actualIssueIdAssignToUser = issueIdCaptor.getValue();
         String actualDeveloperId = assigneeIdCaptor.getValue();
-        String actualAssignerEmail = assignerEmailCaptor.getValue();
 
         assertThat(actualIssueIdAssignToUser).isEqualTo(expectedIssueId);
         assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
-        assertThat(actualAssignerEmail).isEqualTo(expectedAssignerEmail);
         
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            assignerEmailCaptor.capture()
         );
 
         String actualIssueIdChangeIssueStatus = issueIdCaptor.getValue();
         IssueStatus actualIsueStatus = issueStatusCaptor.getValue();
+        String actualAssignerEmail = assignerEmailCaptor.getValue();
 
         assertThat(actualIssueIdChangeIssueStatus).isEqualTo(expectedIssueId);
         assertThat(actualIsueStatus).isEqualTo(expectedStatus);
+        assertThat(actualAssignerEmail).isEqualTo(expectedAssignerEmail);
     }
 
     @Test
     @DisplayName("Should return OK Response when no exception was thrown when calling the open endpoint")
     void open_NoExceptionThrown_OkResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = OPEN;
 
 		mockMvc.perform(put("/issues/{issueId}/open", expectedIssueId))
@@ -641,23 +645,27 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = "test.user@domain.com";
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the open endpoint")
     void open_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = OPEN;
 
-        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/open", expectedIssueId))
 			.andExpect(status().isNotFound())
@@ -666,24 +674,28 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the open endpoint")
     void open_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = OPEN;
         IssueStatus currentStatus = NEW;
 
-		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/open", expectedIssueId))
 			.andExpect(status().isBadRequest())
@@ -692,20 +704,24 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return OK Response when no exception was thrown when calling the fix endpoint")
     void fix_NoExceptionThrown_OkResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = FIXED;
 
 		mockMvc.perform(put("/issues/{issueId}/fix", expectedIssueId))
@@ -713,23 +729,27 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the fix endpoint")
     void fix_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = FIXED;
 
-        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/fix", expectedIssueId))
 			.andExpect(status().isNotFound())
@@ -738,24 +758,28 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the fix endpoint")
     void fix_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = FIXED;
         IssueStatus currentStatus = ASSIGNED;
 
-		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/fix", expectedIssueId))
 			.andExpect(status().isBadRequest())
@@ -764,20 +788,24 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return OK Response when no exception was thrown when calling the sendToRetest endpoint")
     void sendToRetest_NoExceptionThrown_OkResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = PENDING_RETEST;
 
 		mockMvc.perform(put("/issues/{issueId}/sendToRetest", expectedIssueId))
@@ -785,23 +813,27 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the sendToRetest endpoint")
     void sendToRetest_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = PENDING_RETEST;
 
-        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/sendToRetest", expectedIssueId))
 			.andExpect(status().isNotFound())
@@ -810,24 +842,28 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the sendToRetest endpoint")
     void sendToRetest_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = PENDING_RETEST;
         IssueStatus currentStatus = OPEN;
 
-		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/sendToRetest", expectedIssueId))
 			.andExpect(status().isBadRequest())
@@ -836,20 +872,24 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return OK Response when no exception was thrown when calling the retest endpoint")
     void retest_NoExceptionThrown_OkResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = RETEST;
 
 		mockMvc.perform(put("/issues/{issueId}/retest", expectedIssueId))
@@ -857,23 +897,27 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the retest endpoint")
     void retest_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = RETEST;
 
-        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/retest", expectedIssueId))
 			.andExpect(status().isNotFound())
@@ -882,24 +926,28 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the retest endpoint")
     void retest_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = RETEST;
         IssueStatus currentStatus = FIXED;
 
-		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/retest", expectedIssueId))
 			.andExpect(status().isBadRequest())
@@ -908,20 +956,24 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return OK Response when no exception was thrown when calling the reopen endpoint")
     void reopen_NoExceptionThrown_OkResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = REOPENED;
 
 		mockMvc.perform(put("/issues/{issueId}/reopen", expectedIssueId))
@@ -929,23 +981,27 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the reopen endpoint")
     void reopen_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = REOPENED;
 
-        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/reopen", expectedIssueId))
 			.andExpect(status().isNotFound())
@@ -954,24 +1010,28 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the reopen endpoint")
     void reopen_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = REOPENED;
         IssueStatus currentStatus = RETEST;
 
-		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/reopen", expectedIssueId))
 			.andExpect(status().isBadRequest())
@@ -980,20 +1040,24 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return OK Response when no exception was thrown when calling the verify endpoint")
     void verify_NoExceptionThrown_OkResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = VERIFIED;
 
 		mockMvc.perform(put("/issues/{issueId}/verify", expectedIssueId))
@@ -1001,23 +1065,27 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the verify endpoint")
     void verify_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = VERIFIED;
 
-        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/verify", expectedIssueId))
 			.andExpect(status().isNotFound())
@@ -1026,24 +1094,28 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the verify endpoint")
     void verify_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = VERIFIED;
         IssueStatus currentStatus = PENDING_RETEST;
 
-		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/verify", expectedIssueId))
 			.andExpect(status().isBadRequest())
@@ -1052,167 +1124,177 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return OK Response when no exception was thrown when calling the closeByDeveloper endpoint")
     void close_NoExceptionThrown_OkResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
-        String expectedDeveloperId = "FD_00001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = CLOSED;
 
-		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper/{developerId}", expectedIssueId, expectedDeveloperId))
+		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper", expectedIssueId))
 			.andExpect(status().isOk());
 
         verify(issueService).closeByUser(
             issueIdCaptor.capture(),
-            assigneeIdCaptor.capture()
+            userEmailCaptor.capture()
         );
 
         String actualIssueIdCloseByUser = issueIdCaptor.getValue();
-        String actualDeveloperId = assigneeIdCaptor.getValue();
+        String actualClosingUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueIdCloseByUser).isEqualTo(expectedIssueId);
-        assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
+        assertThat(actualClosingUserEmail).isEqualTo(expectedUserEmail);
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueIdChangeStatus = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueIdChangeStatus).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the closeByDeveloper endpoint")
     void close_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
-        String expectedDeveloperId = "FD_00001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = CLOSED;
         IssueStatus currentStatus = RETEST;
 
-        doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).closeByUser(expectedIssueId, expectedDeveloperId);
+        doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).closeByUser(expectedIssueId, expectedUserEmail);
 
-		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper/{developerId}", expectedIssueId, expectedDeveloperId))
+		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper", expectedIssueId))
 			.andExpect(status().isBadRequest())
             .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueStatusInvalidTransitionException.class))
             .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_STATUS_INVALID_TRANSITION, currentStatus, expectedStatus)));
 
         verify(issueService).closeByUser(
             issueIdCaptor.capture(),
-            assigneeIdCaptor.capture()
+            userEmailCaptor.capture()
         );
 
         String actualIssueIdCloseByUser = issueIdCaptor.getValue();
-        String actualDeveloperId = assigneeIdCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueIdCloseByUser).isEqualTo(expectedIssueId);
-        assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown in changeIssueStatus when calling the closeByDeveloper endpoint")
     void close_IssueIdNotFoundExceptionThrownInChangeIssueStatus_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
-        String expectedDeveloperId = "FD_00001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = CLOSED;
 
-        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
-		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper/{developerId}", expectedIssueId, expectedDeveloperId))
+		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper", expectedIssueId))
 			.andExpect(status().isNotFound())
             .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueNotFoundException.class))
             .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_WITH_ID_NOT_FOUND, expectedIssueId)));
 
         verify(issueService).closeByUser(
             issueIdCaptor.capture(),
-            assigneeIdCaptor.capture()
+            userEmailCaptor.capture()
         );
 
         String actualIssueIdCloseByUser = issueIdCaptor.getValue();
-        String actualDeveloperId = assigneeIdCaptor.getValue();
+        String actualClosingUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueIdCloseByUser).isEqualTo(expectedIssueId);
-        assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
+        assertThat(actualClosingUserEmail).isEqualTo(expectedUserEmail);
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
-        String actualIssueId = issueIdCaptor.getValue();
+        String actualIssueIdChangeStatus = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
-        assertThat(actualIssueId).isEqualTo(expectedIssueId);
+        assertThat(actualIssueIdChangeStatus).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
-    @DisplayName("Should return NOT FOUND Response and resolve exception when UserIdNotFoundException was thrown when calling the closeByDeveloper endpoint")
-    void close_UserIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
+    @DisplayName("Should return NOT FOUND Response and resolve exception when UserEmailNotFoundException was thrown when calling the closeByDeveloper endpoint")
+    void close_UserEmailNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
-        String expectedDeveloperId = "FD_00001";
+        String expectedUserEmail = "test.user@domain.com";
 
-        doThrow(new UserIdNotFoundException(expectedDeveloperId)).when(issueService).closeByUser(expectedIssueId, expectedDeveloperId);
+        doThrow(new UserEmailNotFoundException(expectedUserEmail)).when(issueService).closeByUser(expectedIssueId, expectedUserEmail);
 
-		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper/{developerId}", expectedIssueId, expectedDeveloperId))
+		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper", expectedIssueId))
 			.andExpect(status().isNotFound())
-            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(UserIdNotFoundException.class))
-            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(USER_WITH_ID_NOT_FOUND, expectedDeveloperId)));
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(UserEmailNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(USER_WITH_EMAIL_NOT_FOUND, expectedUserEmail)));
 
         verify(issueService).closeByUser(
             issueIdCaptor.capture(),
-            assigneeIdCaptor.capture()
+            userEmailCaptor.capture()
         );
 
         String actualIssueIdCloseByUser = issueIdCaptor.getValue();
-        String actualDeveloperId = assigneeIdCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueIdCloseByUser).isEqualTo(expectedIssueId);
-        assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown in closeByUser when calling the closeByDeveloper endpoint")
     void close_IssueIdNotFoundExceptionThrownInCloseByUser_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
-        String expectedDeveloperId = "FD_00001";
+        String expectedUserEmail = "test.user@domain.com";
 
-        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).closeByUser(expectedIssueId, expectedDeveloperId);
+        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).closeByUser(expectedIssueId, expectedUserEmail);
 
-		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper/{developerId}", expectedIssueId, expectedDeveloperId))
+		mockMvc.perform(put("/issues/{issueId}/closeByDeveloper", expectedIssueId))
 			.andExpect(status().isNotFound())
             .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(IssueNotFoundException.class))
             .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(ISSUE_WITH_ID_NOT_FOUND, expectedIssueId)));
 
         verify(issueService).closeByUser(
             issueIdCaptor.capture(),
-            assigneeIdCaptor.capture()
+            userEmailCaptor.capture()
         );
 
         String actualIssueIdCloseByUser = issueIdCaptor.getValue();
-        String actualDeveloperId = assigneeIdCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueIdCloseByUser).isEqualTo(expectedIssueId);
-        assertThat(actualDeveloperId).isEqualTo(expectedDeveloperId);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return OK Response when no exception was thrown when calling the duplicate endpoint")
     void duplicate_NoExceptionThrown_OkResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = DUPLICATE;
 
 		mockMvc.perform(put("/issues/{issueId}/duplicate", expectedIssueId))
@@ -1220,23 +1302,27 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the duplicate endpoint")
     void duplicate_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = DUPLICATE;
 
-        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/duplicate", expectedIssueId))
 			.andExpect(status().isNotFound())
@@ -1245,24 +1331,28 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the duplicate endpoint")
     void duplicate_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = DUPLICATE;
         IssueStatus currentStatus = PENDING_RETEST;
 
-		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/duplicate", expectedIssueId))
 			.andExpect(status().isBadRequest())
@@ -1271,20 +1361,24 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return OK Response when no exception was thrown when calling the reject endpoint")
     void reject_NoExceptionThrown_OkResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = REJECTED;
 
 		mockMvc.perform(put("/issues/{issueId}/reject", expectedIssueId))
@@ -1292,23 +1386,27 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the reject endpoint")
     void reject_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = REJECTED;
 
-        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/reject", expectedIssueId))
 			.andExpect(status().isNotFound())
@@ -1317,24 +1415,28 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the reject endpoint")
     void reject_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = REJECTED;
         IssueStatus currentStatus = PENDING_RETEST;
 
-		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/reject", expectedIssueId))
 			.andExpect(status().isBadRequest())
@@ -1343,20 +1445,24 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return OK Response when no exception was thrown when calling the defer endpoint")
     void defer_NoExceptionThrown_OkResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = DEFERRED;
 
 		mockMvc.perform(put("/issues/{issueId}/defer", expectedIssueId))
@@ -1364,23 +1470,27 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the defer endpoint")
     void defer_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = DEFERRED;
 
-        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/defer", expectedIssueId))
 			.andExpect(status().isNotFound())
@@ -1389,24 +1499,28 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the defer endpoint")
     void defer_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = DEFERRED;
         IssueStatus currentStatus = PENDING_RETEST;
 
-		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/defer", expectedIssueId))
 			.andExpect(status().isBadRequest())
@@ -1415,20 +1529,24 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return OK Response when no exception was thrown when calling the notABug endpoint")
     void notABug_NoExceptionThrown_OkResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = NOT_A_BUG;
 
 		mockMvc.perform(put("/issues/{issueId}/notABug", expectedIssueId))
@@ -1436,23 +1554,27 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return NOT FOUND Response and resolve exception when IssueIdNotFoundException was thrown when calling the notABug endpoint")
     void notABug_IssueIdNotFoundExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = NOT_A_BUG;
 
-        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+        doThrow(new IssueNotFoundException(expectedIssueId)).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/notABug", expectedIssueId))
 			.andExpect(status().isNotFound())
@@ -1461,24 +1583,28 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 
     @Test
     @DisplayName("Should return BAD REQUEST Response and resolve exception when IssueStatusInvalidTransitionException was thrown when calling the notABug endpoint")
     void notABug_IssueStatusInvalidTransitionExceptionThrown_ResolveExceptionAndNotFoundResponse() throws Exception {
         String expectedIssueId = "FPC-0001";
+        String expectedUserEmail = "test.user@domain.com";
         IssueStatus expectedStatus = NOT_A_BUG;
         IssueStatus currentStatus = PENDING_RETEST;
 
-		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus);
+		doThrow(new IssueStatusInvalidTransitionException(currentStatus.name(), expectedStatus.name())).when(issueService).changeIssueStatus(expectedIssueId, expectedStatus, expectedUserEmail);
 
 		mockMvc.perform(put("/issues/{issueId}/notABug", expectedIssueId))
 			.andExpect(status().isBadRequest())
@@ -1487,13 +1613,16 @@ class IssueControllerTest {
 
         verify(issueService).changeIssueStatus(
             issueIdCaptor.capture(),
-            issueStatusCaptor.capture()
+            issueStatusCaptor.capture(),
+            userEmailCaptor.capture()
         );
 
         String actualIssueId = issueIdCaptor.getValue();
         IssueStatus actualIssueStatus = issueStatusCaptor.getValue();
+        String actualUserEmail = userEmailCaptor.getValue();
 
         assertThat(actualIssueId).isEqualTo(expectedIssueId);
         assertThat(actualIssueStatus).isEqualTo(expectedStatus);
+        assertThat(actualUserEmail).isEqualTo(expectedUserEmail);
     }
 }
