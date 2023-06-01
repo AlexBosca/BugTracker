@@ -48,7 +48,7 @@
 </div>
 
 <div class="row">
-    <div class="col-8">
+    <div class="col-7">
         <div class="accordion accordion-flush m-5 mb-3 mt-0" id="mainAccordion">
             <div class="accordion-item mb-5 text-small">
                 <h5 class="accordion-header" id="detailsHeading">
@@ -180,7 +180,7 @@
         </button>
     </div>
 
-    <div class="col-4">
+    <div class="col-5">
         <div class="accordion accordion-flush m-5 mb-3 mt-0" id="secondaryAccordion">
             <div class="accordion-item mb-3 text-small">
                 <h5 class="accordion-header" id="peopleHeading">
@@ -191,6 +191,21 @@
     
                 <div id="peopleCollapse" class="accordion-collapse collapse show" aria-labelledby="peopleHeading">
                     <div class="accordion-body p-0 mt-2 mb-4">
+                        <ng-template [ngIf]="issue.modifiedByUser">
+                            <div class="row mb-2">
+                                <!-- Label -->
+                                <div class="col text-secondary">
+                                    Modified by:
+                                </div>
+                                <!-- End -->
+
+                                <!-- Modifier Full Name -->
+                                <div class="col">
+                                    {{issue.modifiedByUser.firstName}} {{issue.modifiedByUser.lastName}}
+                                </div>
+                            </div>
+                        </ng-template>
+                        
                         <div class="row mb-2">
                             <!-- Label -->
                             <div class="col text-secondary">
@@ -274,10 +289,22 @@
                                 Created:
                             </div>
 
-                            <div class="col">   <!-- TODO: Create pipe to display time ago if difference < 24h -->
-                                {{issue.createdOn | date}}
+                            <div class="col">
+                                {{createdOn}}
                             </div>
                         </div>
+
+                        <ng-template [ngIf]="issue.modifiedOn">
+                            <div class="row mb-2">
+                                <div class="col text-secondary">
+                                    Modified:
+                                </div>
+    
+                                <div class="col">
+                                    {{modifiedOn}}
+                                </div>
+                            </div>
+                        </ng-template>
 
                         <ng-template [ngIf]="issue.assignedOn">
                             <div class="row mb-2">
@@ -286,7 +313,7 @@
                                 </div>
                                 
                                 <div class="col">
-                                    {{issue.assignedOn | date}}
+                                    {{assignedOn}}
                                 </div>
                             </div>
                         </ng-template>
@@ -298,7 +325,7 @@
                                 </div>
     
                                 <div class="col">
-                                    {{issue.closedOn | date}}
+                                    {{closedOn}}
                                 </div>
                             </div>
                         </ng-template>
