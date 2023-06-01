@@ -320,32 +320,6 @@ class IssueServiceTest {
         .hasMessage(ISSUE_WITH_ID_NOT_FOUND, "00001");
     }
 
-    // @Test
-    // @DisplayName("Should throw exception when try to assign an existing issue to a not registered user")
-    // void shouldThrowExceptionWhenAssignIssueToNotRegisteredUser() {
-    //     IssueEntity existingIssue = IssueEntity.builder()
-    //         .issueId("00001")
-    //         .title("First Issue Title")
-    //         .description("First Issue Description")
-    //         .build();
-
-    //     UserEntity assigneeUser =  UserEntity.builder()
-    //         .userId("JD_00001")
-    //         .email("john.doe@gmail.com")
-    //         .firstName("John")
-    //         .lastName("Doe")
-    //         .build();
-
-    //     when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.of(existingIssue));
-    //     when(userDao.selectUserByUserId("JD_00001")).thenReturn(Optional.of(assigneeUser));
-    //     when(userDao.selectUserByEmail("martin.luther@gmail.com")).thenReturn(Optional.empty());
-
-    //     assertThatThrownBy(() -> {
-    //         issueService.assignToUser("00001", "JD_00001");
-    //     }).isInstanceOf(UserEmailNotFoundException.class)
-    //     .hasMessage(USER_WITH_EMAIL_NOT_FOUND, "martin.luther@gmail.com");
-    // }
-
     @Test
     @DisplayName("Should throw exception when try to assign an existing issue to a not registered user")
     void shouldThrowExceptionWhenAssignIssueNotRegisteredUser() {
