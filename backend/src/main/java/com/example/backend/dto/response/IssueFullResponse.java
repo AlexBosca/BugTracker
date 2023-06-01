@@ -29,6 +29,8 @@ public class IssueFullResponse {
     private LocalDateTime assignedOn;
     private UserSlimResponse closedByUser;
     private LocalDateTime closedOn;
+    private UserSlimResponse modifiedByUser;
+    private LocalDateTime modifiedOn;
     private UserSlimResponse tester;
     private Collection<IssueCommentFullResponse> discussion;
     private ProjectSlimResponse project;
