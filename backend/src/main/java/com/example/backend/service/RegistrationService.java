@@ -20,7 +20,6 @@ import static com.example.backend.util.Utilities.CONFIRMATION_LINK;
 import static com.example.backend.util.Utilities.formattedString;
 import static com.example.backend.enums.UserRole.getRoleByCode;
 
-//TODO: Add logging wherever it is neccessary
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -59,7 +58,6 @@ public class RegistrationService {
         emailSenderService.send(
                 request.getFullName(),
                 request.getEmail(),
-                // buildEmail(request.getFullName(), formattedString(CONFIRMATION_LINK, token))
                 formattedString(CONFIRMATION_LINK, token));
 
         return token;
