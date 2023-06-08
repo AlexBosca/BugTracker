@@ -1,5 +1,8 @@
 package com.example.backend.service;
 
+import java.util.Optional;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +24,15 @@ public class LoginService {
     
     private final PasswordEncoder passwordEncoder;
 
-    public UserEntity login(String email,  String password) {
-        boolean isUserPresent = userDao.existsUserByEmail(email);
+    public UsernamePasswordAuthenticationToken login(String email,  String password) {
+        Optional<UserEntity> isUserPresent = userDao
+                .selectUserByEmail(email);
 
-        if(!isUserPresent) {
+        if(!isUserPresent.isPresent()) {
             throw new UserEmailNotFoundException(email);
         }
 
-        UserEntity user = userDao.selectUserByEmail(email).get();
+        UserEntity user = isUserPresent.get();
 
         if(!passwordEncoder.matches(password, user.getPassword())) {
             throw new UserCredentialsNotValidException();
@@ -39,6 +43,6 @@ public class LoginService {
             throw new BaseRuntimeException("Email address not confirmed");
         }
 
-        return user;
+        return new UsernamePasswordAuthenticationToken(email, password);
     }
 }

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
@@ -30,7 +31,7 @@ public class AuthenticationService {
         return registrationService.confirmToken(token);
     }
 
-    public UserEntity login(String authorizationHeader) {
+    public UsernamePasswordAuthenticationToken login(String authorizationHeader) {
         Credentials credentials = this.extractCredentials(authorizationHeader);
 
         return loginService.login(credentials.getEmail(), credentials.getPassword());

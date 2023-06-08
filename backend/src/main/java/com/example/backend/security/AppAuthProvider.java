@@ -1,0 +1,45 @@
+package com.example.backend.security;
+
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Component;
+
+import com.example.backend.entity.UserEntity;
+import com.example.backend.exception.BaseRuntimeException;
+import com.example.backend.exception.user.UserCredentialsNotValidException;
+import com.example.backend.service.AppUserDetailsService;
+
+import lombok.RequiredArgsConstructor;
+
+@Component
+@RequiredArgsConstructor
+public class AppAuthProvider implements AuthenticationProvider {
+
+    private final AppUserDetailsService userDetailsService;
+
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        if(authentication == null) {
+            throw new BaseRuntimeException("Authentication failed");
+        }
+
+        String email = String.valueOf(authentication.getName());
+        String password = String.valueOf(authentication.getCredentials());
+
+        UserEntity user = (UserEntity) userDetailsService.loadUserByUsername(email);
+
+        if(user.getPassword().equals(password)) {
+            throw new UserCredentialsNotValidException();
+        }
+
+        return new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities());
+    }
+
+    @Override
+    public boolean supports(Class<?> authenticationType) {
+        return authenticationType.equals(UsernamePasswordAuthenticationToken.class);
+    }
+    
+}
