@@ -2,43 +2,41 @@ package com.example.backend.security;
 
 import lombok.RequiredArgsConstructor;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.example.backend.service.AuthenticationService;
 
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final BasicAuthenticationEntryPoint authenticationEntryPoint;
-    private final AppAuthenticationProvider authenticationProvider;
+    private final AppBasicAuthEntryPoint authenticationEntryPoint;
+    private final AuthenticationService authenticationService;
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authManager) throws Exception {
-            return http.authorizeHttpRequests(auth -> {
-                auth.antMatchers("/authentication/**").permitAll();
-                auth.anyRequest().authenticated();
-            })
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+            return http.authorizeHttpRequests(authorize -> authorize
+                    .antMatchers("/authentication/**").permitAll()
+                    .anyRequest().authenticated())
             .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.disable())
-            .authenticationManager(authManager)
-            .authenticationProvider(authenticationProvider)
-            .httpBasic(httpConf -> httpConf.authenticationEntryPoint(authenticationEntryPoint))
+            .addFilterBefore(appBasicAuthFilter(), BasicAuthenticationFilter.class)
+            .exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint))
+            .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(STATELESS))
             .build();
     }
 
@@ -55,22 +53,7 @@ public class SecurityConfig {
         
         return source;
     }
-
-    @Bean
-    DaoAuthenticationProvider daoAuthenticationProvider(
-        PasswordEncoder passwordEncoder,
-        UserDetailsService userDetailsService
-    ) {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-
-        provider.setPasswordEncoder(passwordEncoder);
-        provider.setUserDetailsService(userDetailsService);
-
-        return provider;
-    }
-
-    @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
+    AppBasicAuthFilter appBasicAuthFilter() {
+        return new AppBasicAuthFilter(authenticationService);
     }
 }
