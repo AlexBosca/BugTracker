@@ -40,7 +40,8 @@ public class AuthenticationController {
     @GetMapping
     public ResponseEntity<UserFullResponse> login(@RequestHeader("Authorization") String authorizationHeader) {
         Authentication authentication = authenticationManager
-                .authenticate(authenticationService.login(authorizationHeader));
+                .authenticate(authenticationService.getAuthenticationToken(authorizationHeader));
+
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
