@@ -31,10 +31,10 @@ export class IssueService {
 
   createIssue(
     issueRequest: IssueRequestModel,
-    projectId: string
+    projectKey: string
     ): Observable<void> {
     return this.http.post<void>(
-      `${this.issuesUrl}/createOnProject/${projectId}`,
+      `${this.issuesUrl}/createOnProject/${projectKey}`,
       issueRequest
     );
   }

@@ -9,6 +9,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -27,6 +28,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     private final TemplateEngine htmlTemplateEngine;
 
     @Override
+    @Transactional
     @Async
     public void send(String recipientName, String recipientEmail, String confirmationLink) {
         log.info("Compose and send the confirmation mail");

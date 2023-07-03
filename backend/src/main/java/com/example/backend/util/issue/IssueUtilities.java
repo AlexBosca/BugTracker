@@ -19,6 +19,7 @@ public final class IssueUtilities {
     public static final String ISSUE_ASSIGN_BY_ID_TO_DEV = "Assign issue with id: {} to developer with id: {}";
     public static final String ISSUE_ASSIGNED_TO_DEV = "Issue assigned to developer";
     public static final String ISSUE_CLOSE_BY_ID_BY_DEV = "Close issue with id: {} by developer with id: {}";
+    public static final String ISSUE_CLOSE_BY_EMAIL_BY_DEV = "Close issue with id: {} by developer with email: {}";
     public static final String ISSUE_CLOSE_BY_DEV = "Issue closed by developer";
     public static final String ISSUE_CHANGE_STATUS_BY_ID = "Change status of issue with id: {} to {}";
     public static final String ISSUE_CHANGED_STATUS = "Issue status changed";

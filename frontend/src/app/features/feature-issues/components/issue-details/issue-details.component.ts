@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { IssueModel } from '../../models/IssueModel';
 import { IssueStatusRequest } from '../../models/IssueStatusRequest';
@@ -42,9 +42,17 @@ export class IssueDetailsComponent implements OnInit {
     ['Reopen', IssueStatusRequest.reopen],
     ['Close', IssueStatusRequest.closeByDeveloper]
   ]);
+  readonly SECONDS_OFFSET = 60;
+  readonly MINUTES_OFFSET = this.SECONDS_OFFSET * 60;
+  readonly HOURS_OFFSET = this.MINUTES_OFFSET * 60;
+  readonly DAYS_OFFSET = this.HOURS_OFFSET * 60;
   private issueId!: string | null;
   issue!: IssueModel;
   error!: HttpErrorResponse;
+  createdOn!: string;
+  modifiedOn!: string | null;
+  assignedOn!: string | null;
+  closedOn!: string | null;
 
   constructor(
     private route: ActivatedRoute,
@@ -66,10 +74,45 @@ export class IssueDetailsComponent implements OnInit {
     if(this.issueId) {
       this.issueService.getIssue(this.issueId)
         .subscribe({
-          next: data => this.issue = data,
+          next: data => {
+            this.issue = data;
+            this.initializeDates(data);
+          },
           error: error => this.error = error
         });
     }
+  }
+
+  initializeDates(issue: IssueModel): void {
+    this.createdOn = this.getElapsedTime(issue.createdOn);
+    this.modifiedOn = issue.modifiedOn ? this.getElapsedTime(issue.modifiedOn) : null;
+    this.assignedOn = issue.assignedOn ? this.getElapsedTime(issue.assignedOn) : null;
+    this.closedOn = issue.closedOn ? this.getElapsedTime(issue.closedOn) : null;
+  }
+
+  getElapsedTime(date: Date): string {
+    let now = new Date(Date.now());
+    let givenDate = new Date(date);
+
+    let timeDifferneceInSeconds = Math.abs(now.getTime() - givenDate.getTime()) / 1000;
+
+    if(timeDifferneceInSeconds < this.SECONDS_OFFSET) {
+      return `${Math.round(timeDifferneceInSeconds)} seconds ago`;
+    }
+
+    if(timeDifferneceInSeconds < this.MINUTES_OFFSET) {
+      return `${Math.round(timeDifferneceInSeconds / this.SECONDS_OFFSET)} minutes ago`;
+    }
+
+    if(timeDifferneceInSeconds < this.HOURS_OFFSET) {
+      return `${Math.round(timeDifferneceInSeconds / this.MINUTES_OFFSET)} hours ago`;
+    }
+
+    if(timeDifferneceInSeconds < this.DAYS_OFFSET) {
+      return `${Math.round(timeDifferneceInSeconds / this.HOURS_OFFSET)} days ago`;
+    }
+
+    return givenDate.toDateString();
   }
 
   changeIssueStatus(action: string): void {

@@ -4,7 +4,7 @@
     <div class="col">
         <nav class="row mx-2" aria-label="breadcrumb">
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="#" class="text-decoration-none project-name">{{issue.project.name}}</a></li>
+              <li class="breadcrumb-item"><a href="#" class="text-decoration-none project-name">{{issue.project.projectKey}}</a></li>
               <li class="breadcrumb-item"><a href="#" class="text-decoration-none issueId">{{issue.issueId}}</a></li>
             </ol>
         </nav>
@@ -48,11 +48,11 @@
 </div>
 
 <div class="row">
-    <div class="col-8">
+    <div class="col-7">
         <div class="accordion accordion-flush m-5 mb-3 mt-0" id="mainAccordion">
             <div class="accordion-item mb-5 text-small">
                 <h5 class="accordion-header" id="detailsHeading">
-                    <button class="accordion-button p-0 bg-white text-small" type="button" data-bs-toggle="collapse" data-bs-target="#detailsCollapse" aria-expanded="true" aria-controls="detailsCollape">
+                    <button class="accordion-button p-0 bg-white text-small" type="button" data-bs-toggle="collapse" data-bs-target="#detailsCollapse" aria-expanded="true" aria-controls="detailsCollapse">
                         Details
                     </button>
                 </h5>
@@ -133,7 +133,7 @@
 
             <div class="accordion-item mb-5 text-small">
                 <h5 class="accordion-header" id="descriptionHeading">
-                    <button class="accordion-button p-0 bg-white text-small" type="button" data-bs-toggle="collapse" data-bs-target="#descriptionCollapse" aria-expanded="true" aria-controls="descriptionCollape">
+                    <button class="accordion-button p-0 bg-white text-small" type="button" data-bs-toggle="collapse" data-bs-target="#descriptionCollapse" aria-expanded="true" aria-controls="descriptionCollapse">
                         Description
                     </button>
                 </h5>
@@ -147,7 +147,7 @@
 
             <div class="accordion-item mb-5 text-small">
                 <h5 class="accordion-header" id="attachmentsHeading">
-                    <button class="accordion-button p-0 bg-white text-small" type="button" data-bs-toggle="collapse" data-bs-target="#attachmentsCollapse" aria-expanded="true" aria-controls="attachmentsCollape">
+                    <button class="accordion-button p-0 bg-white text-small" type="button" data-bs-toggle="collapse" data-bs-target="#attachmentsCollapse" aria-expanded="true" aria-controls="attachmentsCollapse">
                         Attachments
                     </button>
                 </h5>
@@ -180,7 +180,7 @@
         </button>
     </div>
 
-    <div class="col-4">
+    <div class="col-5">
         <div class="accordion accordion-flush m-5 mb-3 mt-0" id="secondaryAccordion">
             <div class="accordion-item mb-3 text-small">
                 <h5 class="accordion-header" id="peopleHeading">
@@ -191,6 +191,21 @@
     
                 <div id="peopleCollapse" class="accordion-collapse collapse show" aria-labelledby="peopleHeading">
                     <div class="accordion-body p-0 mt-2 mb-4">
+                        <ng-template [ngIf]="issue.modifiedByUser">
+                            <div class="row mb-2">
+                                <!-- Label -->
+                                <div class="col text-secondary">
+                                    Modified by:
+                                </div>
+                                <!-- End -->
+
+                                <!-- Modifier Full Name -->
+                                <div class="col">
+                                    {{issue.modifiedByUser.firstName}} {{issue.modifiedByUser.lastName}}
+                                </div>
+                            </div>
+                        </ng-template>
+                        
                         <div class="row mb-2">
                             <!-- Label -->
                             <div class="col text-secondary">
@@ -274,10 +289,22 @@
                                 Created:
                             </div>
 
-                            <div class="col">   <!-- TODO: Create pipe to display time ago if difference < 24h -->
-                                {{issue.createdOn | date}}
+                            <div class="col">
+                                {{createdOn}}
                             </div>
                         </div>
+
+                        <ng-template [ngIf]="issue.modifiedOn">
+                            <div class="row mb-2">
+                                <div class="col text-secondary">
+                                    Modified:
+                                </div>
+    
+                                <div class="col">
+                                    {{modifiedOn}}
+                                </div>
+                            </div>
+                        </ng-template>
 
                         <ng-template [ngIf]="issue.assignedOn">
                             <div class="row mb-2">
@@ -286,7 +313,7 @@
                                 </div>
                                 
                                 <div class="col">
-                                    {{issue.assignedOn | date}}
+                                    {{assignedOn}}
                                 </div>
                             </div>
                         </ng-template>
@@ -298,7 +325,7 @@
                                 </div>
     
                                 <div class="col">
-                                    {{issue.closedOn | date}}
+                                    {{closedOn}}
                                 </div>
                             </div>
                         </ng-template>

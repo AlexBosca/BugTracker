@@ -1,0 +1,31 @@
+:not(h3, h4, h5, h6, strong, span.issuesDone, span.issuesUpdated, i, span.badge) {
+    font-size: small;
+}
+
+/* span.badge {
+    font-size: smaller;
+} */
+
+.accordion-item {
+    border: none;
+}
+
+.accordion-button {
+    box-shadow: none;
+}
+
+.issuesDone {
+    font-size: 50px;
+}
+
+.issuesUpdated {
+    font-size: 50px;
+}
+
+.issuesCreated {
+    font-size: 50px;
+}
+
+.issuesDue {
+    font-size: 50px;
+}

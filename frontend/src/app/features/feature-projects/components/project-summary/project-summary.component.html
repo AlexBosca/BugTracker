@@ -1,0 +1,177 @@
+<div class="row">
+    <div class="col-11">
+        <div class="accordion accordion-flush mb-3 mt-3" id="mainAccordion">
+            <div class="accordion-item mb-5 text-small">
+                <h5 class="accordion-header" id="detailsHeading">
+                    <button class="accordion-button p-0 bg-white text-small" type="button" data-bs-toggle="collapse" data-bs-target="#detailsCollapse" aria-expanded="true" aria-controls="detailsCollapse">
+                        Details
+                    </button>
+                </h5>
+
+                <div id="detailsCollapse" class="accordion-collapse collapse show" aria-labelledby="detailsHeading">
+                    <div class="accordion-body p-0 mt-2 mb-4">
+                        <div class="row mb-2">
+                            <div class="col text-secondary">
+                                Type:
+                            </div>
+
+                            <div class="col">
+                                Project Type
+                            </div>
+
+                            <div class="col text-secondary">
+                                Status: 
+                            </div>
+
+                            <div class="col">
+                                Project Type
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item mb-5 text-small">
+                <h5 class="accordion-header" id="descriptionHeading">
+                    <button class="accordion-button p-0 bg-white text-small" type="button" data-bs-toggle="collapse" data-bs-target="#descriptionCollapse" aria-expanded="true" aria-controls="descriptionCollapse">
+                        Description
+                    </button>
+                </h5>
+
+                <div id="descriptionCollapse" class="accordion-collapse collapse show" aria-labelledby="descriptionHeading">
+                    <div class="accordion-body p-0 mt-2 mb-4">
+                        {{project.description}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item mb-5">
+                <h5 class="accordion-header" id="statisticsHeading">
+                    <button class="accordion-button p-0 bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#statisticsCollapse" aria-expanded="true" aria-controls="statisticsCollapse">
+                        Statistics
+                    </button>
+                </h5>
+
+                <div id="statisticsCollapse" class="accordion-collapse collapse show" aria-labelledby="statisticsHeading">
+                    <div class="accordion-body p-0 mt-2 mb-4 rounded">
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2 mt-4">
+                            <div class="col">
+                                <div class="card">
+                                    <div class="row">
+                                        <div class="col-3 mx-2 text-center">
+                                            <i class="bi bi-check-lg text-success bg-success bg-opacity-25 rounded-circle issuesDone"></i>
+                                        </div>
+                                        <div class="col p-0">
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{doneIssues.length}} done</h6>
+                                                <p class="card-subtitle text-muted">in the last 7 days</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="card">
+                                    <div class="row">
+                                        <div class="col-3 mx-2 text-center">
+                                            <i class="bi bi-pencil text-primary bg-primary bg-opacity-25 rounded-circle issuesUpdated"></i>
+                                        </div>
+                                        <div class="col p-0">
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{updatedIssues.length}} updated</h6>
+                                                <p class="card-subtitle text-muted">in the last 7 days</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="card">
+                                    <div class="row">
+                                        <div class="col-3 mx-2 text-center">
+                                            <i class="bi bi-plus text-warning bg-warning bg-opacity-25 rounded-circle issuesCreated"></i>
+                                        </div>
+                                        <div class="col p-0">
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{createdIssues}} created</h6>
+                                                <p class="card-subtitle text-muted">in the last 7 days</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="card">
+                                    <div class="row">
+                                        <div class="col-3 mx-2 text-center">
+                                            <i class="bi bi-calendar2-week text-danger bg-danger bg-opacity-25 rounded-circle issuesDue"></i>
+                                        </div>
+                                        <div class="col p-0">
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{dueIssues.length}} due</h6>
+                                                <p class="card-subtitle text-muted">in the next 7 days</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row row-cols-1 row-cols-xl-2 g-2 mt-4">
+                            <div class="col">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title d-flex justify-content-between">
+                                            <strong>Status overview</strong>
+                                            <p class="text-secondary">Last 7 days</p>
+                                        </h5>
+                                        <p class="card-text">View your project's overall progress based on the statuses in your workflow. To see your team's progress in more detail,
+                                            <a routerLink="../board" href="#" class="link-primary" style="text-decoration: none;">go to the board view</a>.
+                                        </p>
+                                        <div class="container">
+                                            <canvas id="issuesStatusOverviewChart">{{issuesStatusOverviewChart}}</canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title d-flex justify-content-between">
+                                            <strong>Priority breakdown</strong>
+                                            <p class="text-secondary">Last 7 days</p>
+                                        </h5>
+                                        <p class="card-text">
+                                            View the priority of items within your project.
+                                            It's helpful to priortitize work so you can ensure that your team is focusing on the most important work first.
+                                            To prioritize your work,
+                                            <a routerLink="../list" href="#" class="link-primary" style="text-decoration: none;">go to the list view</a>.
+                                        </p>
+                                        <div class="container">
+                                            <canvas id="issuesPriorityBreakdownChart">{{issuesPriorityBreakdownChart}}</canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <strong>Team workload</strong>
+                                        </h5>
+                                        <p class="card-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde similique earum aperiam nostrum minima neque, quaerat quo! Doloribus, amet distinctio porro deserunt quam magni molestias laboriosam optio veritatis pariatur? Ipsam?</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

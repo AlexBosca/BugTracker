@@ -5,7 +5,13 @@ import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Builder.Default;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -23,32 +29,36 @@ import static javax.persistence.FetchType.EAGER;
 @Table(name = "users")
 public class UserEntity extends BaseEntity implements UserDetails {
 
-    @Column(name = "user_id", columnDefinition = "varchar(255)")
+    @Column(name = "user_id")
     private String userId;
 
-    @Column(name = "first_name", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "email", columnDefinition = "varchar(255)", nullable = false, updatable = false, unique = true)
+    @Column(name = "email", nullable = false, updatable = false, unique = true)
     private String email;
 
-    @Column(name = "password", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "expired", columnDefinition = "boolean default false")
-    private Boolean isAccountExpired;
+    @Column(name = "expired")
+    @Default
+    private Boolean isAccountExpired = true;
 
-    @Column(name = "locked", columnDefinition = "boolean default false")
-    private Boolean isAccountLocked;
+    @Column(name = "locked")
+    @Default
+    private Boolean isAccountLocked = true;
 
-    @Column(name = "credential_expired", columnDefinition = "boolean default false")
-    private Boolean isCredentialsExpired;
+    @Column(name = "credential_expired")
+    @Default
+    private Boolean isCredentialsExpired = true;
 
-    @Column(name = "enabled", columnDefinition = "boolean default false")
-    private Boolean isEnabled;
+    @Column(name = "enabled")
+    @Default
+    private Boolean isEnabled = false;
 
     @JoinTable(
             name = "user_role",

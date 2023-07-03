@@ -3,9 +3,9 @@ package com.example.backend.exception;
 import com.example.backend.exception.issue.IssueStatusInvalidTransitionException;
 import com.example.backend.exception.registration.*;
 import com.example.backend.exception.issue.IssueAlreadyCreatedException;
-import com.example.backend.exception.issue.IssueIdNotFoundException;
+import com.example.backend.exception.issue.IssueNotFoundException;
 import com.example.backend.exception.project.ProjectAlreadyCreatedException;
-import com.example.backend.exception.project.ProjectIdNotFoundException;
+import com.example.backend.exception.project.ProjectNotFoundException;
 import com.example.backend.exception.team.TeamAlreadyCreatedException;
 import com.example.backend.exception.team.TeamIdNotFoundException;
 import com.example.backend.exception.token.TokenExpiredException;
@@ -40,6 +40,11 @@ public class EntityExceptionHandler {
         return buildErrorResponse(exception, BAD_REQUEST);
     }
 
+    @ExceptionHandler(EmailNotConfirmedException.class)
+    public ResponseEntity<ErrorResponse> handleEmailNotConfirmedException(Exception exception) {
+        return buildErrorResponse(exception, BAD_REQUEST);
+    }
+
     @ExceptionHandler(UserCredentialsNotValidException.class)
     public ResponseEntity<ErrorResponse> handleCredentialsNotValidException(Exception exception) {
         return buildErrorResponse(exception, BAD_REQUEST);
@@ -55,7 +60,7 @@ public class EntityExceptionHandler {
         return buildErrorResponse(exception, BAD_REQUEST);
     }
 
-    @ExceptionHandler(IssueIdNotFoundException.class)
+    @ExceptionHandler(IssueNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleIssueIdNotFoundException(Exception exception) {
         return buildErrorResponse(exception, NOT_FOUND);
     }
@@ -70,8 +75,8 @@ public class EntityExceptionHandler {
         return buildErrorResponse(exception, BAD_REQUEST);
     }
 
-    @ExceptionHandler(ProjectIdNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleProjectIdNotFoundException(Exception exception) {
+    @ExceptionHandler(ProjectNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProjectNotFoundException(Exception exception) {
         return buildErrorResponse(exception, NOT_FOUND);
     }
 
