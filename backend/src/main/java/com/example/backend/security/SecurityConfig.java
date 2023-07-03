@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -33,7 +34,7 @@ public class SecurityConfig {
                     .antMatchers("/authentication/**").permitAll()
                     .anyRequest().authenticated())
             .cors(Customizer.withDefaults())
-            .csrf(csrf -> csrf.disable())
+            .csrf(AbstractHttpConfigurer::disable)
             .addFilterBefore(appBasicAuthFilter(), BasicAuthenticationFilter.class)
             .exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint))
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(STATELESS))
