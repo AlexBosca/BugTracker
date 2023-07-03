@@ -7,9 +7,9 @@ import static com.example.backend.util.ExceptionUtilities.PROJECT_WITH_ID_NOT_FO
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ResponseStatus(value = NOT_FOUND)
-public class ProjectIdNotFoundException extends BaseRuntimeException {
+public class ProjectNotFoundException extends BaseRuntimeException {
 
-    public ProjectIdNotFoundException(String id) {
+    public ProjectNotFoundException(String id) {
         super(PROJECT_WITH_ID_NOT_FOUND, id);
     }
 }

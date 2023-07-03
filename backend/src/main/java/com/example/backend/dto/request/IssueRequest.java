@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class IssueRequest {
 
-    private String issueId;
     private String title;
     private String description;
     private String reproducingSteps;

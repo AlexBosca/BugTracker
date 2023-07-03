@@ -30,8 +30,8 @@ import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.enums.IssueStatus;
 import com.example.backend.exception.issue.IssueAlreadyCreatedException;
-import com.example.backend.exception.issue.IssueIdNotFoundException;
-import com.example.backend.exception.project.ProjectIdNotFoundException;
+import com.example.backend.exception.issue.IssueNotFoundException;
+import com.example.backend.exception.project.ProjectNotFoundException;
 import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 
@@ -145,13 +145,13 @@ class IssueServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw an exception when try to return an isssue by issueId that doesn't exist")
+    @DisplayName("Should throw an exception when try to return an issue by issueId that doesn't exist")
     void shouldThrowExceptionIfIssueToReturnByIssueIdDoesNotExists() {
         when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
             issueService.getIssueByIssueId("00001");
-        }).isInstanceOf(IssueIdNotFoundException.class)
+        }).isInstanceOf(IssueNotFoundException.class)
         .hasMessage(String.format(ISSUE_WITH_ID_NOT_FOUND, "00001"));
     }
 
@@ -165,7 +165,7 @@ class IssueServiceTest {
             .build();
 
         ProjectEntity existingProject = ProjectEntity.builder()
-            .projectId("FP_00001")
+            .projectKey("FP_00001")
             .name("First Project")
             .description("First project description")
             .build();
@@ -179,7 +179,7 @@ class IssueServiceTest {
         when(clock.getZone()).thenReturn(NOW.getZone());
         when(clock.instant()).thenReturn(NOW.toInstant());
         
-        when(projectDao.selectProjectById("FP_00001")).thenReturn(Optional.of(existingProject));
+        when(projectDao.selectProjectByKey("FP_00001")).thenReturn(Optional.of(existingProject));
         when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.of(registeredUser));
 
         issueService.saveIssue(issueToSave, "FP_00001", "john.doe@gmail.com");
@@ -194,7 +194,7 @@ class IssueServiceTest {
         assertThat(capturedIssue.getCreatedByUser().getEmail()).isEqualTo(registeredUser.getEmail());
         assertThat(capturedIssue.getCreatedByUser().getFirstName()).isEqualTo(registeredUser.getFirstName());
         assertThat(capturedIssue.getCreatedByUser().getLastName()).isEqualTo(registeredUser.getLastName());
-        assertThat(capturedIssue.getProject().getProjectId()).isEqualTo(existingProject.getProjectId());
+        assertThat(capturedIssue.getProject().getProjectKey()).isEqualTo(existingProject.getProjectKey());
         assertThat(capturedIssue.getProject().getName()).isEqualTo(existingProject.getName());
         assertThat(capturedIssue.getProject().getDescription()).isEqualTo(existingProject.getDescription());
     }
@@ -209,7 +209,7 @@ class IssueServiceTest {
             .build();
 
         ProjectEntity existingProject = ProjectEntity.builder()
-            .projectId("FP_00001")
+            .projectKey("FP_00001")
             .name("First Project")
             .description("First project description")
             .build();
@@ -220,7 +220,7 @@ class IssueServiceTest {
             .lastName("Doe")
             .build();
 
-        when(projectDao.selectProjectById("FP_00001")).thenReturn(Optional.of(existingProject));
+        when(projectDao.selectProjectByKey("FP_00001")).thenReturn(Optional.of(existingProject));
         when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.of(registeredUser));
         when(issueDao.existsIssueWithIssueId("00001")).thenReturn(true);
 
@@ -239,11 +239,11 @@ class IssueServiceTest {
             .description("First Issue Description")
             .build();
 
-        when(projectDao.selectProjectById("FP_00001")).thenReturn(Optional.empty());
+        when(projectDao.selectProjectByKey("FP_00001")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
             issueService.saveIssue(existingIssue, "FP_00001", "john.doe@gmail.com");
-        }).isInstanceOf(ProjectIdNotFoundException.class)
+        }).isInstanceOf(ProjectNotFoundException.class)
         .hasMessage(String.format(PROJECT_WITH_ID_NOT_FOUND, "FP_00001"));
     }
 
@@ -257,12 +257,12 @@ class IssueServiceTest {
             .build();
 
         ProjectEntity existingProject = ProjectEntity.builder()
-            .projectId("FP_00001")
+            .projectKey("FP_00001")
             .name("First Project")
             .description("First project description")
             .build();
 
-            when(projectDao.selectProjectById("FP_00001")).thenReturn(Optional.of(existingProject));
+            when(projectDao.selectProjectByKey("FP_00001")).thenReturn(Optional.of(existingProject));
             when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> {
@@ -280,7 +280,7 @@ class IssueServiceTest {
             .description("First Issue Description")
             .build();
 
-        UserEntity registeredUser =  UserEntity.builder()
+        UserEntity assigneeUser =  UserEntity.builder()
             .userId("JD_00001")
             .email("john.doe@gmail.com")
             .firstName("John")
@@ -291,7 +291,7 @@ class IssueServiceTest {
         when(clock.instant()).thenReturn(NOW.toInstant());
 
         when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.of(existingIssue));
-        when(userDao.selectUserByUserId("JD_00001")).thenReturn(Optional.of(registeredUser));
+        when(userDao.selectUserByUserId("JD_00001")).thenReturn(Optional.of(assigneeUser));
 
         issueService.assignToUser("00001", "JD_00001");
 
@@ -303,10 +303,10 @@ class IssueServiceTest {
         assertThat(capturedIssue.getTitle()).isEqualTo(existingIssue.getTitle());
         assertThat(capturedIssue.getDescription()).isEqualTo(existingIssue.getDescription());
         assertThat(capturedIssue.getAssignedOn()).isEqualTo(now(clock));
-        assertThat(capturedIssue.getAssignedUser().getUserId()).isEqualTo(registeredUser.getUserId());
-        assertThat(capturedIssue.getAssignedUser().getFirstName()).isEqualTo(registeredUser.getFirstName());
-        assertThat(capturedIssue.getAssignedUser().getLastName()).isEqualTo(registeredUser.getLastName());
-        assertThat(capturedIssue.getAssignedUser().getEmail()).isEqualTo(registeredUser.getEmail());
+        assertThat(capturedIssue.getAssignedUser().getUserId()).isEqualTo(assigneeUser.getUserId());
+        assertThat(capturedIssue.getAssignedUser().getFirstName()).isEqualTo(assigneeUser.getFirstName());
+        assertThat(capturedIssue.getAssignedUser().getLastName()).isEqualTo(assigneeUser.getLastName());
+        assertThat(capturedIssue.getAssignedUser().getEmail()).isEqualTo(assigneeUser.getEmail());
     }
 
     @Test
@@ -316,13 +316,13 @@ class IssueServiceTest {
 
         assertThatThrownBy(() -> {
             issueService.assignToUser("00001", "JD_00001");
-        }).isInstanceOf(IssueIdNotFoundException.class)
+        }).isInstanceOf(IssueNotFoundException.class)
         .hasMessage(ISSUE_WITH_ID_NOT_FOUND, "00001");
     }
 
     @Test
     @DisplayName("Should throw exception when try to assign an existing issue to a not registered user")
-    void shouldThrowExceptionWhenAssignIssueToNotRegisteredUser() {
+    void shouldThrowExceptionWhenAssignIssueNotRegisteredUser() {
         IssueEntity existingIssue = IssueEntity.builder()
             .issueId("00001")
             .title("First Issue Title")
@@ -358,9 +358,9 @@ class IssueServiceTest {
         when(clock.instant()).thenReturn(NOW.toInstant());
 
         when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.of(existingIssue));
-        when(userDao.selectUserByUserId("JD_00001")).thenReturn(Optional.of(registeredUser));
+        when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.of(registeredUser));
 
-        issueService.closeByUser("00001", "JD_00001");
+        issueService.closeByUser("00001", "john.doe@gmail.com");
 
         verify(issueDao, times(1)).updateIssue(issueArgumentCaptor.capture());
 
@@ -382,8 +382,8 @@ class IssueServiceTest {
         when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
-            issueService.closeByUser("00001", "JD_00001");
-        }).isInstanceOf(IssueIdNotFoundException.class)
+            issueService.closeByUser("00001", "john.doe@gmail.com");
+        }).isInstanceOf(IssueNotFoundException.class)
         .hasMessage(ISSUE_WITH_ID_NOT_FOUND, "00001");
     }
 
@@ -397,12 +397,12 @@ class IssueServiceTest {
             .build();
 
         when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.of(existingIssue));
-        when(userDao.selectUserByUserId("JD_00001")).thenReturn(Optional.empty());
+        when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
-            issueService.closeByUser("00001", "JD_00001");
-        }).isInstanceOf(UserIdNotFoundException.class)
-        .hasMessage(USER_WITH_ID_NOT_FOUND, "JD_00001");
+            issueService.closeByUser("00001", "john.doe@gmail.com");
+        }).isInstanceOf(UserEmailNotFoundException.class)
+        .hasMessage(USER_WITH_EMAIL_NOT_FOUND, "john.doe@gmail.com");
     }
 
     @Test
@@ -415,10 +415,20 @@ class IssueServiceTest {
             .status(IssueStatus.NEW)
             .build();
 
-        when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.of(existingIssue));
-        
+        UserEntity registeredUser =  UserEntity.builder()
+            .userId("JD_00001")
+            .email("john.doe@gmail.com")
+            .firstName("John")
+            .lastName("Doe")
+            .build();
 
-        issueService.changeIssueStatus("00001", IssueStatus.ASSIGNED);
+        when(clock.getZone()).thenReturn(NOW.getZone());
+        when(clock.instant()).thenReturn(NOW.toInstant());
+
+        when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.of(existingIssue));
+        when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.of(registeredUser));
+
+        issueService.changeIssueStatus("00001", IssueStatus.ASSIGNED, "john.doe@gmail.com");
 
         verify(issueDao, times(1)).updateIssue(issueArgumentCaptor.capture());
 
@@ -428,6 +438,11 @@ class IssueServiceTest {
         assertThat(capturedIssue.getTitle()).isEqualTo(existingIssue.getTitle());
         assertThat(capturedIssue.getDescription()).isEqualTo(existingIssue.getDescription());
         assertThat(capturedIssue.getStatus()).isEqualTo(IssueStatus.ASSIGNED);
+        assertThat(capturedIssue.getModifiedOn()).isEqualTo(now(clock));
+        assertThat(capturedIssue.getModifiedByUser().getUserId()).isEqualTo(registeredUser.getUserId());
+        assertThat(capturedIssue.getModifiedByUser().getFirstName()).isEqualTo(registeredUser.getFirstName());
+        assertThat(capturedIssue.getModifiedByUser().getLastName()).isEqualTo(registeredUser.getLastName());
+        assertThat(capturedIssue.getModifiedByUser().getEmail()).isEqualTo(registeredUser.getEmail());
     }
 
     @Test
@@ -436,8 +451,26 @@ class IssueServiceTest {
         when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
-            issueService.changeIssueStatus("00001", IssueStatus.ASSIGNED);
-        }).isInstanceOf(IssueIdNotFoundException.class)
+            issueService.changeIssueStatus("00001", IssueStatus.ASSIGNED, "john.doe@gmail.com");
+        }).isInstanceOf(IssueNotFoundException.class)
         .hasMessage(ISSUE_WITH_ID_NOT_FOUND, "00001");
+    }
+
+    @Test
+    @DisplayName("Should throw exception when try to change state of an existing issue by a not registered user")
+    void shouldThrowExceptionWhenChangeStateOfIssueByNotRegisteredUser() {
+        IssueEntity existingIssue = IssueEntity.builder()
+            .issueId("00001")
+            .title("First Issue Title")
+            .description("First Issue Description")
+            .build();
+
+        when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.of(existingIssue));
+        when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> {
+            issueService.changeIssueStatus("00001", IssueStatus.ASSIGNED, "john.doe@gmail.com");
+        }).isInstanceOf(UserEmailNotFoundException.class)
+        .hasMessage(USER_WITH_EMAIL_NOT_FOUND, "john.doe@gmail.com");
     }
 }

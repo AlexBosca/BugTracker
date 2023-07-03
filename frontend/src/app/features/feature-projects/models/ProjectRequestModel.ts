@@ -1,5 +1,5 @@
 export interface ProjectRequestModel {
-    projectId: string;
+    projectKey: string;
     name: string;
     description: string;
 }

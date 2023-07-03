@@ -22,7 +22,7 @@ export class ProjectFilterComponent implements OnInit {
 
   ngOnInit(): void {
     this.projectCreationForm = this.formBuilder.group({
-      projectId: ['', Validators.required],
+      projectKey: ['', Validators.required],
       name: ['', Validators.required],
       description: ['', Validators.required]
     });
@@ -42,7 +42,7 @@ export class ProjectFilterComponent implements OnInit {
     this.loading = true;
 
     this.projectService.createProject({
-      projectId: this.form['projectId'].value,
+      projectKey: this.form['projectKey'].value,
       name: this.form['name'].value,
       description: this.form['description'].value
     }).subscribe({
