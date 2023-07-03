@@ -238,7 +238,7 @@ class ProjectServiceTest {
 
     @Test
     @DisplayName("Should return a not empty list when there are issues created on given project")
-    public void shouldGetAllIssuesOnProjectWhenThereAreIssuesOnGivenProject() {
+    void shouldGetAllIssuesOnProjectWhenThereAreIssuesOnGivenProject() {
         IssueEntity firstExpectedIssue = IssueEntity.builder()
             .issueId("FPC-0001")
             .title("First Issue Title")
