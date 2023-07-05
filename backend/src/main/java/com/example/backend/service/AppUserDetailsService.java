@@ -19,7 +19,8 @@ import org.springframework.stereotype.Service;
 import static java.time.LocalDateTime.now;
 
 import java.time.Clock;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.example.backend.util.ExceptionUtilities.*;
@@ -51,31 +52,39 @@ public class AppUserDetailsService implements UserDetailsService {
     public String signUpUser(UserEntity user) {
         log.info("Searching for user with email: {}", user.getEmail());
 
-        boolean userExists = userDao
-                .existsUserByEmail(user.getEmail());
-        
-        if (userExists) {
+        Optional<UserEntity> presentUserOptional = userDao
+                .selectUserByEmail(user.getEmail());
+
+        if(presentUserOptional.isPresent()) {
             log.info("User with email: {}, successfully found", user.getEmail());
-            UserEntity presentUser = userDao.selectUserByEmail(user.getEmail()).get();
+            UserEntity presentUser = presentUserOptional.get();
 
             if (!presentUser.getFirstName().equals(user.getFirstName()) ||
-                !presentUser.getLastName().equals(user.getLastName()) ||
-                    !Objects.equals(presentUser.getUserId(), user.getUserId())) {
+                !presentUser.getLastName().equals(user.getLastName())) {
 
                 throw new EmailTakenException();
             }
 
-            boolean userConfirmationTokenExists = confirmationTokenService
-                    .getTokenByUserId(user.getUserId())
-                    .isPresent();
+            Optional<ConfirmationTokenEntity> confirmationTokenOptional = confirmationTokenService
+                    .getTokenByUserId(presentUser.getUserId());
 
-            if(userConfirmationTokenExists) {
-                ConfirmationTokenEntity userConfirmationToken = confirmationTokenService
-                        .getTokenByUserId(user.getUserId())
-                        .get();
+            if(confirmationTokenOptional.isPresent()) {
+                ConfirmationTokenEntity userConfirmationToken = confirmationTokenOptional.get();
 
                 if(userConfirmationToken.getConfirmedAt() != null) {
                     throw new EmailAlreadyConfirmedException();
+                }
+
+                LocalDateTime expiresAt = userConfirmationToken.getExpiresAt();
+
+                if(expiresAt.isBefore(now(clock))) {
+                    userConfirmationToken
+                            .setExpiresAt(now(clock).plusMinutes(5));
+
+                    // TODO: Create specific function to update the expiration date
+                    confirmationTokenService.saveConfirmationToken(userConfirmationToken);
+
+                    return userConfirmationToken.getToken();
                 }
 
                 return userConfirmationToken.getToken();

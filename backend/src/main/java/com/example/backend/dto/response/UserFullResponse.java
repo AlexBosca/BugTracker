@@ -17,6 +17,7 @@ public class UserFullResponse {
     private String firstName;
     private String lastName;
     private String email;
+    private String role;
     private Collection<TeamSlimResponse> teams;
     private Collection<IssueSlimResponse> issuesCreated;
     private Collection<IssueSlimResponse> issuesAssigned;
