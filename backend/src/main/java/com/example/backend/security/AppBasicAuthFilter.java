@@ -37,6 +37,6 @@ public class AppBasicAuthFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();                       // To delete
-        return path.startsWith("/api/v1/bug-tracker/authentication/");
+        return path.startsWith("/api/v1/bug-tracker/authentication");
     }
 }
