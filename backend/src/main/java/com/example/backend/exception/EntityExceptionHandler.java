@@ -40,6 +40,11 @@ public class EntityExceptionHandler {
         return buildErrorResponse(exception, BAD_REQUEST);
     }
 
+    @ExceptionHandler(EmailNotConfirmedException.class)
+    public ResponseEntity<ErrorResponse> handleEmailNotConfirmedException(Exception exception) {
+        return buildErrorResponse(exception, BAD_REQUEST);
+    }
+
     @ExceptionHandler(UserCredentialsNotValidException.class)
     public ResponseEntity<ErrorResponse> handleCredentialsNotValidException(Exception exception) {
         return buildErrorResponse(exception, BAD_REQUEST);

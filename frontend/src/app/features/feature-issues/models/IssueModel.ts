@@ -17,6 +17,8 @@ export interface IssueModel {
     createdOn: Date;
     assignedUser: UserSlimModel | null;
     assignedOn: Date | null;
+    modifiedByUser: UserSlimModel | null;
+    modifiedOn: Date | null;
     closedByUser: UserSlimModel | null;
     closedOn: Date | null;
     tester: UserSlimModel | null;

@@ -92,18 +92,18 @@ public class IssueService {
         log.info(ISSUE_CREATED);
     }
 
-    public void assignToUser(String issueId, String developerId) {
-        log.info(ISSUE_ASSIGN_BY_ID_TO_DEV, issueId, developerId);
+    public void assignToUser(String issueId, String assigneeId) {
+        log.info(ISSUE_ASSIGN_BY_ID_TO_DEV, issueId, assigneeId);
 
         IssueEntity issue = issueDao
             .selectIssueByIssueId(issueId)
             .orElseThrow(() -> new IssueNotFoundException(issueId));
 
-        UserEntity developer = userDao
-            .selectUserByUserId(developerId)
-            .orElseThrow(() -> new UserIdNotFoundException(developerId));
+        UserEntity assignee = userDao
+            .selectUserByUserId(assigneeId)
+            .orElseThrow(() -> new UserIdNotFoundException(assigneeId));
 
-        issue.setAssignedUser(developer);
+        issue.setAssignedUser(assignee);
         issue.setAssignedOn(now(clock));
 
         // TODO: com/example/backend/dao/ProjectRepository.java:14
@@ -112,16 +112,16 @@ public class IssueService {
         log.info(ISSUE_ASSIGNED_TO_DEV);
     }
 
-    public void closeByUser(String issueId, String developerId) {
-        log.info(ISSUE_CLOSE_BY_ID_BY_DEV, issueId, developerId);
+    public void closeByUser(String issueId, String developerEmail) {
+        log.info(ISSUE_CLOSE_BY_EMAIL_BY_DEV, issueId, developerEmail);
 
         IssueEntity issue = issueDao
             .selectIssueByIssueId(issueId)
             .orElseThrow(() -> new IssueNotFoundException(issueId));
 
         UserEntity developer = userDao
-            .selectUserByUserId(developerId)
-            .orElseThrow(() -> new UserIdNotFoundException(developerId));
+            .selectUserByEmail(developerEmail)
+            .orElseThrow(() -> new UserEmailNotFoundException(developerEmail));
 
         issue.setClosedByUser(developer);
         issue.setClosedOn(now(clock));
@@ -132,16 +132,22 @@ public class IssueService {
         log.info(ISSUE_CLOSE_BY_DEV);
     }
 
-    public void changeIssueStatus(String issueId, IssueStatus status) {
+    public void changeIssueStatus(String issueId, IssueStatus status, String developerEmail) {
         log.info(ISSUE_CHANGE_STATUS_BY_ID, issueId, status);
 
         IssueEntity issue = issueDao
             .selectIssueByIssueId(issueId)
             .orElseThrow(() -> new IssueNotFoundException(issueId));
 
+        UserEntity developer = userDao
+            .selectUserByEmail(developerEmail)
+            .orElseThrow(() -> new UserEmailNotFoundException(developerEmail));
+
         IssueStatus currentStatus = issue.getStatus();
 
         issue.setStatus(currentStatus.transitionTo(status));
+        issue.setModifiedByUser(developer);
+        issue.setModifiedOn(now(clock));
 
         // TODO: com/example/backend/dao/ProjectRepository.java:14
         issueDao.updateIssue(issue);

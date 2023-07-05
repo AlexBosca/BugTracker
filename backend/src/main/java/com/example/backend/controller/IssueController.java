@@ -57,131 +57,105 @@ public class IssueController {
     }
 
     @PostMapping(path = "/createOnProject/{projectKey}")
-    public ResponseEntity<Void> createIssue(
-            // @RequestHeader("Authorization") String authorizationHeader,
-            @RequestBody IssueRequest request,
-            @PathVariable(name = "projectKey") String projectKey) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
-        // String email = authenticationService.getEmailFromAuthorizationHeader(authorizationHeader);
+    public ResponseEntity<Void> createIssue(@RequestBody IssueRequest request,
+                                            @PathVariable(name = "projectKey") String projectKey) {
+        String userEmail = getLoggedUserEmail();
 
         log.info(ISSUE_CREATE);
 
         IssueEntity entity = mapper.toEntity(request);
 
-        issueService.saveIssue(entity, projectKey, email);
+        issueService.saveIssue(entity, projectKey, userEmail);
 
         return new ResponseEntity<>(CREATED);
     }
 
-    @PutMapping(path = "/{issueId}/assignToDeveloper/{developerId}")
+    @PutMapping(path = "/{issueId}/assignToDeveloper/{assigneeId}")
     public ResponseEntity<Void> assignToDeveloper(@PathVariable(name = "issueId") String issueId,
-                                       @PathVariable(name = "developerId") String developerId) {
-        log.info(ISSUE_ASSIGN_TO_DEV);
-
-        issueService.assignToUser(issueId, developerId);
-        issueService.changeIssueStatus(issueId, ASSIGNED);
+                                                  @PathVariable(name = "assigneeId") String assigneeId) {
+        issueService.assignToUser(issueId, assigneeId);
+        changeStateOfGivenIssue(issueId, ASSIGNED);
 
         return new ResponseEntity<>(OK);
     }
 
     @PutMapping(path = "/{issueId}/open")
     public ResponseEntity<Void> open(@PathVariable(name = "issueId") String issueId) {
-        logIssueChangingState(issueId, OPEN);
-
-        issueService.changeIssueStatus(issueId, OPEN);
+        changeStateOfGivenIssue(issueId, OPEN);
 
         return new ResponseEntity<>(OK);
     }
 
     @PutMapping(path = "/{issueId}/fix")
     public ResponseEntity<Void> fix(@PathVariable(name = "issueId") String issueId) {
-        logIssueChangingState(issueId, FIXED);
-
-        issueService.changeIssueStatus(issueId, FIXED);
+        changeStateOfGivenIssue(issueId, FIXED);
 
         return new ResponseEntity<>(OK);
     }
 
     @PutMapping(path = "/{issueId}/sendToRetest")
     public ResponseEntity<Void> sendToRetest(@PathVariable(name = "issueId") String issueId) {
-        logIssueChangingState(issueId, PENDING_RETEST);
-
-        issueService.changeIssueStatus(issueId, PENDING_RETEST);
+        changeStateOfGivenIssue(issueId, PENDING_RETEST);
 
         return new ResponseEntity<>(OK);
     }
 
     @PutMapping(path = "/{issueId}/retest")
     public ResponseEntity<Void> retest(@PathVariable(name = "issueId") String issueId) {
-        logIssueChangingState(issueId, RETEST);
-
-        issueService.changeIssueStatus(issueId, RETEST);
+        changeStateOfGivenIssue(issueId, RETEST);
 
         return new ResponseEntity<>(OK);
     }
 
     @PutMapping(path = "/{issueId}/reopen")
     public ResponseEntity<Void> reopen(@PathVariable(name = "issueId") String issueId) {
-        logIssueChangingState(issueId, REOPENED);
-
-        issueService.changeIssueStatus(issueId, REOPENED);
+        changeStateOfGivenIssue(issueId, REOPENED);
 
         return new ResponseEntity<>(OK);
     }
 
     @PutMapping(path = "/{issueId}/verify")
     public ResponseEntity<Void> verify(@PathVariable(name = "issueId") String issueId) {
-        logIssueChangingState(issueId, VERIFIED);
-
-        issueService.changeIssueStatus(issueId, VERIFIED);
+ 
+        changeStateOfGivenIssue(issueId, VERIFIED);
 
         return new ResponseEntity<>(OK);
     }
 
-    @PutMapping(path = "/{issueId}/closeByDeveloper/{developerId}")
-    public ResponseEntity<Void> close(@PathVariable(name = "issueId") String issueId,
-                                @PathVariable(name = "developerId") String developerId) {
-        logIssueChangingState(issueId, CLOSED);
+    @PutMapping(path = "/{issueId}/closeByDeveloper")
+    public ResponseEntity<Void> close(@PathVariable(name = "issueId") String issueId) {
+        String developerEmail = getLoggedUserEmail();
 
-        issueService.closeByUser(issueId, developerId);
-        issueService.changeIssueStatus(issueId, CLOSED);
+        issueService.closeByUser(issueId, developerEmail);
+        changeStateOfGivenIssue(issueId, CLOSED);
 
         return new ResponseEntity<>(OK);
     }
 
     @PutMapping(path = "/{issueId}/duplicate")
     public ResponseEntity<Void> duplicate(@PathVariable(name = "issueId") String issueId) {
-        logIssueChangingState(issueId, DUPLICATE);
-
-        issueService.changeIssueStatus(issueId, DUPLICATE);
+        changeStateOfGivenIssue(issueId, DUPLICATE);
 
         return new ResponseEntity<>(OK);
     }
 
     @PutMapping(path = "/{issueId}/reject")
     public ResponseEntity<Void> reject(@PathVariable(name = "issueId") String issueId) {
-        logIssueChangingState(issueId, REJECTED);
-
-        issueService.changeIssueStatus(issueId, REJECTED);
+        changeStateOfGivenIssue(issueId, REJECTED);
 
         return new ResponseEntity<>(OK);
     }
 
     @PutMapping(path = "/{issueId}/defer")
     public ResponseEntity<Void> defer(@PathVariable(name = "issueId") String issueId) {
-        logIssueChangingState(issueId, DEFERRED);
-
-        issueService.changeIssueStatus(issueId, DEFERRED);
+        changeStateOfGivenIssue(issueId, DEFERRED);
 
         return new ResponseEntity<>(OK);
     }
 
     @PutMapping(path = "/{issueId}/notABug")
     public ResponseEntity<Void> notABug(@PathVariable(name = "issueId") String issueId) {
-        logIssueChangingState(issueId, NOT_A_BUG);
-
-        issueService.changeIssueStatus(issueId, NOT_A_BUG);
+        changeStateOfGivenIssue(issueId, NOT_A_BUG);
 
         return new ResponseEntity<>(OK);
     }
@@ -200,7 +174,20 @@ public class IssueController {
         return new ResponseEntity<>(CREATED);
     }
 
+    private void changeStateOfGivenIssue(String issueId, IssueStatus status) {
+        logIssueChangingState(issueId, status);
+
+        String developerEmail = getLoggedUserEmail();
+
+        issueService.changeIssueStatus(issueId, status, developerEmail);
+    }
+
     private void logIssueChangingState(String issueId, IssueStatus issueStatus) {
         log.info(ISSUE_CHANGE_STATE_MSG, issueId, issueStatus.name());
+    }
+
+    private String getLoggedUserEmail() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getName();
     }
 }
