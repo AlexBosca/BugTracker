@@ -3,7 +3,9 @@ package com.example.backend.controller;
 import com.example.backend.dto.request.ProjectRequest;
 import com.example.backend.dto.response.IssueFullResponse;
 import com.example.backend.dto.response.ProjectFullResponse;
+import com.example.backend.dto.response.TeamFullResponse;
 import com.example.backend.entity.ProjectEntity;
+import com.example.backend.entity.TeamEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.mapper.MapStructMapper;
 import com.example.backend.service.ProjectService;
@@ -79,6 +81,22 @@ public class ProjectController {
         List<IssueEntity> entities = projectService.getAllIssuesOnProjectById(projectKey);
 
         List<IssueFullResponse> responses = entities.stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            responses,
+            OK
+        );
+    }
+    
+    @GetMapping(path = "/{projectKey}/teams")
+    public ResponseEntity<List<TeamFullResponse>> getAllTeamsOnProject(@PathVariable(name = "projectKey") String projectKey) {
+        log.info("Get teams on project with id: {}", projectKey);
+
+        List<TeamEntity> entities = projectService.getAllTeamsOnProjectById(projectKey);
+
+        List<TeamFullResponse> responses = entities.stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
 

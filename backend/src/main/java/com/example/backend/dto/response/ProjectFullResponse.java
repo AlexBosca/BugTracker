@@ -16,6 +16,6 @@ public class ProjectFullResponse {
     private String projectKey;
     private String name;
     private String description;
-    private TeamSlimResponse team;
+    private Collection<TeamSlimResponse> teams;
     private Collection<IssueSlimResponse> issues;
 }

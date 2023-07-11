@@ -6,6 +6,7 @@ import { ProjectsIssuesBoardComponent } from './components/projects-issues-board
 import { ProjectSummaryComponent } from './components/project-summary/project-summary.component';
 import { ProjectsIssuesListComponent } from './components/projects-issues-list/projects-issues-list.component';
 import { ProjectCalendarComponent } from './components/project-calendar/project-calendar.component';
+import { ProjectTeamsComponent } from './components/project-teams/project-teams.component';
 
 const routes: Routes = [
   {
@@ -28,6 +29,10 @@ const routes: Routes = [
       {
         path: 'list',
         component: ProjectsIssuesListComponent
+      },
+      {
+        path: 'teams',
+        component: ProjectTeamsComponent
       },
       {
         path: 'calendar',

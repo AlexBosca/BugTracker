@@ -36,7 +36,7 @@ public class ProjectEntity extends BaseEntity {
             name = "teams_on_project",
             joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"))
-    private Set<TeamEntity> teams = new HashSet<>();
+    private Set<TeamEntity> teams;
 
     @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
     private Collection<IssueEntity> issues;

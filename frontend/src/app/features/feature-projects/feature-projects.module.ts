@@ -17,6 +17,7 @@ import { ProjectNavigationComponent } from './components/project-navigation/proj
 import { ProjectSummaryComponent } from './components/project-summary/project-summary.component';
 import { ProjectsIssuesListComponent } from './components/projects-issues-list/projects-issues-list.component';
 import { ProjectCalendarComponent } from './components/project-calendar/project-calendar.component';
+import { ProjectTeamsComponent } from './components/project-teams/project-teams.component';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { ProjectCalendarComponent } from './components/project-calendar/project-
     ProjectNavigationComponent,
     ProjectSummaryComponent,
     ProjectsIssuesListComponent,
-    ProjectCalendarComponent
+    ProjectCalendarComponent,
+    ProjectTeamsComponent
   ],
   imports: [
     CommonModule,
