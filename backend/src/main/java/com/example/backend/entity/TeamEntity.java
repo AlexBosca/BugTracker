@@ -30,7 +30,7 @@ public class TeamEntity extends BaseEntity {
         fetch = FetchType.LAZY,
         cascade = CascadeType.PERSIST
     )
-    private Set<ProjectEntity> projects = new HashSet<>();
+    private Set<ProjectEntity> projects;
 
     @ManyToMany
     @JoinTable(

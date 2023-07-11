@@ -28,6 +28,7 @@ public class ProjectService {
     @Qualifier("project-jpa")
     private final ProjectDao projectDao;
     
+    @Qualifier("team-jpa")
     private final TeamDao teamDao;
 
     public List<ProjectEntity> getAllProjects() {
@@ -81,8 +82,10 @@ public class ProjectService {
         Set<TeamEntity> teams = project.getTeams();
         teams.add(team);
         project.setTeams(teams);
+        team.addProject(project);
 
         projectDao.insertProject(project);
+        teamDao.insertTeam(team);
 
         log.info(PROJECT_TEAM_ADDED);
     }
@@ -100,5 +103,20 @@ public class ProjectService {
         log.info("Return all issues on project with id: {}", projectKey);
 
         return issuesOnProject;
+    }
+
+    public List<TeamEntity> getAllTeamsOnProjectById(String projectKey) {
+        log.info("Request all teams on project with id: {}", projectKey);
+
+        ProjectEntity project = projectDao
+                .selectProjectByKey(projectKey)
+                .orElseThrow(() -> new ProjectNotFoundException(projectKey));
+
+        List<TeamEntity> teamsOnProject = project.getTeams().stream()
+                .collect(Collectors.toList());
+
+        log.info("Return all issues on project with id: {}", projectKey);
+
+        return teamsOnProject;
     }
 }

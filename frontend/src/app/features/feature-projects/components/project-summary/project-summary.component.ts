@@ -14,7 +14,7 @@ import { StatusCategory } from 'src/app/features/feature-issues/models/StatusCat
   styleUrls: ['./project-summary.component.css']
 })
 export class ProjectSummaryComponent implements OnInit {
-  private projectKey!: string| null;
+  private projectKey!: string | null;
   project!: ProjectModel;
   issues: IssueModel[] = [];
   doneIssues: IssueModel[] = [];
