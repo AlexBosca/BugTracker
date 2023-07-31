@@ -129,8 +129,12 @@ public class AppUserDetailsService implements UserDetailsService {
         setCredentialsNonExpired(email);
     }
 
-    private int enableAppUser(String email) {
-        return userDao.enableUserAccountByEmail(email);
+    public int enableAppUser(String userId) {
+        return userDao.enableUserAccountByUserId(userId);
+    }
+
+    public int disableAppUser(String userId) {
+        return userDao.disableUserAccountByUserId(userId);
     }
 
     private int unlockAppUser(String email) {

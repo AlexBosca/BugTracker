@@ -14,7 +14,8 @@ public interface UserDao {
     boolean existsUserByEmail(String email);
     void deleteUserByUserId(String userId);
     void updateUser(UserEntity user);
-    int enableUserAccountByEmail(String email);
+    int enableUserAccountByUserId(String email);
+    int disableUserAccountByUserId(String email);
     int unlockUserAccountByEmail(String email);
     int setUserAccountNonExpiredByEmail(String email);
     int setUserCredentialsNonExpired(String email);

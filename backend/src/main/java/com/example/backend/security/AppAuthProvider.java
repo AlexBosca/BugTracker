@@ -37,9 +37,16 @@ public class AppAuthProvider implements AuthenticationProvider {
             throw new UserCredentialsNotValidException();
         }
 
-        if(!user.isEnabled()) {
+        if(!user.isEnabled() &&
+           !user.isAccountNonExpired() &&
+           !user.isAccountNonLocked() &&
+           !user.isCredentialsNonExpired()) {
             throw new EmailNotConfirmedException();
         }
+
+        // if(!user.isEnabled()) {
+        //     throw new BaseRuntimeException("Account disabled");
+        // }
 
         return new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities());
     }

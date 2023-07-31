@@ -91,6 +91,14 @@ public class AuthenticationService {
 
         return "confirmed";
     }
+    
+    public void enableAccountByUserId(String userId) {
+        userDetailsService.enableAppUser(userId);
+    }
+
+    public void disableAccountByUserId(String userId) {
+        userDetailsService.disableAppUser(userId);
+    }
 
     public UsernamePasswordAuthenticationToken getAuthenticationToken(String authorizationHeader) {
         Credentials credentials = this.extractCredentials(authorizationHeader);
