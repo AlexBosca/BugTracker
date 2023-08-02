@@ -56,8 +56,13 @@ public class UserJPADataAccessService implements UserDao {
     }
 
     @Override
-    public int enableUserAccountByEmail(String email) {
+    public int enableUserAccountByUserId(String email) {
         return userRepository.enableAccountByEmail(email);
+    }
+
+    @Override
+    public int disableUserAccountByUserId(String email) {
+        return userRepository.disableAccountByEmail(email);
     }
 
     @Override

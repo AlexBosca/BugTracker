@@ -7,6 +7,8 @@ import com.example.backend.mapper.MapStructMapper;
 import com.example.backend.service.AuthenticationService;
 import lombok.AllArgsConstructor;
 
+import static org.springframework.http.HttpStatus.OK;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,5 +53,20 @@ public class AuthenticationController {
                 .toResponse(user);
         
         return new ResponseEntity<>(userResponse, HttpStatus.OK);
+    }
+
+    @PutMapping(path = "/account/{userId}/enable")
+    public ResponseEntity<Void> enableAccount(@RequestHeader("Authorization") String authorizationHeader,
+                                              @PathVariable(name = "userId") String userId) {
+        authenticationService.enableAccountByUserId(userId);
+
+        return new ResponseEntity<>(OK);
+    }
+    
+    @PutMapping(path = "/account/{userId}/disable")
+    public ResponseEntity<Void> disableAccount(@PathVariable(name = "userId") String userId) {
+        authenticationService.disableAccountByUserId(userId);
+
+        return new ResponseEntity<>(OK);
     }
 }

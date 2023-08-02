@@ -30,6 +30,12 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Transactional
     @Modifying
     @Query("UPDATE UserEntity user " +
+            "SET user.isEnabled = FALSE WHERE user.email = ?1")
+    int disableAccountByEmail(String email);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE UserEntity user " +
             "SET user.isAccountLocked = FALSE WHERE user.email = ?1")
     int unlockAccountByEmail(String email);
 
