@@ -2,6 +2,7 @@ package com.example.backend.dao;
 
 import com.example.backend.entity.UserEntity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,5 +19,5 @@ public interface UserDao {
     int disableUserAccountByUserId(String email);
     int unlockUserAccountByEmail(String email);
     int setUserAccountNonExpiredByEmail(String email);
-    int setUserCredentialsNonExpired(String email);
+    int setUserCrecentialsExpiresOn(String email, LocalDateTime credentialsExpirationDate);
 }

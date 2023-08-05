@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
@@ -48,6 +49,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Transactional
     @Modifying
     @Query("UPDATE UserEntity user " +
-            "SET user.isCredentialsExpired = FALSE WHERE user.email = ?1")
-    int setCredentialsNonExpired(String email);
+            "SET user.credentialExpiresOn = ?2 WHERE user.email = ?1")
+    int setCrecentialExpiresOn(String email, LocalDateTime credentialsExpirationDate);
 }

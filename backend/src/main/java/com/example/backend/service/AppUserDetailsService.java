@@ -23,7 +23,9 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.example.backend.util.ExceptionUtilities.*;
+import static com.example.backend.util.ExceptionUtilities.USER_WITH_EMAIL_NOT_FOUND;
+import static com.example.backend.util.Utilities.CREDENTIALS_VALIDITY_IN_DAYS;
+
 
 @Slf4j
 @Service
@@ -126,7 +128,7 @@ public class AppUserDetailsService implements UserDetailsService {
         enableAppUser(email);
         unlockAppUser(email);
         setAccountNonExpired(email);
-        setCredentialsNonExpired(email);
+        setCredentialExpiresOn(email);
     }
 
     public int enableAppUser(String userId) {
@@ -145,7 +147,9 @@ public class AppUserDetailsService implements UserDetailsService {
         return userDao.setUserAccountNonExpiredByEmail(email);
     }
 
-    private int setCredentialsNonExpired(String email) {
-        return userDao.setUserCredentialsNonExpired(email);
+    private int setCredentialExpiresOn(String email) {
+        LocalDateTime credentialsExpirationDate = now(clock).plusDays(CREDENTIALS_VALIDITY_IN_DAYS);
+        
+        return userDao.setUserCrecentialsExpiresOn(email, credentialsExpirationDate);
     }
 }

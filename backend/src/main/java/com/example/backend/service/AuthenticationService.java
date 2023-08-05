@@ -36,7 +36,7 @@ public class AuthenticationService {
     @Autowired
     private final CredentialValidatorService credentialValidatorService;
     @Autowired
-    private final EmailSenderServiceImpl emailSenderService;
+    private final EmailSenderService emailSenderService;
     @Autowired
     private final ConfirmationTokenService confirmationTokenService;
     
