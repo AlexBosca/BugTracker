@@ -5,6 +5,8 @@ import com.example.backend.entity.ConfirmationTokenEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.exception.registration.EmailAlreadyConfirmedException;
 import com.example.backend.exception.registration.EmailTakenException;
+import com.example.backend.exception.user.UserCredentialsNotValidException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.example.backend.util.ExceptionUtilities.USER_WITH_EMAIL_NOT_FOUND;
 import static com.example.backend.util.Utilities.CREDENTIALS_VALIDITY_IN_DAYS;
 
 
@@ -42,13 +43,12 @@ public class AppUserDetailsService implements UserDetailsService {
     private final Clock clock;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UserCredentialsNotValidException {
         log.info("Loading user with email: {}", email);
         
         return userDao
                 .selectUserByEmail(email)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException(String.format(USER_WITH_EMAIL_NOT_FOUND, email)));
+                .orElseThrow(UserCredentialsNotValidException::new);
     }
 
     public String signUpUser(UserEntity user) {
@@ -100,6 +100,16 @@ public class AppUserDetailsService implements UserDetailsService {
         return createConfirmationToken(user);
     }
 
+    public void resetPasswordOfUser(UserEntity user, String currentPassword, String newPassword) {
+        if(!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new UserCredentialsNotValidException();
+        }
+        
+        user.setPassword(newPassword);
+        setPasswordToUser(user);
+        setCredentialExpiresOn(user.getUserId());
+    }
+
     private void setPasswordToUser(UserEntity user) {
         String encodedPassword = passwordEncoder
                 .encode(user.getPassword());
@@ -124,11 +134,11 @@ public class AppUserDetailsService implements UserDetailsService {
         return token;
     }
 
-    public void setupAccount(String email) {
-        enableAppUser(email);
-        unlockAppUser(email);
-        setAccountNonExpired(email);
-        setCredentialExpiresOn(email);
+    public void setupAccount(String userId) {
+        enableAppUser(userId);
+        unlockAppUser(userId);
+        setAccountNonExpired(userId);
+        setCredentialExpiresOn(userId);
     }
 
     public int enableAppUser(String userId) {
@@ -139,17 +149,17 @@ public class AppUserDetailsService implements UserDetailsService {
         return userDao.disableUserAccountByUserId(userId);
     }
 
-    private int unlockAppUser(String email) {
-        return userDao.unlockUserAccountByEmail(email);
+    private int unlockAppUser(String userId) {
+        return userDao.unlockUserAccountByUserId(userId);
     }
 
-    private int setAccountNonExpired(String email) {
-        return userDao.setUserAccountNonExpiredByEmail(email);
+    private int setAccountNonExpired(String userId) {
+        return userDao.setUserAccountNonExpiredByUserId(userId);
     }
 
-    private int setCredentialExpiresOn(String email) {
+    private int setCredentialExpiresOn(String userId) {
         LocalDateTime credentialsExpirationDate = now(clock).plusDays(CREDENTIALS_VALIDITY_IN_DAYS);
         
-        return userDao.setUserCrecentialsExpiresOn(email, credentialsExpirationDate);
+        return userDao.setUserCrecentialsExpiresOn(userId, credentialsExpirationDate);
     }
 }
