@@ -18,7 +18,7 @@ export class BasicAuthInterceptor implements HttpInterceptor {
     const currentUser = this.authService.getCurrentUser();
     const token = this.authService.getCurrentUserAuthToken();
 
-    if(currentUser && token) {
+    if((currentUser || request.url === this.authService.resetPasswordUrl) && token) {
         request = request.clone({
           setHeaders: {
             Authorization: token

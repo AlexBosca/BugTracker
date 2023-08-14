@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
@@ -24,30 +25,30 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Transactional
     @Modifying
     @Query("UPDATE UserEntity user " +
-            "SET user.isEnabled = TRUE WHERE user.email = ?1")
-    int enableAccountByEmail(String email);
+            "SET user.isEnabled = TRUE WHERE user.userId = ?1")
+    int enableAccountByUserId(String userId);
 
     @Transactional
     @Modifying
     @Query("UPDATE UserEntity user " +
-            "SET user.isEnabled = FALSE WHERE user.email = ?1")
-    int disableAccountByEmail(String email);
+            "SET user.isEnabled = FALSE WHERE user.userId = ?1")
+    int disableAccountByUserId(String userId);
 
     @Transactional
     @Modifying
     @Query("UPDATE UserEntity user " +
-            "SET user.isAccountLocked = FALSE WHERE user.email = ?1")
-    int unlockAccountByEmail(String email);
+            "SET user.isAccountLocked = FALSE WHERE user.userId = ?1")
+    int unlockAccountByUserId(String userId);
 
     @Transactional
     @Modifying
     @Query("UPDATE UserEntity user " +
-            "SET user.isAccountExpired = FALSE WHERE user.email = ?1")
-    int setAccountNonExpiredByEmail(String email);
+            "SET user.isAccountExpired = FALSE WHERE user.userId = ?1")
+    int setAccountNonExpiredByUserId(String userId);
 
     @Transactional
     @Modifying
     @Query("UPDATE UserEntity user " +
-            "SET user.isCredentialsExpired = FALSE WHERE user.email = ?1")
-    int setCredentialsNonExpired(String email);
+            "SET user.credentialExpiresOn = ?2 WHERE user.userId = ?1")
+    int setCrecentialExpiresOn(String userId, LocalDateTime credentialsExpirationDate);
 }

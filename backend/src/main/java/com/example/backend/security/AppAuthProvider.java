@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.exception.BaseRuntimeException;
 import com.example.backend.exception.registration.EmailNotConfirmedException;
+import com.example.backend.exception.user.UserCredentialsExpiredException;
 import com.example.backend.exception.user.UserCredentialsNotValidException;
 import com.example.backend.service.AppUserDetailsService;
 
@@ -44,9 +45,13 @@ public class AppAuthProvider implements AuthenticationProvider {
             throw new EmailNotConfirmedException();
         }
 
-        // if(!user.isEnabled()) {
-        //     throw new BaseRuntimeException("Account disabled");
-        // }
+        if(!user.isEnabled()) {
+            throw new BaseRuntimeException("Account disabled");
+        }
+
+        if(!user.isCredentialsNonExpired()) {
+            throw new UserCredentialsExpiredException();
+        }
 
         return new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities());
     }
