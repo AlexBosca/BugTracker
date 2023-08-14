@@ -6,6 +6,7 @@ import com.example.backend.entity.UserEntity;
 import com.example.backend.exception.registration.EmailAlreadyConfirmedException;
 import com.example.backend.exception.registration.EmailTakenException;
 import com.example.backend.exception.user.UserCredentialsNotValidException;
+import com.example.backend.exception.user.UserIdNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,14 @@ public class AppUserDetailsService implements UserDetailsService {
         return userDao
                 .selectUserByEmail(email)
                 .orElseThrow(UserCredentialsNotValidException::new);
+    }
+
+    public UserEntity loadUserByUserId(String userId) throws UserIdNotFoundException {
+        log.info("Loading user with userId: {}", userId);
+
+        return userDao
+                .selectUserByUserId(userId)
+                .orElseThrow(UserIdNotFoundException::new);
     }
 
     public String signUpUser(UserEntity user) {
