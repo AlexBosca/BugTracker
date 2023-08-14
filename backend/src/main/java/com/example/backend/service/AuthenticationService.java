@@ -8,6 +8,7 @@ import com.example.backend.exception.registration.EmailAlreadyConfirmedException
 import com.example.backend.exception.token.TokenExpiredException;
 import com.example.backend.exception.token.TokenNotFoundException;
 import com.example.backend.exception.user.UserCredentialsNotValidException;
+import com.example.backend.exception.user.UserIdNotFoundException;
 import com.example.backend.exception.user.UserPasswordsNotMatchingException;
 
 import lombok.AllArgsConstructor;
@@ -111,11 +112,19 @@ public class AuthenticationService {
     }
     
     public void enableAccountByUserId(String userId) {
-        userDetailsService.enableAppUser(userId);
+        int rowsAffected = userDetailsService.enableAppUser(userId);
+
+        if(rowsAffected == 0) {
+            throw new UserIdNotFoundException(userId);
+        }
     }
 
     public void disableAccountByUserId(String userId) {
-        userDetailsService.disableAppUser(userId);
+        int rowsAffected = userDetailsService.disableAppUser(userId);
+
+        if(rowsAffected == 0) {
+            throw new UserIdNotFoundException(userId);
+        }
     }
 
     public UsernamePasswordAuthenticationToken getAuthenticationToken(String authorizationHeader) {
