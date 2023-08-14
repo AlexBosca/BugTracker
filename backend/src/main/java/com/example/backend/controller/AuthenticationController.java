@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.entity.UserEntity;
 import com.example.backend.dto.request.RegistrationRequest;
+import com.example.backend.dto.request.ResetPasswordRequest;
 import com.example.backend.dto.response.UserFullResponse;
 import com.example.backend.mapper.MapStructMapper;
 import com.example.backend.service.AuthenticationService;
@@ -55,9 +56,15 @@ public class AuthenticationController {
         return new ResponseEntity<>(userResponse, HttpStatus.OK);
     }
 
+    @PutMapping(path = "/resetPassword")
+    public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest request) {
+        authenticationService.resetPassword(request);
+
+        return new ResponseEntity<>(OK);
+    }
+
     @PutMapping(path = "/account/{userId}/enable")
-    public ResponseEntity<Void> enableAccount(@RequestHeader("Authorization") String authorizationHeader,
-                                              @PathVariable(name = "userId") String userId) {
+    public ResponseEntity<Void> enableAccount(@PathVariable(name = "userId") String userId) {
         authenticationService.enableAccountByUserId(userId);
 
         return new ResponseEntity<>(OK);

@@ -10,9 +10,11 @@ import com.example.backend.exception.team.TeamAlreadyCreatedException;
 import com.example.backend.exception.team.TeamIdNotFoundException;
 import com.example.backend.exception.token.TokenExpiredException;
 import com.example.backend.exception.token.TokenNotFoundException;
+import com.example.backend.exception.user.UserCredentialsExpiredException;
 import com.example.backend.exception.user.UserCredentialsNotValidException;
 import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
+import com.example.backend.exception.user.UserPasswordsNotMatchingException;
 import com.example.backend.exception.user.UserRoleNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -48,6 +50,16 @@ public class EntityExceptionHandler {
     @ExceptionHandler(UserCredentialsNotValidException.class)
     public ResponseEntity<ErrorResponse> handleCredentialsNotValidException(Exception exception) {
         return buildErrorResponse(exception, BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserPasswordsNotMatchingException.class)
+    public ResponseEntity<ErrorResponse> handlePasswordsNotMatchingException(Exception exception) {
+        return buildErrorResponse(exception, BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserCredentialsExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleCredentialsExpiredException(Exception exception) {
+        return buildErrorResponse(exception, UNAUTHORIZED);
     }
 
     @ExceptionHandler(EmailSendFailException.class)

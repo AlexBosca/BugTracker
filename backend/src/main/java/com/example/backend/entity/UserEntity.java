@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.example.backend.config.ClockConfig;
 import com.example.backend.entity.issue.IssueCommentEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.enums.UserRole;
@@ -16,8 +17,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
+import static java.time.LocalDateTime.now;
 import static javax.persistence.FetchType.EAGER;
 
 @Entity
@@ -52,9 +57,8 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @Default
     private Boolean isAccountLocked = true;
 
-    @Column(name = "credential_expired")
-    @Default
-    private Boolean isCredentialsExpired = true;
+    @Column(name = "credentials_expire_on")
+    private LocalDateTime credentialExpiresOn;
 
     @Column(name = "enabled")
     @Default
@@ -127,9 +131,13 @@ public class UserEntity extends BaseEntity implements UserDetails {
         return !isAccountLocked;
     }
 
+    private boolean isPasswordExpired(Clock clock) {
+        return (credentialExpiresOn != null) && (credentialExpiresOn.isBefore(now(clock)));
+    }
+
     @Override
     public boolean isCredentialsNonExpired() {
-        return !isCredentialsExpired;
+        return !isPasswordExpired(ClockConfig.getClock());
     }
 
     @Override

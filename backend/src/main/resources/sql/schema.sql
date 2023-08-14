@@ -6,7 +6,7 @@ CREATE TABLE users (
     first_name character varying(255) NOT NULL,
     expired boolean,
     locked boolean,
-    credential_expired boolean,
+    credentials_expire_on timestamp without time zone,
     enabled boolean,
     last_name character varying(255) NOT NULL,
     password character varying(255) NOT NULL,
