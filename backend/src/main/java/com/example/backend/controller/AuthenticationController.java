@@ -76,4 +76,11 @@ public class AuthenticationController {
 
         return new ResponseEntity<>(OK);
     }
+
+    @PutMapping(path = "/account/{userId}/unlock")
+    public ResponseEntity<Void> unlockAccount(@PathVariable(name = "userId") String userId) {
+        authenticationService.unlockAccountByUserId(userId);
+
+        return new ResponseEntity<>(OK);
+    }
 }

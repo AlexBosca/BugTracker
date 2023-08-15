@@ -57,6 +57,10 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @Default
     private Boolean isAccountLocked = true;
 
+    @Column(name = "failed_login_attempts")
+    @Default
+    private int failedLoginAttempts = 0;
+
     @Column(name = "credentials_expire_on")
     private LocalDateTime credentialExpiresOn;
 

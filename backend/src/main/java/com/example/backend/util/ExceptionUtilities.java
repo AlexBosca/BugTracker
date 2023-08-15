@@ -8,6 +8,7 @@ public final class ExceptionUtilities {
     public static final String EMAIL_SEND_FAIL = "Failed to send the email";
     public static final String USER_WITH_EMAIL_NOT_FOUND = "User with email: %s not found";
     public static final String USER_WITH_ID_NOT_FOUND = "User with id: %s not found";
+    public static final String USER_ACOCUNT_DISABLED = "User's account disabled";
     public static final String USER_CREDENTIALS_NOT_VALID = "User's credentials aren't valid";
     public static final String USER_PASSWORDS_NOT_MATCHING = "User's passwords aren't matching";
     public static final String USER_CREDENTIALS_EXPIRED = "User's credentials has expired";

@@ -10,6 +10,7 @@ import com.example.backend.exception.team.TeamAlreadyCreatedException;
 import com.example.backend.exception.team.TeamIdNotFoundException;
 import com.example.backend.exception.token.TokenExpiredException;
 import com.example.backend.exception.token.TokenNotFoundException;
+import com.example.backend.exception.user.UserAccountDisabledException;
 import com.example.backend.exception.user.UserCredentialsExpiredException;
 import com.example.backend.exception.user.UserCredentialsNotValidException;
 import com.example.backend.exception.user.UserEmailNotFoundException;
@@ -45,6 +46,11 @@ public class EntityExceptionHandler {
     @ExceptionHandler(EmailNotConfirmedException.class)
     public ResponseEntity<ErrorResponse> handleEmailNotConfirmedException(Exception exception) {
         return buildErrorResponse(exception, BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserAccountDisabledException.class)
+    public ResponseEntity<ErrorResponse> handleAccountDisabledException(Exception exception) {
+        return buildErrorResponse(exception, UNAUTHORIZED);
     }
 
     @ExceptionHandler(UserCredentialsNotValidException.class)

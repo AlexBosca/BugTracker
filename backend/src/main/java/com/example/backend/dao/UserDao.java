@@ -18,6 +18,11 @@ public interface UserDao {
     int enableUserAccountByUserId(String userId);
     int disableUserAccountByUserId(String userId);
     int unlockUserAccountByUserId(String userId);
+    int lockUserAccountByEmail(String email);
+    int setUserAccountFailedLoginAttemptsByEmail(String email, int attempts);
+    int resetUserAccountFailedLoginAttemptsByEmail(String email);
+    int resetUserAccountFailedLoginAttemptsByUserId(String userId);
+    boolean isUserAccountLockedByEmail(String email);
     int setUserAccountNonExpiredByUserId(String userId);
     int setUserCrecentialsExpiresOn(String userId, LocalDateTime credentialsExpirationDate);
 }

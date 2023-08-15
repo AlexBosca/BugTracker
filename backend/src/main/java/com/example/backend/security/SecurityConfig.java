@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -37,6 +38,7 @@ public class SecurityConfig {
                     .anyRequest().authenticated())
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
+            .addFilterBefore(accountLockingFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(appBasicAuthFilter(), BasicAuthenticationFilter.class)
             .exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint))
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(STATELESS))
@@ -56,7 +58,12 @@ public class SecurityConfig {
         
         return source;
     }
+
     AppBasicAuthFilter appBasicAuthFilter() {
         return new AppBasicAuthFilter(authenticationService);
+    }
+
+    AccountLockingFilter accountLockingFilter() {
+        return new AccountLockingFilter(authenticationService);
     }
 }
