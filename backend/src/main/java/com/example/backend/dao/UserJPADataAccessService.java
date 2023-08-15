@@ -77,6 +77,31 @@ public class UserJPADataAccessService implements UserDao {
     }
 
     @Override
+    public int lockUserAccountByEmail(String email) {
+        return userRepository.lockAccountByEmail(email);
+    }
+
+    @Override
+    public int setUserAccountFailedLoginAttemptsByEmail(String email, int attempts) {
+        return userRepository.setAccountFailedLoginAttemptsByEmail(email, attempts);
+    }
+
+    @Override
+    public int resetUserAccountFailedLoginAttemptsByEmail(String email) {
+        return userRepository.resetAccountFailedLoginAttemptsByEmail(email);
+    }
+
+    @Override
+    public int resetUserAccountFailedLoginAttemptsByUserId(String userId) {
+        return userRepository.resetAccountFailedLoginAttemptsByUserId(userId);
+    }
+
+    @Override
+    public boolean isUserAccountLockedByEmail(String email) {
+        return userRepository.isAccountLockedByEmail(email);
+    }
+
+    @Override
     public int setUserCrecentialsExpiresOn(String userId, LocalDateTime credentialsExpirationDate) {
         return userRepository.setCrecentialExpiresOn(userId, credentialsExpirationDate);
     }

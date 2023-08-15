@@ -43,6 +43,34 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Transactional
     @Modifying
     @Query("UPDATE UserEntity user " +
+            "SET user.isAccountLocked = TRUE WHERE user.email = ?1")
+    int lockAccountByEmail(String email);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE UserEntity user " +
+            "SET user.failedLoginAttempts = 0 WHERE user.email = ?1")
+    int resetAccountFailedLoginAttemptsByEmail(String email);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE UserEntity user " +
+            "SET user.failedLoginAttempts = 0 WHERE user.userId = ?1")
+    int resetAccountFailedLoginAttemptsByUserId(String userId);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE UserEntity user " +
+            "SET user.failedLoginAttempts = ?2 WHERE user.email = ?1")
+    int setAccountFailedLoginAttemptsByEmail(String email, int attempts);
+
+    @Transactional
+    @Query("SELECT user.isAccountLocked FROM UserEntity user WHERE user.email = ?1")
+    boolean isAccountLockedByEmail(String email);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE UserEntity user " +
             "SET user.isAccountExpired = FALSE WHERE user.userId = ?1")
     int setAccountNonExpiredByUserId(String userId);
 

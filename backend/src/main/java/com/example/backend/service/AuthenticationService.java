@@ -127,6 +127,18 @@ public class AuthenticationService {
         }
     }
 
+    public void unlockAccountByUserId(String userId) {
+        int rowsAffected = userDetailsService.unlockAppUser(userId);
+
+        if(rowsAffected == 0) {
+            throw new UserIdNotFoundException(userId);
+        }
+    }
+
+    public boolean isAccountLockedByEmail(String userId) {
+        return userDetailsService.isAccountLocked(userId);
+    }
+
     public UsernamePasswordAuthenticationToken getAuthenticationToken(String authorizationHeader) {
         Credentials credentials = this.extractCredentials(authorizationHeader);
 
