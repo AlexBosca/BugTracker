@@ -2,10 +2,13 @@ package com.example.backend.controller;
 
 import com.example.backend.entity.UserEntity;
 import com.example.backend.dto.request.RegistrationRequest;
+import com.example.backend.dto.request.ResetPasswordRequest;
 import com.example.backend.dto.response.UserFullResponse;
 import com.example.backend.mapper.MapStructMapper;
 import com.example.backend.service.AuthenticationService;
 import lombok.AllArgsConstructor;
+
+import static org.springframework.http.HttpStatus.OK;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,5 +54,33 @@ public class AuthenticationController {
                 .toResponse(user);
         
         return new ResponseEntity<>(userResponse, HttpStatus.OK);
+    }
+
+    @PutMapping(path = "/resetPassword")
+    public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest request) {
+        authenticationService.resetPassword(request);
+
+        return new ResponseEntity<>(OK);
+    }
+
+    @PutMapping(path = "/account/{userId}/enable")
+    public ResponseEntity<Void> enableAccount(@PathVariable(name = "userId") String userId) {
+        authenticationService.enableAccountByUserId(userId);
+
+        return new ResponseEntity<>(OK);
+    }
+    
+    @PutMapping(path = "/account/{userId}/disable")
+    public ResponseEntity<Void> disableAccount(@PathVariable(name = "userId") String userId) {
+        authenticationService.disableAccountByUserId(userId);
+
+        return new ResponseEntity<>(OK);
+    }
+
+    @PutMapping(path = "/account/{userId}/unlock")
+    public ResponseEntity<Void> unlockAccount(@PathVariable(name = "userId") String userId) {
+        authenticationService.unlockAccountByUserId(userId);
+
+        return new ResponseEntity<>(OK);
     }
 }

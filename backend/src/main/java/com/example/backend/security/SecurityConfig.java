@@ -13,11 +13,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.example.backend.enums.UserPrivilege;
 import com.example.backend.service.AuthenticationService;
 
 @Configuration
@@ -31,10 +33,12 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             return http.authorizeHttpRequests(authorize -> authorize
+                    .antMatchers("/authentication/account/{userId}/disable").hasAuthority(UserPrivilege.USER_UPDATE.getCode())
                     .antMatchers("/authentication/**").permitAll()
                     .anyRequest().authenticated())
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
+            .addFilterBefore(accountLockingFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(appBasicAuthFilter(), BasicAuthenticationFilter.class)
             .exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint))
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(STATELESS))
@@ -54,7 +58,12 @@ public class SecurityConfig {
         
         return source;
     }
+
     AppBasicAuthFilter appBasicAuthFilter() {
         return new AppBasicAuthFilter(authenticationService);
+    }
+
+    AccountLockingFilter accountLockingFilter() {
+        return new AccountLockingFilter(authenticationService);
     }
 }

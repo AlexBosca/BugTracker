@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.exception.BaseRuntimeException;
 import com.example.backend.exception.registration.EmailNotConfirmedException;
+import com.example.backend.exception.user.UserAccountDisabledException;
+import com.example.backend.exception.user.UserCredentialsExpiredException;
 import com.example.backend.exception.user.UserCredentialsNotValidException;
 import com.example.backend.service.AppUserDetailsService;
 
@@ -34,12 +36,26 @@ public class AppAuthProvider implements AuthenticationProvider {
         UserEntity user = (UserEntity) userDetailsService.loadUserByUsername(email);
 
         if(!passwordEncoder.matches(password, user.getPassword())) {
+            userDetailsService.handleFailedLoginAttempt(email);
             throw new UserCredentialsNotValidException();
         }
 
-        if(!user.isEnabled()) {
+        if(!user.isEnabled() &&
+           !user.isAccountNonExpired() &&
+           !user.isAccountNonLocked() &&
+           !user.isCredentialsNonExpired()) {
             throw new EmailNotConfirmedException();
         }
+
+        if(!user.isEnabled()) {
+            throw new UserAccountDisabledException();
+        }
+
+        if(!user.isCredentialsNonExpired()) {
+            throw new UserCredentialsExpiredException();
+        }
+
+        userDetailsService.resetFailedLoginAttempts(email);
 
         return new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities());
     }

@@ -4,6 +4,7 @@ import { BehaviorSubject, map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserModel } from '../models/UserModel';
 import { UserRegistrationModel } from '../models/UserRegistrationModel';
+import { UserResetPasswordModel } from '../models/UserResetPasswordModel';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,8 @@ import { UserRegistrationModel } from '../models/UserRegistrationModel';
 export class AuthService {
   CURRENT_USER_SESSION_ATTRIBUTE_NAME = 'currentUser';
   BASIC_AUTH_SESSION_ATTRIBUTE_NAME = 'basicAuth';
-  private authenticationUrl = `${environment.apiUrl}/authentication`;
+  public authenticationUrl = `${environment.apiUrl}/authentication`;
+  public resetPasswordUrl = `${this.authenticationUrl}/resetPassword`;
 
   constructor(private http: HttpClient) { }
 
@@ -30,13 +32,24 @@ export class AuthService {
   }
 
   public logout() {
-
+    sessionStorage.removeItem(this.CURRENT_USER_SESSION_ATTRIBUTE_NAME);
+    sessionStorage.removeItem(this.BASIC_AUTH_SESSION_ATTRIBUTE_NAME);
   }
 
   public register(registrationRequest: UserRegistrationModel): Observable<any> {
     return this.http.post(
       this.authenticationUrl,
       registrationRequest
+    );
+  }
+
+  public resetPassword(resetPasswordRequest: UserResetPasswordModel): Observable<any> {
+    let authToken = this.generateAuthToken(resetPasswordRequest.email, resetPasswordRequest.currentPassword);
+    sessionStorage.setItem(this.BASIC_AUTH_SESSION_ATTRIBUTE_NAME, authToken);
+
+    return this.http.put(
+      this.resetPasswordUrl,
+      resetPasswordRequest
     );
   }
 

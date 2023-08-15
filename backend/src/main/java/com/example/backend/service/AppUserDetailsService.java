@@ -5,6 +5,10 @@ import com.example.backend.entity.ConfirmationTokenEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.exception.registration.EmailAlreadyConfirmedException;
 import com.example.backend.exception.registration.EmailTakenException;
+import com.example.backend.exception.user.UserCredentialsNotValidException;
+import com.example.backend.exception.user.UserEmailNotFoundException;
+import com.example.backend.exception.user.UserIdNotFoundException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +26,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.example.backend.util.ExceptionUtilities.*;
+import static com.example.backend.util.Utilities.CREDENTIALS_VALIDITY_IN_DAYS;
+
 
 @Slf4j
 @Service
@@ -40,13 +44,20 @@ public class AppUserDetailsService implements UserDetailsService {
     private final Clock clock;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UserCredentialsNotValidException {
         log.info("Loading user with email: {}", email);
         
         return userDao
                 .selectUserByEmail(email)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException(String.format(USER_WITH_EMAIL_NOT_FOUND, email)));
+                .orElseThrow(UserCredentialsNotValidException::new);
+    }
+
+    public UserEntity loadUserByUserId(String userId) throws UserIdNotFoundException {
+        log.info("Loading user with userId: {}", userId);
+
+        return userDao
+                .selectUserByUserId(userId)
+                .orElseThrow(UserIdNotFoundException::new);
     }
 
     public String signUpUser(UserEntity user) {
@@ -98,6 +109,16 @@ public class AppUserDetailsService implements UserDetailsService {
         return createConfirmationToken(user);
     }
 
+    public void resetPasswordOfUser(UserEntity user, String currentPassword, String newPassword) {
+        if(!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new UserCredentialsNotValidException();
+        }
+        
+        user.setPassword(newPassword);
+        setPasswordToUser(user);
+        setCredentialExpiresOn(user.getUserId());
+    }
+
     private void setPasswordToUser(UserEntity user) {
         String encodedPassword = passwordEncoder
                 .encode(user.getPassword());
@@ -122,26 +143,89 @@ public class AppUserDetailsService implements UserDetailsService {
         return token;
     }
 
-    public void setupAccount(String email) {
-        enableAppUser(email);
-        unlockAppUser(email);
-        setAccountNonExpired(email);
-        setCredentialsNonExpired(email);
+    public void handleFailedLoginAttempt(String email) {
+        UserEntity user = userDao.selectUserByEmail(email)
+                .orElseThrow(() -> new UserEmailNotFoundException(email));
+
+        int loginAttempts = user.getFailedLoginAttempts() + 1;
+        userDao.setUserAccountFailedLoginAttemptsByEmail(email, loginAttempts);
+        if(loginAttempts >= 3) {
+            userDao.lockUserAccountByEmail(email);
+        }
     }
 
-    private int enableAppUser(String email) {
-        return userDao.enableUserAccountByEmail(email);
+    public void resetFailedLoginAttempts(String email) {
+        boolean isUserPresent = userDao.existsUserByEmail(email);
+
+        if(!isUserPresent) {
+            throw new UserEmailNotFoundException(email);
+        }
+
+        userDao.resetUserAccountFailedLoginAttemptsByEmail(email);
     }
 
-    private int unlockAppUser(String email) {
-        return userDao.unlockUserAccountByEmail(email);
+    public boolean isAccountLocked(String email) {
+        boolean isUserPresent = userDao.existsUserByEmail(email);
+
+        if(!isUserPresent) {
+            throw new UserEmailNotFoundException(email);
+        }
+
+        return userDao.isUserAccountLockedByEmail(email);
     }
 
-    private int setAccountNonExpired(String email) {
-        return userDao.setUserAccountNonExpiredByEmail(email);
+    public void setupAccount(String userId) {
+        enableAppUser(userId);
+        unlockAppUser(userId);
+        setAccountNonExpired(userId);
+        setCredentialExpiresOn(userId);
     }
 
-    private int setCredentialsNonExpired(String email) {
-        return userDao.setUserCredentialsNonExpired(email);
+    public int enableAppUser(String userId) {
+        boolean isUserPresent = userDao.existsUserByUserId(userId);
+
+        if(!isUserPresent) {
+            throw new UserIdNotFoundException(userId);
+        }
+        return userDao.enableUserAccountByUserId(userId);
+    }
+
+    public int disableAppUser(String userId) {
+        boolean isUserPresent = userDao.existsUserByUserId(userId);
+
+        if(!isUserPresent) {
+            throw new UserIdNotFoundException(userId);
+        }
+        return userDao.disableUserAccountByUserId(userId);
+    }
+
+    public int unlockAppUser(String userId) {
+        boolean isUserPresent = userDao.existsUserByUserId(userId);
+
+        if(!isUserPresent) {
+            throw new UserIdNotFoundException(userId);
+        }
+        userDao.resetUserAccountFailedLoginAttemptsByUserId(userId);
+        return userDao.unlockUserAccountByUserId(userId);
+    }
+
+    private int setAccountNonExpired(String userId) {
+        boolean isUserPresent = userDao.existsUserByUserId(userId);
+
+        if(!isUserPresent) {
+            throw new UserIdNotFoundException(userId);
+        }
+        return userDao.setUserAccountNonExpiredByUserId(userId);
+    }
+
+    private int setCredentialExpiresOn(String userId) {
+        boolean isUserPresent = userDao.existsUserByUserId(userId);
+
+        if(!isUserPresent) {
+            throw new UserIdNotFoundException(userId);
+        }
+        LocalDateTime credentialsExpirationDate = now(clock).plusDays(CREDENTIALS_VALIDITY_IN_DAYS);
+        
+        return userDao.setUserCrecentialsExpiresOn(userId, credentialsExpirationDate);
     }
 }

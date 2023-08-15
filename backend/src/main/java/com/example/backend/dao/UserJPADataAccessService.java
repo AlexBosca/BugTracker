@@ -1,5 +1,6 @@
 package com.example.backend.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,22 +57,52 @@ public class UserJPADataAccessService implements UserDao {
     }
 
     @Override
-    public int enableUserAccountByEmail(String email) {
-        return userRepository.enableAccountByEmail(email);
+    public int enableUserAccountByUserId(String userId) {
+        return userRepository.enableAccountByUserId(userId);
     }
 
     @Override
-    public int setUserAccountNonExpiredByEmail(String email) {
-        return userRepository.setAccountNonExpiredByEmail(email);
+    public int disableUserAccountByUserId(String userId) {
+        return userRepository.disableAccountByUserId(userId);
     }
 
     @Override
-    public int setUserCredentialsNonExpired(String email) {
-        return userRepository.setCredentialsNonExpired(email);
+    public int setUserAccountNonExpiredByUserId(String userId) {
+        return userRepository.setAccountNonExpiredByUserId(userId);
     }
 
     @Override
-    public int unlockUserAccountByEmail(String email) {
-        return userRepository.unlockAccountByEmail(email);
+    public int unlockUserAccountByUserId(String userId) {
+        return userRepository.unlockAccountByUserId(userId);
+    }
+
+    @Override
+    public int lockUserAccountByEmail(String email) {
+        return userRepository.lockAccountByEmail(email);
+    }
+
+    @Override
+    public int setUserAccountFailedLoginAttemptsByEmail(String email, int attempts) {
+        return userRepository.setAccountFailedLoginAttemptsByEmail(email, attempts);
+    }
+
+    @Override
+    public int resetUserAccountFailedLoginAttemptsByEmail(String email) {
+        return userRepository.resetAccountFailedLoginAttemptsByEmail(email);
+    }
+
+    @Override
+    public int resetUserAccountFailedLoginAttemptsByUserId(String userId) {
+        return userRepository.resetAccountFailedLoginAttemptsByUserId(userId);
+    }
+
+    @Override
+    public boolean isUserAccountLockedByEmail(String email) {
+        return userRepository.isAccountLockedByEmail(email);
+    }
+
+    @Override
+    public int setUserCrecentialsExpiresOn(String userId, LocalDateTime credentialsExpirationDate) {
+        return userRepository.setCrecentialExpiresOn(userId, credentialsExpirationDate);
     }
 }

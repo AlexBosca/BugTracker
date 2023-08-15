@@ -1,12 +1,15 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.request.RegistrationRequest;
+import com.example.backend.dto.request.ResetPasswordRequest;
 import com.example.backend.entity.ConfirmationTokenEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.exception.registration.EmailAlreadyConfirmedException;
 import com.example.backend.exception.token.TokenExpiredException;
 import com.example.backend.exception.token.TokenNotFoundException;
 import com.example.backend.exception.user.UserCredentialsNotValidException;
+import com.example.backend.exception.user.UserIdNotFoundException;
+import com.example.backend.exception.user.UserPasswordsNotMatchingException;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,12 +39,12 @@ public class AuthenticationService {
     @Autowired
     private final CredentialValidatorService credentialValidatorService;
     @Autowired
-    private final EmailSenderServiceImpl emailSenderService;
+    private final EmailSenderService emailSenderService;
     @Autowired
     private final ConfirmationTokenService confirmationTokenService;
     
     public String register(RegistrationRequest request) {
-        boolean areCredentialsValid = credentialValidatorService.isValid(
+        boolean areCredentialsValid = credentialValidatorService.areCredentialsValid(
                 request.getEmail(),
                 request.getPassword());
 
@@ -87,9 +90,53 @@ public class AuthenticationService {
 
         confirmationTokenService.setConfirmedAt(token);
 
-        userDetailsService.setupAccount(confirmationToken.getUser().getEmail());
+        userDetailsService.setupAccount(confirmationToken.getUser().getUserId());
 
         return "confirmed";
+    }
+
+    public void resetPassword(ResetPasswordRequest request) {
+        UserEntity user = (UserEntity) userDetailsService.loadUserByUsername(request.getEmail());
+        boolean isNewPasswordConfirmed = request.getNewPassword().equals(request.getNewPasswordRepeated());
+        boolean isNewPasswordValid = credentialValidatorService.isPasswordValid(request.getNewPassword());
+
+        if(!isNewPasswordConfirmed) {
+            throw new UserPasswordsNotMatchingException();
+        }
+
+        if(!isNewPasswordValid) {
+            throw new UserCredentialsNotValidException();
+        }
+
+        userDetailsService.resetPasswordOfUser(user, request.getCurrentPassword(), request.getNewPassword());
+    }
+    
+    public void enableAccountByUserId(String userId) {
+        int rowsAffected = userDetailsService.enableAppUser(userId);
+
+        if(rowsAffected == 0) {
+            throw new UserIdNotFoundException(userId);
+        }
+    }
+
+    public void disableAccountByUserId(String userId) {
+        int rowsAffected = userDetailsService.disableAppUser(userId);
+
+        if(rowsAffected == 0) {
+            throw new UserIdNotFoundException(userId);
+        }
+    }
+
+    public void unlockAccountByUserId(String userId) {
+        int rowsAffected = userDetailsService.unlockAppUser(userId);
+
+        if(rowsAffected == 0) {
+            throw new UserIdNotFoundException(userId);
+        }
+    }
+
+    public boolean isAccountLockedByEmail(String email) {
+        return userDetailsService.isAccountLocked(email);
     }
 
     public UsernamePasswordAuthenticationToken getAuthenticationToken(String authorizationHeader) {
@@ -112,7 +159,7 @@ public class AuthenticationService {
 
         return new Credentials(splitCredentials[0], splitCredentials[1]);
     }
-
+    
     @Data
     @AllArgsConstructor
     private final class Credentials {
