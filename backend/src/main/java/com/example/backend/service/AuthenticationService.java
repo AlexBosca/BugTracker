@@ -135,8 +135,8 @@ public class AuthenticationService {
         }
     }
 
-    public boolean isAccountLockedByEmail(String userId) {
-        return userDetailsService.isAccountLocked(userId);
+    public boolean isAccountLockedByEmail(String email) {
+        return userDetailsService.isAccountLocked(email);
     }
 
     public UsernamePasswordAuthenticationToken getAuthenticationToken(String authorizationHeader) {
