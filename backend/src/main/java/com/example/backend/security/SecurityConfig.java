@@ -34,6 +34,7 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             return http.authorizeHttpRequests(authorize -> authorize
                     .antMatchers("/authentication/account/{userId}/disable").hasAuthority(UserPrivilege.USER_UPDATE.getCode())
+                    .antMatchers("/users/**").hasRole("ADMIN")
                     .antMatchers("/authentication/**").permitAll()
                     .anyRequest().authenticated())
             .cors(Customizer.withDefaults())

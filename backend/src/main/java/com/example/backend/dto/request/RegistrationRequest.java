@@ -26,8 +26,4 @@ public class RegistrationRequest {
 
     @JsonProperty("role")
     private String role;
-
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
 }

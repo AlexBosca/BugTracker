@@ -1,7 +1,5 @@
 package com.example.backend.security;
 
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
@@ -15,6 +13,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.example.backend.service.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;
+
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @Component
 @RequiredArgsConstructor
@@ -36,5 +36,4 @@ public class AccountLockingFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-    
 }

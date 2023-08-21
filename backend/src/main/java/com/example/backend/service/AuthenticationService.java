@@ -1,6 +1,5 @@
 package com.example.backend.service;
 
-import com.example.backend.dto.request.RegistrationRequest;
 import com.example.backend.dto.request.ResetPasswordRequest;
 import com.example.backend.entity.ConfirmationTokenEntity;
 import com.example.backend.entity.UserEntity;
@@ -27,7 +26,6 @@ import java.util.Collection;
 
 import static com.example.backend.util.Utilities.CONFIRMATION_LINK;
 import static com.example.backend.util.Utilities.formattedString;
-import static com.example.backend.enums.UserRole.getRoleByCode;
 
 @Slf4j
 @Service
@@ -43,30 +41,24 @@ public class AuthenticationService {
     @Autowired
     private final ConfirmationTokenService confirmationTokenService;
     
-    public String register(RegistrationRequest request) {
+    public String register(UserEntity user) {
         boolean areCredentialsValid = credentialValidatorService.areCredentialsValid(
-                request.getEmail(),
-                request.getPassword());
+                user.getEmail(),
+                user.getPassword());
 
         if(!areCredentialsValid) {
             throw new UserCredentialsNotValidException();
         }
 
-        log.info("Generating token for user: {}", request.getFullName());
+        log.info("Generating token for user: {}", user.getFullName());
 
-        String token = userDetailsService.signUpUser(
-                UserEntity.builder()
-                        .firstName(request.getFirstName())
-                        .lastName(request.getLastName())
-                        .email(request.getEmail())
-                        .password(request.getPassword())
-                        .role(getRoleByCode(request.getRole())).build());
+        String token = userDetailsService.signUpUser(user);
 
         log.info("Send confirmation mail to user");
 
         emailSenderService.send(
-                request.getFullName(),
-                request.getEmail(),
+                user.getFullName(),
+                user.getEmail(),
                 formattedString(CONFIRMATION_LINK, token));
 
         return token;
