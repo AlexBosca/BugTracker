@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.request.RegistrationRequest;
+import com.example.backend.dto.request.UserRequest;
 import com.example.backend.dto.response.UserFullResponse;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.mapper.MapStructMapper;
@@ -62,6 +63,18 @@ public class UserController {
         return new ResponseEntity<>(OK);
     }
 
+    @PutMapping(path = "/{userId}")
+    public ResponseEntity<Void> updateUser(
+        @PathVariable(name = "userId") String userId,
+        @RequestBody UserRequest request) {
+        userDetailsService.updateUser(
+            userId,
+            request
+        );
+
+        return new ResponseEntity<>(OK);
+    }
+
     @PutMapping(path = "/enable/{userId}")
     public ResponseEntity<Void> enableAccount(@PathVariable(name = "userId") String userId) {
         userDetailsService.enableAppUser(userId);
@@ -76,7 +89,7 @@ public class UserController {
         return new ResponseEntity<>(OK);
     }
 
-    // @PutMapping(path = "/account/{userId}/lock")
+    // @PutMapping(path = "/lock/{userId}")
     // public ResponseEntity<Void> lockAccount(@PathVariable(name = "userId") String userId) {
     //     userDetailsService.(userId);
 

@@ -62,6 +62,9 @@ export class LoginFormComponent implements OnInit {
         .subscribe({
           next: () => {
             this.router.navigate([this.returnUrl])
+              .then(() => {
+                window.location.reload();
+              });
           },
           error: error => {
             this.error = error;
