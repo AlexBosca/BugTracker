@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.dao.UserDao;
+import com.example.backend.dto.request.UserRequest;
 import com.example.backend.entity.ConfirmationTokenEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.exception.registration.EmailAlreadyConfirmedException;
@@ -23,6 +24,7 @@ import static java.time.LocalDateTime.now;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -58,6 +60,10 @@ public class AppUserDetailsService implements UserDetailsService {
         return userDao
                 .selectUserByUserId(userId)
                 .orElseThrow(UserIdNotFoundException::new);
+    }
+
+    public List<UserEntity> loadAllUsers() {
+        return userDao.selectAllUsers();
     }
 
     public String signUpUser(UserEntity user) {
@@ -109,6 +115,24 @@ public class AppUserDetailsService implements UserDetailsService {
         return createConfirmationToken(user);
     }
 
+    public void saveUser(UserEntity user) {
+        setPasswordToUser(user);
+        setupAccount(user.getUserId());
+    }
+
+    public void updateUser(String userId, UserRequest request) {
+        boolean isUserPresent = userDao.existsUserByUserId(userId);
+
+        if(!isUserPresent) {
+            throw new UserEmailNotFoundException(request.getEmail());
+        }
+
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        request.setPassword(encodedPassword);
+
+        userDao.updateUser(userId, request);
+    }
+
     public void resetPasswordOfUser(UserEntity user, String currentPassword, String newPassword) {
         if(!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new UserCredentialsNotValidException();
@@ -119,7 +143,7 @@ public class AppUserDetailsService implements UserDetailsService {
         setCredentialExpiresOn(user.getUserId());
     }
 
-    private void setPasswordToUser(UserEntity user) {
+    public void setPasswordToUser(UserEntity user) {
         String encodedPassword = passwordEncoder
                 .encode(user.getPassword());
 
@@ -172,6 +196,16 @@ public class AppUserDetailsService implements UserDetailsService {
         }
 
         return userDao.isUserAccountLockedByEmail(email);
+    }
+
+    public void deleteUserByUserId(String userId) {
+        boolean isUserPresent = userDao.existsUserByUserId(userId);
+
+        if(!isUserPresent) {
+            throw new UserIdNotFoundException(userId);
+        }
+
+        userDao.deleteUserByUserId(userId);
     }
 
     public void setupAccount(String userId) {

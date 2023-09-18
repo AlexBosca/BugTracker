@@ -1,5 +1,6 @@
 package com.example.backend.dao;
 
+import com.example.backend.dto.request.UserRequest;
 import com.example.backend.entity.UserEntity;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ public interface UserDao {
     boolean existsUserByUserId(String userId);
     boolean existsUserByEmail(String email);
     void deleteUserByUserId(String userId);
-    void updateUser(UserEntity user);
+    void updateUser(String userId, UserRequest request);
     int enableUserAccountByUserId(String userId);
     int disableUserAccountByUserId(String userId);
     int unlockUserAccountByUserId(String userId);

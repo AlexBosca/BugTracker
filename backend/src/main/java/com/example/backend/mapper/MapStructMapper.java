@@ -8,8 +8,10 @@ import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueCommentEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
+
 
 @Mapper(
         componentModel = "spring"
@@ -18,6 +20,10 @@ public interface MapStructMapper {
 
     UserRequest toRequest(UserEntity user);
     UserEntity toEntity(UserRequest request);
+
+    @Mapping(target = "role", expression = "java(UserRole.getRoleByCode(request.getRole()))")
+    UserEntity toEntity(RegistrationRequest request);
+
     UserFullResponse toResponse(UserEntity user);
     UserEntity toEntity(UserFullResponse response);
 

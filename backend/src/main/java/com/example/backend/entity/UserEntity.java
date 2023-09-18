@@ -20,7 +20,9 @@ import javax.persistence.*;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static java.time.LocalDateTime.now;
 import static javax.persistence.FetchType.EAGER;
@@ -117,7 +119,14 @@ public class UserEntity extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.getGrantedAuthorities();
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(role);
+        authorities.addAll(role.getGrantedAuthorities());
+        return authorities;
+    }
+
+    public String getFullName() {
+        return firstName + lastName;
     }
 
     @Override

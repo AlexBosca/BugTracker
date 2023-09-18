@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
+import { AdminGuard } from './core/guards/admin.guard';
+import { AccessDeniedComponent } from './core/components/access-denied/access-denied.component';
 
 const routes: Routes = [
   {
@@ -19,8 +21,17 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'users',
+    loadChildren: () => import('./features/feature-users/feature-users.module').then(m => m.FeatureUsersModule),
+    canActivate: [AuthGuard, AdminGuard]
+  },
+  {
     path: 'auth',
     loadChildren: () => import('./features/feature-auth/feature-auth.module').then(m => m.FeatureAuthModule)
+  },
+  {
+    path: 'access-denied',
+    component: AccessDeniedComponent
   },
   {
     path: '',

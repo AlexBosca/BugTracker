@@ -16,11 +16,11 @@ import com.example.backend.service.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;
 
+import static com.example.backend.util.Utilities.AUTHENTICATION_REQUEST_PATH;
+
 @Component
 @RequiredArgsConstructor
 public class AppBasicAuthFilter extends OncePerRequestFilter {
-
-    private static final String AUTHENTICATION_REQUEST_PATH = "/api/v1/bug-tracker/authentication";
 
     private final AuthenticationService authenticationService;
 

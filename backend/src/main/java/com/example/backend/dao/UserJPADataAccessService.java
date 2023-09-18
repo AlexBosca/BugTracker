@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
+import com.example.backend.dto.request.UserRequest;
 import com.example.backend.entity.UserEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -42,8 +43,14 @@ public class UserJPADataAccessService implements UserDao {
     }
 
     @Override
-    public void updateUser(UserEntity user) {
-        userRepository.save(user);
+    public void updateUser(String userId, UserRequest request) {
+        userRepository.updateUser(
+            userId,
+            request.getFirstName(),
+            request.getLastName(),
+            request.getEmail(),
+            request.getPassword()
+        );
     }
 
     @Override
