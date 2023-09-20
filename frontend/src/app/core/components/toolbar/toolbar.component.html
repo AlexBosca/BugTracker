@@ -3,25 +3,31 @@
         <a class="navbar-brand text-center" aria-current="page" href="#"><h3 class="mx-3 mt-3">Bug Tracker</h3></a>
         <ul class="navbar-nav bg-white">
             <li class="nav-item mx-3">
-                <a class="nav-link" href="#"><i class="bi bi-grid-fill me-3"></i> Dashboard</a>
+                <a class="nav-link"><i class="bi bi-grid-fill me-3"></i> Dashboard</a>
             </li>
             <li class="nav-item mx-3">
-                <a routerLink="/issues" class="nav-link" href="#"><i class="bi bi-bug-fill me-3"></i> Issues</a>
+                <a routerLink="/issues" class="nav-link"><i class="bi bi-bug-fill me-3"></i> Issues</a>
             </li>
             <!-- <li class="nav-item mx-3">
                 <a class="nav-link" href="#"><i class="bi bi-calendar-fill me-3"></i> Calendar</a>
             </li> -->
             <li class="nav-item mx-3">
-                <a class="nav-link" href="#"><i class="bi bi-chat-left-dots-fill me-3"></i> Messages</a>
+                <a class="nav-link"><i class="bi bi-chat-left-dots-fill me-3"></i> Messages</a>
             </li>
             <li class="nav-item mx-3">
-                <a routerLink="/teams" class="nav-link" href="#"><i class="bi bi-people-fill me-3"></i> Teams</a>
+                <a routerLink="/teams" class="nav-link"><i class="bi bi-people-fill me-3"></i> Teams</a>
             </li>
             <li class="nav-item mx-3">
-                <a routerLink="/projects" class="nav-link" href="#"><i class="bi bi-collection-fill me-3"></i> Projects</a>
+                <a routerLink="/projects" class="nav-link"><i class="bi bi-collection-fill me-3"></i> Projects</a>
             </li>
             <li class="nav-item mx-3">
-                <a class="nav-link" href="#"><i class="bi bi-gear-fill me-3"></i> Settings</a>
+                <a routerLink="/users" class="nav-link"><i class="bi bi-person-lines-fill me-3"></i> Users</a>
+            </li>
+            <li class="nav-item mx-3">
+                <a class="nav-link"><i class="bi bi-gear-fill me-3"></i> Settings</a>
+            </li>
+            <li *ngIf="this.isUserLoggedIn() === true" class="nav-item mx-3">
+                <a (click)="logout()" class="nav-link" style="cursor: pointer;"><i class="bi bi-box-arrow-right me-3"></i> Logout</a>
             </li>
         </ul>
     </div>

@@ -1,12 +1,14 @@
 package com.example.backend.service;
 
-import com.example.backend.dto.request.RegistrationRequest;
+import com.example.backend.dto.request.ResetPasswordRequest;
 import com.example.backend.entity.ConfirmationTokenEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.exception.registration.EmailAlreadyConfirmedException;
 import com.example.backend.exception.token.TokenExpiredException;
 import com.example.backend.exception.token.TokenNotFoundException;
 import com.example.backend.exception.user.UserCredentialsNotValidException;
+import com.example.backend.exception.user.UserIdNotFoundException;
+import com.example.backend.exception.user.UserPasswordsNotMatchingException;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +26,6 @@ import java.util.Collection;
 
 import static com.example.backend.util.Utilities.CONFIRMATION_LINK;
 import static com.example.backend.util.Utilities.formattedString;
-import static com.example.backend.enums.UserRole.getRoleByCode;
 
 @Slf4j
 @Service
@@ -36,34 +37,28 @@ public class AuthenticationService {
     @Autowired
     private final CredentialValidatorService credentialValidatorService;
     @Autowired
-    private final EmailSenderServiceImpl emailSenderService;
+    private final EmailSenderService emailSenderService;
     @Autowired
     private final ConfirmationTokenService confirmationTokenService;
     
-    public String register(RegistrationRequest request) {
-        boolean areCredentialsValid = credentialValidatorService.isValid(
-                request.getEmail(),
-                request.getPassword());
+    public String register(UserEntity user) {
+        boolean areCredentialsValid = credentialValidatorService.areCredentialsValid(
+                user.getEmail(),
+                user.getPassword());
 
         if(!areCredentialsValid) {
             throw new UserCredentialsNotValidException();
         }
 
-        log.info("Generating token for user: {}", request.getFullName());
+        log.info("Generating token for user: {}", user.getFullName());
 
-        String token = userDetailsService.signUpUser(
-                UserEntity.builder()
-                        .firstName(request.getFirstName())
-                        .lastName(request.getLastName())
-                        .email(request.getEmail())
-                        .password(request.getPassword())
-                        .role(getRoleByCode(request.getRole())).build());
+        String token = userDetailsService.signUpUser(user);
 
         log.info("Send confirmation mail to user");
 
         emailSenderService.send(
-                request.getFullName(),
-                request.getEmail(),
+                user.getFullName(),
+                user.getEmail(),
                 formattedString(CONFIRMATION_LINK, token));
 
         return token;
@@ -87,9 +82,53 @@ public class AuthenticationService {
 
         confirmationTokenService.setConfirmedAt(token);
 
-        userDetailsService.setupAccount(confirmationToken.getUser().getEmail());
+        userDetailsService.setupAccount(confirmationToken.getUser().getUserId());
 
         return "confirmed";
+    }
+
+    public void resetPassword(ResetPasswordRequest request) {
+        UserEntity user = (UserEntity) userDetailsService.loadUserByUsername(request.getEmail());
+        boolean isNewPasswordConfirmed = request.getNewPassword().equals(request.getNewPasswordRepeated());
+        boolean isNewPasswordValid = credentialValidatorService.isPasswordValid(request.getNewPassword());
+
+        if(!isNewPasswordConfirmed) {
+            throw new UserPasswordsNotMatchingException();
+        }
+
+        if(!isNewPasswordValid) {
+            throw new UserCredentialsNotValidException();
+        }
+
+        userDetailsService.resetPasswordOfUser(user, request.getCurrentPassword(), request.getNewPassword());
+    }
+    
+    public void enableAccountByUserId(String userId) {
+        int rowsAffected = userDetailsService.enableAppUser(userId);
+
+        if(rowsAffected == 0) {
+            throw new UserIdNotFoundException(userId);
+        }
+    }
+
+    public void disableAccountByUserId(String userId) {
+        int rowsAffected = userDetailsService.disableAppUser(userId);
+
+        if(rowsAffected == 0) {
+            throw new UserIdNotFoundException(userId);
+        }
+    }
+
+    public void unlockAccountByUserId(String userId) {
+        int rowsAffected = userDetailsService.unlockAppUser(userId);
+
+        if(rowsAffected == 0) {
+            throw new UserIdNotFoundException(userId);
+        }
+    }
+
+    public boolean isAccountLockedByEmail(String email) {
+        return userDetailsService.isAccountLocked(email);
     }
 
     public UsernamePasswordAuthenticationToken getAuthenticationToken(String authorizationHeader) {
@@ -112,7 +151,7 @@ public class AuthenticationService {
 
         return new Credentials(splitCredentials[0], splitCredentials[1]);
     }
-
+    
     @Data
     @AllArgsConstructor
     private final class Credentials {

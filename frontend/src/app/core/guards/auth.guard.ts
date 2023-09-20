@@ -7,7 +7,7 @@ import { AuthService } from 'src/app/features/feature-auth/services/auth.service
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-  constructor (private router: Router, private authService: AuthService) { }
+  constructor(private router: Router, private authService: AuthService) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     const isUserLoggedIn = this.authService.isUserLoggedIn();

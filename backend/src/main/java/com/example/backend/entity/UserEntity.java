@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.example.backend.config.ClockConfig;
 import com.example.backend.entity.issue.IssueCommentEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.enums.UserRole;
@@ -16,8 +17,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static java.time.LocalDateTime.now;
 import static javax.persistence.FetchType.EAGER;
 
 @Entity
@@ -52,9 +59,12 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @Default
     private Boolean isAccountLocked = true;
 
-    @Column(name = "credential_expired")
+    @Column(name = "failed_login_attempts")
     @Default
-    private Boolean isCredentialsExpired = true;
+    private int failedLoginAttempts = 0;
+
+    @Column(name = "credentials_expire_on")
+    private LocalDateTime credentialExpiresOn;
 
     @Column(name = "enabled")
     @Default
@@ -109,7 +119,14 @@ public class UserEntity extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.getGrantedAuthorities();
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(role);
+        authorities.addAll(role.getGrantedAuthorities());
+        return authorities;
+    }
+
+    public String getFullName() {
+        return firstName + lastName;
     }
 
     @Override
@@ -127,9 +144,13 @@ public class UserEntity extends BaseEntity implements UserDetails {
         return !isAccountLocked;
     }
 
+    private boolean isPasswordExpired(Clock clock) {
+        return (credentialExpiresOn != null) && (credentialExpiresOn.isBefore(now(clock)));
+    }
+
     @Override
     public boolean isCredentialsNonExpired() {
-        return !isCredentialsExpired;
+        return !isPasswordExpired(ClockConfig.getClock());
     }
 
     @Override

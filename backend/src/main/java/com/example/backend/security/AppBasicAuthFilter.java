@@ -16,6 +16,8 @@ import com.example.backend.service.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;
 
+import static com.example.backend.util.Utilities.AUTHENTICATION_REQUEST_PATH;
+
 @Component
 @RequiredArgsConstructor
 public class AppBasicAuthFilter extends OncePerRequestFilter {
@@ -36,7 +38,9 @@ public class AppBasicAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getRequestURI();                       // To delete
-        return path.startsWith("/api/v1/bug-tracker/authentication");
+        String path = request.getRequestURI();
+        String method = request.getMethod();
+
+        return path.startsWith(AUTHENTICATION_REQUEST_PATH) && (method.equals("GET") || method.equals("POST"));
     }
 }

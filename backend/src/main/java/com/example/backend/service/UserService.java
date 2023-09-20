@@ -5,7 +5,7 @@ import com.example.backend.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import static com.example.backend.enums.UserRole.VISITOR;
+import static com.example.backend.enums.UserRole.ROLE_VISITOR;
 
 @Service
 @RequiredArgsConstructor
@@ -15,7 +15,7 @@ public class UserService {
 
     public void createUser(UserEntity user) {
         if(user.getRole() == null) {
-            user.setRole(VISITOR);
+            user.setRole(ROLE_VISITOR);
         }
 
         userDao.insertUser(user);

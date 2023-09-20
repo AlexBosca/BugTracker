@@ -5,30 +5,17 @@ spring:
         - dev
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
+  sql:
+    init:
+      schema-locations: classpath:/sql/schema.sql
+      data-locations: classpath:/sql/import-data/import-projects.sql, classpath:/sql/import-data/import-teams.sql, classpath:/sql/import-data/import-users.sql, classpath:/sql/import-data/import-teams-on-project.sql, classpath:/sql/import-data/import-issues.sql, classpath:/sql/import-data/import-users-in-teams.sql
+      mode: always
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/bugtracker
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
-
-  # mail:
-  #   host: localhost
-  #   port: 1025
-  #   username: hello
-  #   password: hello
-
-  #   properties:
-  #     mail:
-  #       smtp:
-  #         ssl:
-  #           trust: "*"
-  #         auth: true
-  #         starttls:
-  #           enable: true
-  #         connectiontimeout: 5000
-  #         timeout: 3000
-  #         writetimeout: 5000
   mail:
     host: smtp.gmail.com
     port: 587

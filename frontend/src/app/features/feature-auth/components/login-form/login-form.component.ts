@@ -15,10 +15,10 @@ export class LoginFormComponent implements OnInit {
 
   loginForm!: FormGroup;
   loading: boolean = false;
-  loginSubmitted: boolean = false;
+  submitted: boolean = false;
   error!: HttpErrorResponse;
   returnUrl: string = '';
-  registrationResponse?: string;
+  previousViewResponse?: string;
 
   constructor(
     private router: Router,
@@ -30,7 +30,7 @@ export class LoginFormComponent implements OnInit {
         this.router.navigate(['/']);
       }
 
-      this.registrationResponse = router.getCurrentNavigation()?.extras?.state?.['data'];
+      this.previousViewResponse = router.getCurrentNavigation()?.extras?.state?.['data'];
     }
 
   ngOnInit(): void {
@@ -47,7 +47,7 @@ export class LoginFormComponent implements OnInit {
   }
 
   login(): void {
-    this.loginSubmitted = true;
+    this.submitted = true;
 
     if(!this.loginForm.valid) {
       return;
@@ -62,6 +62,9 @@ export class LoginFormComponent implements OnInit {
         .subscribe({
           next: () => {
             this.router.navigate([this.returnUrl])
+              .then(() => {
+                window.location.reload();
+              });
           },
           error: error => {
             this.error = error;

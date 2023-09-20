@@ -18,6 +18,8 @@ public class UserFullResponse {
     private String lastName;
     private String email;
     private String role;
+    private boolean isAccountLocked;
+    private boolean isEnabled;
     private Collection<TeamSlimResponse> teams;
     private Collection<IssueSlimResponse> issuesCreated;
     private Collection<IssueSlimResponse> issuesAssigned;
