@@ -3,7 +3,7 @@
     <div class="card-body">
       <!-- Table Header -->
       <div class="row p-2 mb-3 fw-bold">
-        <div class="col-3">Project ID</div>
+        <div class="col-3">Project Key</div>
         <div class="col-3">Name</div>
         <div class="col-6">Description</div>
         <!-- <div class="col">Version</div>
@@ -16,7 +16,7 @@
   
       <!-- Table Content -->
       <ng-template [ngIf]="projects.length !== 0" [ngIfElse]="no_projects">
-        <div *ngFor="let project of projects" [routerLink]="['details', project.projectId]" class="row mb-3 p-2 d-flex align-items-center">
+        <div *ngFor="let project of projects" [routerLink]="['details', project.projectKey]" class="row mb-3 p-2 d-flex align-items-center">
           <!-- <div class="col-3 d-flex">
             <div class="bg-secondary rounded-circle w-25"></div>
             <div class="container">
@@ -25,7 +25,7 @@
             </div>
           </div> -->
   
-          <div class="col-3">{{project.projectId}}</div>
+          <div class="col-3">{{project.projectKey}}</div>
   
           <div class="col-3">{{project.name}}</div>
   

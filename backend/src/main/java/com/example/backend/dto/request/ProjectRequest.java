@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ProjectRequest {
 
-    private String projectId;
+    private String projectKey;
     private String name;
     private String description;
 }

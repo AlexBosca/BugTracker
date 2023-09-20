@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { ProjectModel } from '../models/ProjectModel';
 import { ProjectRequestModel } from '../models/ProjectRequestModel';
 import { IssueModel } from '../../feature-issues/models/IssueModel';
+import { TeamModel } from '../../feature-teams/models/TeamModel';
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +19,8 @@ export class ProjectService {
     return this.http.get<ProjectModel[]>(this.projectsUrl);
   }
 
-  getProject(projectId: string): Observable<ProjectModel> {
-    return this.http.get<ProjectModel>(`${this.projectsUrl}/${projectId}`);
+  getProject(projectKey: string): Observable<ProjectModel> {
+    return this.http.get<ProjectModel>(`${this.projectsUrl}/${projectKey}`);
   }
 
   createProject(projectRequest: ProjectRequestModel): Observable<void> {
@@ -29,14 +30,18 @@ export class ProjectService {
       );
   }
 
-  addTeamToProjects(projectId: string, teamId: string): Observable<void> {
+  addTeamToProjects(projectKey: string, teamId: string): Observable<void> {
     return this.http.put<void>(
-      `${this.projectsUrl}/${projectId}/addTeam/${teamId}`,
+      `${this.projectsUrl}/${projectKey}/addTeam/${teamId}`,
       null
     );
   }
 
-  getIssuesOnProjects(projectId: string): Observable<IssueModel[]> {
-    return this.http.get<IssueModel[]>(`${this.projectsUrl}/${projectId}/issues`);
+  getIssuesOnProject(projectKey: string): Observable<IssueModel[]> {
+    return this.http.get<IssueModel[]>(`${this.projectsUrl}/${projectKey}/issues`);
+  }
+
+  getTeamsOnProject(projectKey: string): Observable<TeamModel[]> {
+    return this.http.get<TeamModel[]>(`${this.projectsUrl}/${projectKey}/teams`);
   }
 }

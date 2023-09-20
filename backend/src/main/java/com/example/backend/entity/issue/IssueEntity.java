@@ -65,6 +65,14 @@ public class IssueEntity extends BaseEntity {
     private LocalDateTime assignedOn;
 
     @ManyToOne
+    @JoinColumn(name = "modified_by_user", referencedColumnName = "id")
+    @Cascade({ SAVE_UPDATE, MERGE, PERSIST})
+    private UserEntity modifiedByUser;
+
+    @Column(name = "modified_on")
+    private LocalDateTime modifiedOn;
+
+    @ManyToOne
     @JoinColumn(name = "closed_by_user", referencedColumnName = "id")
     @Cascade({ SAVE_UPDATE, MERGE, PERSIST})
     private UserEntity closedByUser;
@@ -83,6 +91,6 @@ public class IssueEntity extends BaseEntity {
 
     @PostPersist
     public void setIssueIdPostPersist() {
-        issueId = String.format("%s%05d", this.getTitle().substring(0, 2), this.getId());
+        issueId = String.format("%s-%04d", this.getProject().getProjectKey(), this.getId());
     }
 }

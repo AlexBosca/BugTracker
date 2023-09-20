@@ -13,9 +13,9 @@ import java.util.Collection;
 @Getter
 public class ProjectFullResponse {
 
-    private String projectId;
+    private String projectKey;
     private String name;
     private String description;
-    private TeamSlimResponse team;
+    private Collection<TeamSlimResponse> teams;
     private Collection<IssueSlimResponse> issues;
 }

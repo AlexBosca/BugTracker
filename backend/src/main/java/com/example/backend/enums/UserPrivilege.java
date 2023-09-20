@@ -1,11 +1,13 @@
 package com.example.backend.enums;
 
+import org.springframework.security.core.GrantedAuthority;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum UserPrivilege {
+public enum UserPrivilege implements GrantedAuthority {
 
     ISSUE_CREATE("IC"), ISSUE_READ("IR"), ISSUE_UPDATE("IU"), ISSUE_DELETE("ID"),
     PROJECT_CREATE("PC"), PROJECT_READ("PR"), PROJECT_UPDATE("PU"), PROJECT_DELETE("PD"),
@@ -14,6 +16,11 @@ public enum UserPrivilege {
     COMMENT_CREATE("CC"), COMMENT_READ("CR"), COMMENT_UPDATE("CU"), COMMENT_DELETE("CD");
 
     private final String code;
+
+    @Override
+    public String getAuthority() {
+        return name();
+    }
 
     public static UserPrivilege[] getAllPrivileges() {
         return values();

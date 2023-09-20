@@ -1,5 +1,6 @@
 package com.example.backend.enums;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.example.backend.exception.user.UserRoleNotFoundException;
@@ -14,40 +15,40 @@ import static com.example.backend.enums.UserPrivilege.*;
 
 @AllArgsConstructor
 @Getter
-public enum UserRole {
+public enum UserRole implements GrantedAuthority {
 
-    ADMIN("A", Set.of(
+    ROLE_ADMIN("A", Set.of(
             getAllPrivileges()
     )),
-    DEVELOPER("D", Set.of(
+    ROLE_DEVELOPER("D", Set.of(
             ISSUE_CREATE, ISSUE_READ, ISSUE_UPDATE,
             PROJECT_READ,
             TEAM_READ,
             USER_READ,
             COMMENT_CREATE, COMMENT_READ, COMMENT_UPDATE, COMMENT_DELETE
     )),
-    TESTER("T", Set.of(
+    ROLE_TESTER("T", Set.of(
             ISSUE_CREATE, ISSUE_READ, ISSUE_UPDATE,
             PROJECT_READ,
             TEAM_READ,
             USER_READ,
             COMMENT_CREATE, COMMENT_READ, COMMENT_UPDATE, COMMENT_DELETE
     )),
-    SCRUM_MASTER("SM", Set.of(
+    ROLE_SCRUM_MASTER("SM", Set.of(
             ISSUE_CREATE, ISSUE_READ, ISSUE_UPDATE,
             PROJECT_READ,
             TEAM_CREATE, TEAM_READ, TEAM_UPDATE,
             USER_READ,
             COMMENT_CREATE, COMMENT_READ, COMMENT_UPDATE, COMMENT_DELETE
     )),
-    PROJECT_MANAGER("PM", Set.of(
+    ROLE_PROJECT_MANAGER("PM", Set.of(
             ISSUE_CREATE, ISSUE_READ, ISSUE_UPDATE, // can't change issue's state, ex: SUBMITTED -> IN_WORK
             PROJECT_CREATE, PROJECT_READ, PROJECT_UPDATE,
             TEAM_READ,
             USER_READ,
             COMMENT_CREATE, COMMENT_READ, COMMENT_UPDATE, COMMENT_DELETE
     )),
-    VISITOR("V", Set.of(
+    ROLE_VISITOR("V", Set.of(
             ISSUE_READ,
             PROJECT_READ,
             TEAM_READ,
@@ -61,8 +62,13 @@ public enum UserRole {
     public Set<SimpleGrantedAuthority> getGrantedAuthorities() {
 
         return getPrivileges().stream()
-                .map(privilege -> new SimpleGrantedAuthority(privilege.getCode()))
+                .map(privilege -> new SimpleGrantedAuthority(privilege.name()))
                 .collect(Collectors.toSet());
+    }
+    
+    @Override
+    public String getAuthority() {
+        return name();
     }
 
     public static Set<UserRole> getAllRoles() {

@@ -18,8 +18,7 @@ public class AppBasicAuthEntryPoint extends BasicAuthenticationEntryPoint {
     public void commence(
         HttpServletRequest request,
         HttpServletResponse response,
-        AuthenticationException authException
-        ) throws IOException {
+        AuthenticationException authException) throws IOException {
         response.addHeader("WWW-Authenticate", "Basic realm=" + getRealmName() + "");
         response.setStatus(SC_UNAUTHORIZED);
     }

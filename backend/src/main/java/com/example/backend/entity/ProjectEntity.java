@@ -19,13 +19,13 @@ import static javax.persistence.CascadeType.ALL;
 @Table(name = "projects")
 public class ProjectEntity extends BaseEntity {
 
-    @Column(name = "project_id")
-    private String projectId;
+    @Column(name = "project_key", nullable = false)
+    private String projectKey;
 
-    @Column(name = "name", unique = true)
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 
     @ManyToMany(
@@ -36,7 +36,7 @@ public class ProjectEntity extends BaseEntity {
             name = "teams_on_project",
             joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"))
-    private Set<TeamEntity> teams = new HashSet<>();
+    private Set<TeamEntity> teams;
 
     @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
     private Collection<IssueEntity> issues;

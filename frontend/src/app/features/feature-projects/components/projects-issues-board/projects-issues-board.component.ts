@@ -11,7 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrls: ['./projects-issues-board.component.css']
 })
 export class ProjectsIssuesBoardComponent implements OnInit {
-  private projectId!: string | null;
+  private projectKey!: string | null;
   project!: ProjectModel;
   issues!: IssueModel[];
   error!: HttpErrorResponse;
@@ -22,10 +22,9 @@ export class ProjectsIssuesBoardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    
     this.route.parent!.paramMap.subscribe(
       (params: ParamMap) => {
-        this.projectId = params.get('id');
+        this.projectKey = params.get('id');
       }
     );
     
@@ -33,9 +32,8 @@ export class ProjectsIssuesBoardComponent implements OnInit {
   }
 
   fetchIssuesOnProject(): void {
-    if(this.projectId) {
-      console.log(this.projectId)
-      this.projectService.getIssuesOnProjects(this.projectId)
+    if(this.projectKey) {
+      this.projectService.getIssuesOnProject(this.projectKey)
         .subscribe({
           next: data => this.issues = data,
           error: error => this.error = error
