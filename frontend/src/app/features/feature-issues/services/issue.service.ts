@@ -43,7 +43,7 @@ export class IssueService {
     let changeStateRequest = `${this.issuesUrl}/${issueId}/${status}`;
     let request = changeStateRequest;
 
-    if(status === IssueStatusRequest.assignToDeveloper || status === IssueStatusRequest.closeByDeveloper) {
+    if(status === IssueStatusRequest.assignToDeveloper) {
       let developerId = this.authService.getCurrentUser().userId;
       request = `${request}/${developerId}`;
     }
