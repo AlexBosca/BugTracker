@@ -1,16 +1,16 @@
 <div class="row h-75">
     <app-issues-board class="col"
         [status]="'TO DO'"
-        [issues]="issues">
+        [issues]="getToDoIssues(issues)">
     </app-issues-board>
 
     <app-issues-board class="col"
         [status]="'IN PROGRESS'"
-        [issues]="issues">
+        [issues]="getInProgressIssues(issues)">
     </app-issues-board>
 
     <app-issues-board class="col"
         [status]="'DONE'"
-        [issues]="issues">
+        [issues]="getDoneIssues(issues)">
     </app-issues-board>
 </div>
