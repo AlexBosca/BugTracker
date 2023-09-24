@@ -4,6 +4,7 @@ import { IssueModel } from 'src/app/features/feature-issues/models/IssueModel';
 import { ProjectService } from '../../services/project.service';
 import { ProjectModel } from '../../models/ProjectModel';
 import { HttpErrorResponse } from '@angular/common/http';
+import { StatusCategory } from 'src/app/features/feature-issues/models/StatusCategory';
 
 @Component({
   selector: 'app-projects-issues-board',
@@ -39,5 +40,17 @@ export class ProjectsIssuesBoardComponent implements OnInit {
           error: error => this.error = error
         });
     }
+  }
+
+  getToDoIssues(issues: IssueModel[]): IssueModel[] {
+    return issues.filter(issue => StatusCategory.TO_DO.includes(issue.status))
+  }
+
+  getInProgressIssues(issues: IssueModel[]): IssueModel[] {
+    return issues.filter(issue => StatusCategory.IN_PROGRESS.includes(issue.status))
+  }
+
+  getDoneIssues(issues: IssueModel[]): IssueModel[] {
+    return issues.filter(issue => StatusCategory.DONE.includes(issue.status))
   }
 }
