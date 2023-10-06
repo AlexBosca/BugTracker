@@ -4,6 +4,7 @@ import com.example.backend.dao.IssueCommentDao;
 import com.example.backend.dao.IssueDao;
 import com.example.backend.dao.ProjectDao;
 import com.example.backend.dao.UserDao;
+import com.example.backend.dto.filter.IssueFilter;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueCommentEntity;
@@ -52,6 +53,12 @@ public class IssueService {
 
         return issues;
     }
+
+    public List<IssueEntity> filterIssues(IssueFilter filter) {
+
+        return issueDao.selectAllFilteredIssues(filter);
+    }
+
     public IssueEntity getIssueByIssueId(String issueId) {
         log.info(ISSUE_REQUEST_BY_ID, issueId);
 
