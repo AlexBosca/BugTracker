@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.filter.IssueFilter;
 import com.example.backend.dto.request.IssueCommentRequest;
 import com.example.backend.dto.request.IssueRequest;
 import com.example.backend.dto.response.IssueFullResponse;
@@ -42,6 +43,14 @@ public class IssueController {
 
         return new ResponseEntity<>(
                 mapper.toResponses(issueService.getAllIssues()),
+                OK
+        );
+    }
+
+    @PostMapping(path = "/filter")
+    public ResponseEntity<List<IssueFullResponse>> getFilteredIssues(@RequestBody IssueFilter filter) {
+        return new ResponseEntity<>(
+                mapper.toResponses(issueService.filterIssues(filter)),
                 OK
         );
     }
