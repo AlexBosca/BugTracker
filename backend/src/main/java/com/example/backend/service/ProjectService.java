@@ -2,6 +2,7 @@ package com.example.backend.service;
 
 import com.example.backend.dao.ProjectDao;
 import com.example.backend.dao.TeamDao;
+import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.TeamEntity;
 import com.example.backend.entity.issue.IssueEntity;
@@ -41,12 +42,16 @@ public class ProjectService {
         return projects;
     }
 
+    public List<ProjectEntity> filterProjects(FilterCriteria filterCriteria) {
+        return projectDao.selectAllFilteredProjects(filterCriteria);
+    }
+
     public ProjectEntity getProjectByProjectKey(String projectKey) {
         log.info(PROJECT_REQUEST_BY_ID, projectKey);
         
         ProjectEntity project = projectDao
-                .selectProjectByKey(projectKey)
-                .orElseThrow(() -> new ProjectNotFoundException(projectKey));
+            .selectProjectByKey(projectKey)
+            .orElseThrow(() -> new ProjectNotFoundException(projectKey));
 
         log.info(PROJECT_RETURN);
 
@@ -57,7 +62,7 @@ public class ProjectService {
         log.info(PROJECT_CREATE);
 
         boolean isProjectPresent = projectDao
-                .existsProjectWithProjectKey(project.getProjectKey());
+            .existsProjectWithProjectKey(project.getProjectKey());
 
         if(isProjectPresent) {
             throw new ProjectAlreadyCreatedException(project.getProjectKey());
@@ -72,12 +77,12 @@ public class ProjectService {
         log.info(PROJECT_ADD_TEAM_BY_ID, teamId, projectKey);
 
         ProjectEntity project = projectDao
-                .selectProjectByKey(projectKey)
-                .orElseThrow(() -> new ProjectNotFoundException(projectKey));
+            .selectProjectByKey(projectKey)
+            .orElseThrow(() -> new ProjectNotFoundException(projectKey));
 
         TeamEntity team = teamDao
-                .selectTeamByTeamId(teamId)
-                .orElseThrow(() -> new TeamIdNotFoundException(teamId));
+            .selectTeamByTeamId(teamId)
+            .orElseThrow(() -> new TeamIdNotFoundException(teamId));
 
         Set<TeamEntity> teams = project.getTeams();
         teams.add(team);
@@ -94,11 +99,11 @@ public class ProjectService {
         log.info("Request all issues on project with id: {}", projectKey);
 
         ProjectEntity project = projectDao
-                .selectProjectByKey(projectKey)
-                .orElseThrow(() -> new ProjectNotFoundException(projectKey));
+            .selectProjectByKey(projectKey)
+            .orElseThrow(() -> new ProjectNotFoundException(projectKey));
 
         List<IssueEntity> issuesOnProject = project.getIssues().stream()
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
 
         log.info("Return all issues on project with id: {}", projectKey);
 
@@ -109,11 +114,11 @@ public class ProjectService {
         log.info("Request all teams on project with id: {}", projectKey);
 
         ProjectEntity project = projectDao
-                .selectProjectByKey(projectKey)
-                .orElseThrow(() -> new ProjectNotFoundException(projectKey));
+            .selectProjectByKey(projectKey)
+            .orElseThrow(() -> new ProjectNotFoundException(projectKey));
 
         List<TeamEntity> teamsOnProject = project.getTeams().stream()
-                .collect(Collectors.toList());
+            .collect(Collectors.toList());
 
         log.info("Return all issues on project with id: {}", projectKey);
 

@@ -42,16 +42,16 @@ public class IssueController {
         log.info(ISSUE_GET_ALL);
 
         return new ResponseEntity<>(
-                mapper.toResponses(issueService.getAllIssues()),
-                OK
+            mapper.toResponses(issueService.getAllIssues()),
+            OK
         );
     }
 
     @PostMapping(path = "/filter")
-    public ResponseEntity<List<IssueFullResponse>> getFilteredIssues(@RequestBody FilterCriteria filter) {
+    public ResponseEntity<List<IssueFullResponse>> getFilteredIssues(@RequestBody FilterCriteria filterCriteria) {
         return new ResponseEntity<>(
-                mapper.toResponses(issueService.filterIssues(filter)),
-                OK
+            mapper.toResponses(issueService.filterIssues(filterCriteria)),
+            OK
         );
     }
 
@@ -60,8 +60,8 @@ public class IssueController {
         log.info(ISSUE_GET_BY_ID, issueId);
 
         return new ResponseEntity<>(
-                mapper.toResponse(issueService.getIssueByIssueId(issueId)),
-                OK
+            mapper.toResponse(issueService.getIssueByIssueId(issueId)),
+            OK
         );
     }
 

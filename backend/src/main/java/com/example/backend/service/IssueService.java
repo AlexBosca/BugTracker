@@ -54,9 +54,9 @@ public class IssueService {
         return issues;
     }
 
-    public List<IssueEntity> filterIssues(FilterCriteria filter) {
+    public List<IssueEntity> filterIssues(FilterCriteria filterCriteria) {
 
-        return issueDao.selectAllFilteredIssues(filter);
+        return issueDao.selectAllFilteredIssues(filterCriteria);
     }
 
     public IssueEntity getIssueByIssueId(String issueId) {
@@ -83,7 +83,7 @@ public class IssueService {
             .orElseThrow(() -> new UserEmailNotFoundException(email));
 
         boolean isIssuePresent = issueDao
-                .existsIssueWithIssueId(issue.getIssueId());
+            .existsIssueWithIssueId(issue.getIssueId());
 
         if(isIssuePresent) {
             throw new IssueAlreadyCreatedException(issue.getIssueId());
@@ -170,8 +170,8 @@ public class IssueService {
             .orElseThrow(() -> new IssueNotFoundException(issueId));
 
         UserEntity user = userDao
-                .selectUserByEmail(email)
-                .orElseThrow(() -> new UserEmailNotFoundException(email));
+            .selectUserByEmail(email)
+            .orElseThrow(() -> new UserEmailNotFoundException(email));
 
         issueComment.setCreatedOnIssue(issue);
         issueComment.setCreatedOn(now(clock));

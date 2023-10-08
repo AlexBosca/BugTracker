@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface IssueDao {
     List<IssueEntity> selectAllIssues();
-    List<IssueEntity> selectAllFilteredIssues(FilterCriteria filter);
+    List<IssueEntity> selectAllFilteredIssues(FilterCriteria filterCriteria);
     Optional<IssueEntity> selectIssueByIssueId(String issueId);
     void insertIssue(IssueEntity issue);
     boolean existsIssueWithIssueId(String issueId);
