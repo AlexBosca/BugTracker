@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class IssueFilter {
+public class FilterCriteria {
     private Map<String, Object> filters;
     private Map<String, String> operators;
     private Map<String, String> dataTypes;

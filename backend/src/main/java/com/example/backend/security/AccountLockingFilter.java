@@ -14,6 +14,7 @@ import com.example.backend.service.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;
 
+import static com.example.backend.util.Utilities.AUTHENTICATION_REQUEST_PATH;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @Component
@@ -35,5 +36,13 @@ public class AccountLockingFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        String method = request.getMethod();
+
+        return path.startsWith(AUTHENTICATION_REQUEST_PATH) && (method.equals("GET") || method.equals("POST"));
     }
 }
