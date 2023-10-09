@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.request.TeamRequest;
 import com.example.backend.dto.response.TeamFullResponse;
 import com.example.backend.entity.TeamEntity;
@@ -45,13 +46,27 @@ public class TeamController {
         );
     }
 
+    @PostMapping(path = "/filter")
+    public ResponseEntity<List<TeamFullResponse>> getFilteredTeams(@RequestBody FilterCriteria filterCriteria) {
+        List<TeamEntity> entities = teamService.filterTeams(filterCriteria);
+
+        List<TeamFullResponse> responses = entities.stream()
+            .map(mapper::toResponse)
+            .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            responses,
+            OK
+        );
+    } 
+
     @GetMapping(path = "/{teamId}")
     public ResponseEntity<TeamFullResponse> getTeam(@PathVariable(name = "teamId") String teamId) {
         log.info(TEAM_GET_BY_ID, teamId);
 
         return new ResponseEntity<>(
-                mapper.toResponse(teamService.getTeamByTeamId(teamId)),
-                OK
+            mapper.toResponse(teamService.getTeamByTeamId(teamId)),
+            OK
         );
     }
 

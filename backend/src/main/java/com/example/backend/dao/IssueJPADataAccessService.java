@@ -3,21 +3,33 @@ package com.example.backend.dao;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+
 import org.springframework.stereotype.Repository;
 
+import com.example.backend.dto.filter.FilterCriteria;
+import com.example.backend.dto.filter.FilterUtility;
 import com.example.backend.entity.issue.IssueEntity;
 
-import lombok.RequiredArgsConstructor;
-
 @Repository("issue-jpa")
-@RequiredArgsConstructor
 public class IssueJPADataAccessService implements IssueDao {
 
+    private final FilterUtility<IssueEntity> filterUtility;
     private final IssueRepository issueRepository;
+
+    public IssueJPADataAccessService(EntityManager entityManager, IssueRepository issueRepository) {
+        this.filterUtility = new FilterUtility<>(entityManager, IssueEntity.class);
+        this.issueRepository = issueRepository;
+    }
 
     @Override
     public List<IssueEntity> selectAllIssues() {
        return issueRepository.findAll();
+    }
+
+    @Override
+    public List<IssueEntity> selectAllFilteredIssues(FilterCriteria filterCriteria) {
+        return filterUtility.filterEntities(filterCriteria);
     }
 
     @Override
@@ -45,5 +57,4 @@ public class IssueJPADataAccessService implements IssueDao {
         // issueRepository.update(issue);
         issueRepository.save(issue);
     }
-    
 }

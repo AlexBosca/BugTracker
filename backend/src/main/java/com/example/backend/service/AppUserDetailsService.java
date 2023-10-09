@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.dao.UserDao;
+import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.request.UserRequest;
 import com.example.backend.entity.ConfirmationTokenEntity;
 import com.example.backend.entity.UserEntity;
@@ -64,6 +65,10 @@ public class AppUserDetailsService implements UserDetailsService {
 
     public List<UserEntity> loadAllUsers() {
         return userDao.selectAllUsers();
+    }
+
+    public List<UserEntity> filterUsers(FilterCriteria filterCriteria) {
+        return userDao.selectAllFilteredUsers(filterCriteria);
     }
 
     public String signUpUser(UserEntity user) {

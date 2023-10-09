@@ -28,10 +28,10 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping
-    public ResponseEntity<Void> register(@RequestBody RegistrationRequest request) {
-        authenticationService.register(mapper.toEntity(request));
+    public ResponseEntity<String> register(@RequestBody RegistrationRequest request) {
+        String responseBody = authenticationService.register(mapper.toEntity(request));
 
-        return new ResponseEntity<>(CREATED);
+        return new ResponseEntity<>(responseBody, CREATED);
     }
 
     @GetMapping(path = "/confirm")

@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.request.ProjectRequest;
 import com.example.backend.dto.response.IssueFullResponse;
 import com.example.backend.dto.response.ProjectFullResponse;
@@ -37,8 +38,22 @@ public class ProjectController {
         List<ProjectEntity> entities = projectService.getAllProjects();
 
         List<ProjectFullResponse> responses = entities.stream()
-                .map(mapper::toResponse)
-                .collect(Collectors.toList());
+            .map(mapper::toResponse)
+            .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+            responses,
+            OK
+        );
+    }
+
+    @PostMapping(path = "/filter")
+    public ResponseEntity<List<ProjectFullResponse>> getFilteredProjects(@RequestBody FilterCriteria filterCriteria) {
+        List<ProjectEntity> entities = projectService.filterProjects(filterCriteria);
+
+        List<ProjectFullResponse> responses = entities.stream()
+            .map(mapper::toResponse)
+            .collect(Collectors.toList());
 
         return new ResponseEntity<>(
             responses,
@@ -51,8 +66,8 @@ public class ProjectController {
         log.info(PROJECT_GET_BY_ID, projectKey);
         
         return new ResponseEntity<>(
-                mapper.toResponse(projectService.getProjectByProjectKey(projectKey)),
-                OK
+            mapper.toResponse(projectService.getProjectByProjectKey(projectKey)),
+            OK
         );
     }
 
@@ -81,8 +96,8 @@ public class ProjectController {
         List<IssueEntity> entities = projectService.getAllIssuesOnProjectById(projectKey);
 
         List<IssueFullResponse> responses = entities.stream()
-                .map(mapper::toResponse)
-                .collect(Collectors.toList());
+            .map(mapper::toResponse)
+            .collect(Collectors.toList());
 
         return new ResponseEntity<>(
             responses,
@@ -97,8 +112,8 @@ public class ProjectController {
         List<TeamEntity> entities = projectService.getAllTeamsOnProjectById(projectKey);
 
         List<TeamFullResponse> responses = entities.stream()
-                .map(mapper::toResponse)
-                .collect(Collectors.toList());
+            .map(mapper::toResponse)
+            .collect(Collectors.toList());
 
         return new ResponseEntity<>(
             responses,

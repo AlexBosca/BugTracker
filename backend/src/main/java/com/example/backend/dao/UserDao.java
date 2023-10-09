@@ -1,5 +1,6 @@
 package com.example.backend.dao;
 
+import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.request.UserRequest;
 import com.example.backend.entity.UserEntity;
 
@@ -9,6 +10,7 @@ import java.util.Optional;
 
 public interface UserDao {
     List<UserEntity> selectAllUsers();
+    List<UserEntity> selectAllFilteredUsers(FilterCriteria filterCriteria);
     Optional<UserEntity> selectUserByUserId(String userId);
     Optional<UserEntity> selectUserByEmail(String email);
     void insertUser(UserEntity user);

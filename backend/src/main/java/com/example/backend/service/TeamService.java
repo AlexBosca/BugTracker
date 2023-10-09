@@ -2,6 +2,7 @@ package com.example.backend.service;
 
 import com.example.backend.dao.TeamDao;
 import com.example.backend.dao.UserDao;
+import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.entity.TeamEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.exception.team.TeamAlreadyCreatedException;
@@ -35,6 +36,10 @@ public class TeamService {
         log.info(TEAM_RETURN_ALL);
 
         return teams;
+    }
+
+    public List<TeamEntity> filterTeams(FilterCriteria filterCriteria) {
+        return teamDao.selectAllFilteredTeams(filterCriteria);
     }
 
     public TeamEntity getTeamByTeamId(String teamId) {

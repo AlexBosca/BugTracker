@@ -86,6 +86,7 @@ public class IssueEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "createdOnIssue", cascade = ALL, orphanRemoval = true)
     private Collection<IssueCommentEntity> discussion;
+    
     @ManyToOne
     private ProjectEntity project;
 

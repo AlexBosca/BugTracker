@@ -4,6 +4,7 @@ import com.example.backend.dao.IssueCommentDao;
 import com.example.backend.dao.IssueDao;
 import com.example.backend.dao.ProjectDao;
 import com.example.backend.dao.UserDao;
+import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueCommentEntity;
@@ -52,6 +53,12 @@ public class IssueService {
 
         return issues;
     }
+
+    public List<IssueEntity> filterIssues(FilterCriteria filterCriteria) {
+
+        return issueDao.selectAllFilteredIssues(filterCriteria);
+    }
+
     public IssueEntity getIssueByIssueId(String issueId) {
         log.info(ISSUE_REQUEST_BY_ID, issueId);
 
@@ -76,7 +83,7 @@ public class IssueService {
             .orElseThrow(() -> new UserEmailNotFoundException(email));
 
         boolean isIssuePresent = issueDao
-                .existsIssueWithIssueId(issue.getIssueId());
+            .existsIssueWithIssueId(issue.getIssueId());
 
         if(isIssuePresent) {
             throw new IssueAlreadyCreatedException(issue.getIssueId());
@@ -163,8 +170,8 @@ public class IssueService {
             .orElseThrow(() -> new IssueNotFoundException(issueId));
 
         UserEntity user = userDao
-                .selectUserByEmail(email)
-                .orElseThrow(() -> new UserEmailNotFoundException(email));
+            .selectUserByEmail(email)
+            .orElseThrow(() -> new UserEmailNotFoundException(email));
 
         issueComment.setCreatedOnIssue(issue);
         issueComment.setCreatedOn(now(clock));

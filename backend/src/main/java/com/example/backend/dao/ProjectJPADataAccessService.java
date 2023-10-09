@@ -3,17 +3,24 @@ package com.example.backend.dao;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+
 import org.springframework.stereotype.Repository;
 
+import com.example.backend.dto.filter.FilterCriteria;
+import com.example.backend.dto.filter.FilterUtility;
 import com.example.backend.entity.ProjectEntity;
 
-import lombok.RequiredArgsConstructor;
-
 @Repository("project-jpa")
-@RequiredArgsConstructor
 public class ProjectJPADataAccessService implements ProjectDao {
 
+    private final FilterUtility<ProjectEntity> filterUtility;
     private final ProjectRepository projectRepository;
+
+    public ProjectJPADataAccessService(EntityManager entityManager, ProjectRepository projectRepository) {
+        this.filterUtility = new FilterUtility<>(entityManager, ProjectEntity.class);
+        this.projectRepository = projectRepository;
+    }
 
     @Override
     public void deleteProjectByProjectKey(String projectKey) {
@@ -33,6 +40,11 @@ public class ProjectJPADataAccessService implements ProjectDao {
     @Override
     public List<ProjectEntity> selectAllProjects() {
         return projectRepository.findAll();
+    }
+
+    @Override
+    public List<ProjectEntity> selectAllFilteredProjects(FilterCriteria filterCriteria) {
+        return filterUtility.filterEntities(filterCriteria);
     }
 
     @Override
