@@ -4,19 +4,26 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+
 import org.springframework.stereotype.Repository;
 
+import com.example.backend.dto.filter.FilterCriteria;
+import com.example.backend.dto.filter.FilterUtility;
 import com.example.backend.dto.request.UserRequest;
 import com.example.backend.entity.UserEntity;
 
-import lombok.RequiredArgsConstructor;
-
 @Repository("user-jpa")
-@RequiredArgsConstructor
 public class UserJPADataAccessService implements UserDao {
 
+    private final FilterUtility<UserEntity> filterUtility;
     private final UserRepository userRepository;
     
+    public UserJPADataAccessService(EntityManager entityManager, UserRepository userRepository) {
+        this.filterUtility = new FilterUtility<>(entityManager, UserEntity.class);
+        this.userRepository = userRepository;
+    }
+
     @Override
     public void deleteUserByUserId(String userId) {
         userRepository.deleteByUserId(userId);
@@ -40,6 +47,11 @@ public class UserJPADataAccessService implements UserDao {
     @Override
     public Optional<UserEntity> selectUserByUserId(String userId) {
         return userRepository.findByUserId(userId);
+    }
+
+    @Override
+    public List<UserEntity> selectAllFilteredUsers(FilterCriteria filterCriteria) {
+        return filterUtility.filterEntities(filterCriteria);
     }
 
     @Override

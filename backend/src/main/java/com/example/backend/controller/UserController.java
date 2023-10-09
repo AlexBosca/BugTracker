@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.request.RegistrationRequest;
 import com.example.backend.dto.request.UserRequest;
 import com.example.backend.dto.response.UserFullResponse;
@@ -42,6 +43,20 @@ public class UserController {
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
                 
+        return new ResponseEntity<>(
+            responses,
+            OK
+        );
+    }
+
+    @PostMapping(path = "/filter")
+    public ResponseEntity<List<UserFullResponse>> getFilteredProjects(@RequestBody FilterCriteria filterCriteria) {
+        List<UserEntity> entities = userDetailsService.filterUsers(filterCriteria);
+
+        List<UserFullResponse> responses = entities.stream()
+            .map(mapper::toResponse)
+            .collect(Collectors.toList());
+
         return new ResponseEntity<>(
             responses,
             OK
