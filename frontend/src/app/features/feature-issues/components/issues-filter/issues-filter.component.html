@@ -12,34 +12,7 @@
 
     <div class="card rounded-4">
         <div class="card-body d-flex justify-content-between">
-            <!-- <div class="input-group w-25">
-                <span class="btn bg-white border border-end-0"><i class="bi bi-search"></i></span>
-                <input class="form-control bg-white border" type="search" placeholder="Issue ID" aria-label="Search">
-            </div> -->
-
-            <!-- <div class="container d-flex justify-content-end m-0 p-0 w-50">
-                <div class="input-group w-25 mx-5">
-                    <select class="form-select">
-                        <option selected value="">Filters</option>
-                        <option value="createdBy">Created By</option>
-                        <option value="issueId">Issue ID</option>
-                        <option value="title">Title</option>
-                        <option value="version">Version</option>
-                        <option value="asignee">Asignee</option>
-                        <option value="priority">Priority</option>
-                        <option value="status">Status</option>
-                        <option value="createdOn">Created On</option>
-                    </select>
-                </div>
-    
-                <div class="input-group w-auto">
-                    <button (click)="applyFilter()" type="button" class="btn btn-secondary rounded-3 px-5">
-                        Search
-                    </button>
-                </div>
-            </div> -->
-
-            <button class="btn btn-secondary position-relative rounded-3 mx-3 px-3" data-bs-toggle="modal" data-bs-target="#filtersModal">
+            <button class="btn btn-secondary position-relative rounded-3 mx-3 px-3" data-bs-toggle="modal" data-bs-target="#issueFiltersModal">
                 <i class="bi bi-funnel-fill"></i> Filters
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                     {{appliedFilters}}
@@ -47,11 +20,11 @@
                 </span>
             </button>
 
-            <div class="modal fade" id="filtersModal" tabindex="-1" aria-labelledby="filtersModalLabel" aria-hidden="true">
+            <div class="modal fade" id="issueFiltersModal" tabindex="-1" aria-labelledby="issueFiltersModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" id="filtersModalLabel">Filters</h5>
+                      <h5 class="modal-title" id="issueFiltersModalLabel">Filters</h5>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                         <div class="modal-body">

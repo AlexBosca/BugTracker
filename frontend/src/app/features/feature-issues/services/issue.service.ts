@@ -1,12 +1,12 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, Observable, of, throwError } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from '../../feature-auth/services/auth.service';
 import { IssueModel } from '../models/IssueModel';
 import { IssueRequestModel } from '../models/IssueRequestModel';
 import { IssueStatusRequest } from '../models/IssueStatusRequest';
-import { FilterCriteria } from '../models/IssueFilter';
+import { FilterCriteria } from '../models/FilterCriteria';
 
 @Injectable({
   providedIn: 'root'

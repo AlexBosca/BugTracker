@@ -9,6 +9,7 @@ import { IssueService } from '../../services/issue.service';
   styleUrls: ['./page-issues.component.css']
 })
 export class PageIssuesComponent implements OnInit {
+  
   readonly IssueStatus = Status;
   issues: IssueModel[] = [];
   error!: HttpErrorResponse;

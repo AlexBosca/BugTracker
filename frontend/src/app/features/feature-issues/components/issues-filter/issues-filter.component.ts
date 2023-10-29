@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { IssueService } from '../../services/issue.service';
-import { FilterCriteria } from '../../models/IssueFilter';
+import { FilterCriteria } from '../../models/FilterCriteria';
 
 @Component({
   selector: 'app-issues-filter',
@@ -42,9 +42,9 @@ export class IssuesFilterComponent {
     "date": "date"
   }
   filterCriteria: FilterCriteria = {
-    filters: {  },
+    filters: { },
     operators: { },
-    dataTypes: {  }
+    dataTypes: { }
   };
   filterSets: FormGroup[] = [];
   appliedFilters: number = 0;
