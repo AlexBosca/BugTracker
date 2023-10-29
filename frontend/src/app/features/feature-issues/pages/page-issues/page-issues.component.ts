@@ -9,6 +9,7 @@ import { IssueService } from '../../services/issue.service';
   styleUrls: ['./page-issues.component.css']
 })
 export class PageIssuesComponent implements OnInit {
+  
   readonly IssueStatus = Status;
   issues: IssueModel[] = [];
   error!: HttpErrorResponse;
@@ -27,5 +28,10 @@ export class PageIssuesComponent implements OnInit {
           next: data => this.issues = data,
           error: error => this.error = error
         });
+  }
+
+  handleFilteredData(filteredIssues: IssueModel[]) {
+    this.issues = filteredIssues;
+    console.log(this.issues);
   }
 }

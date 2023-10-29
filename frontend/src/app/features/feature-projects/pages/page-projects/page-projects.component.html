@@ -1,5 +1,5 @@
-<!-- <app-projects-grid [projects]="projects"></app-projects-grid> -->
 <div class="container-fluid mt-5 p-3">
-    <app-project-filter></app-project-filter>
-    <app-project-table></app-project-table>
+    <app-project-filter (onFilter)="handleFilteredData($event)"></app-project-filter>
+    
+    <app-project-table [projects]="projects"></app-project-table>
 </div>

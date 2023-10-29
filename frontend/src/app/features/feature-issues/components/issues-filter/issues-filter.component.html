@@ -11,33 +11,79 @@
     </div>
 
     <div class="card rounded-4">
-        <form class="card-body d-flex justify-content-between">
-            <div class="input-group w-25">
-                <span class="btn bg-white border border-end-0"><i class="bi bi-search"></i></span>
-                <input class="form-control bg-white border" type="search" placeholder="Issue ID" aria-label="Search">
-            </div>
+        <div class="card-body d-flex justify-content-between">
+            <button class="btn btn-secondary position-relative rounded-3 mx-3 px-3" data-bs-toggle="modal" data-bs-target="#issueFiltersModal">
+                <i class="bi bi-funnel-fill"></i> Filters
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{appliedFilters}}
+                    <span class="visually-hidden">filters applied</span>
+                </span>
+            </button>
 
-            <div class="container d-flex justify-content-end m-0 p-0 w-50">
-                <div class="input-group w-25 mx-5">
-                    <select class="form-select">
-                        <option selected value="">Filters</option>
-                        <option value="createdBy">Created By</option>
-                        <option value="issueId">Issue ID</option>
-                        <option value="title">Title</option>
-                        <option value="version">Version</option>
-                        <option value="asignee">Asignee</option>
-                        <option value="priority">Priority</option>
-                        <option value="status">Status</option>
-                        <option value="createdOn">Created On</option>
-                    </select>
+            <div class="modal fade" id="issueFiltersModal" tabindex="-1" aria-labelledby="issueFiltersModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="issueFiltersModalLabel">Filters</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                        <div class="modal-body">
+                            <div class="mt-2" *ngFor="let filterSet of filterSets; let i = index">
+                                <form [formGroup]="filterSet" class="row">
+                                    <select formControlName="field" class="form-select col mx-2">
+                                        <option value="" disabled selected>Fields</option>
+                                        <option value="issueId">Issue ID</option>
+                                        <option value="title">Title</option>
+                                        <option value="description">Description</option>
+                                        <option value="reproducingSteps">Reproducing Steps</option>
+                                        <option value="environment">Environment</option>
+                                        <option value="version">Version</option>
+                                        <option value="status">Status</option>
+                                        <option value="priority">Priority</option>
+                                        <option value="cretedByUser.userId">Created By User</option>
+                                        <option value="assignedUser.userId">Assigned User</option>
+                                        <option value="modifiedByUser.userId">Modified By User</option>
+                                        <option value="closedByUser.userId">Closed By User</option>
+                                        <option value="tester.userId">Tester</option>
+                                        <option value="project.projectKey">Project</option>
+                                        <option value="createdOn">Created On</option>
+                                        <option value="assignedOn">Assigned On</option>
+                                        <option value="modifiedOn">Modified On</option>
+                                        <option value="closedOn">Closed On</option>
+                                    </select>
+                                    <select formControlName="operator" class="form-select col mx-2">
+                                        <option value="" disabled selected>Relation</option>
+                                        <option value="<">LESS THAN</option>
+                                        <option value="=">EQUAL TO</option>
+                                        <option value=">">GREATER THAN</option>
+                                    </select>
+                                    <input formControlName="value" [type]="dataTypeToInputType[getInputType(filterSet)]" placeholder="Value" class="col form-control mx-2" />
+                                    <button (click)="removeFilterSet(i)" type="button" class="col-1 btn btn-danger mx-2">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </form>
+                                <!-- <div *ngIf="submitted && form['firstName'].errors" class="invalid-feedback">
+                                    <div *ngIf="form['firstName'].errors['required']">First Name is required</div>
+                                </div> -->
+                            </div>
+
+                            <div class="row mt-3">
+                                <button (click)="addFilter()" type="button" class="btn btn-secondary col-3 mx-2">
+                                    <i class="bi bi-plus-lg"></i> Add filter
+                                </button>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" id="closeIssueFilterModal" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button (click)="applyFilter()" class="btn btn-primary">Save changes</button>
+                        </div>
+                  </div>
                 </div>
-    
-                <div class="input-group w-auto">
-                    <button type="button" class="btn btn-secondary rounded-3 px-5">
-                        Search
-                    </button>
-                </div>
-            </div>
-        </form>
+              </div>
+
+            <button type="button" class="btn btn-secondary rounded-3 ml-3 px-3">
+                Search
+            </button>
+        </div>
     </div>
 </div>
