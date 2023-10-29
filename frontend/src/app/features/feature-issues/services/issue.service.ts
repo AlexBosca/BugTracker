@@ -6,6 +6,7 @@ import { AuthService } from '../../feature-auth/services/auth.service';
 import { IssueModel } from '../models/IssueModel';
 import { IssueRequestModel } from '../models/IssueRequestModel';
 import { IssueStatusRequest } from '../models/IssueStatusRequest';
+import { FilterCriteria } from '../models/IssueFilter';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,16 @@ export class IssueService {
 
   getIssues(): Observable<IssueModel[]> {
     return this.http.get<IssueModel[]>(this.issuesUrl)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  getFilteredIssues(filter: FilterCriteria): Observable<IssueModel[]> {
+    return this.http.post<IssueModel[]>(
+      `${this.issuesUrl}/filter`,
+      filter
+      )
       .pipe(
         catchError(this.handleError)
       );

@@ -28,4 +28,9 @@ export class PageIssuesComponent implements OnInit {
           error: error => this.error = error
         });
   }
+
+  handleFilteredData(filteredIssues: IssueModel[]) {
+    this.issues = filteredIssues;
+    console.log(this.issues);
+  }
 }

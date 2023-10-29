@@ -1,71 +1,124 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { IssueService } from '../../services/issue.service';
+import { FilterCriteria } from '../../models/IssueFilter';
 
 @Component({
   selector: 'app-issues-filter',
   templateUrl: './issues-filter.component.html',
   styleUrls: ['./issues-filter.component.css']
 })
-export class IssuesFilterComponent implements OnInit {
+export class IssuesFilterComponent {
+  
+  @Output() onFilter: EventEmitter<any> = new EventEmitter<any>();
 
-  issueCreationForm!: FormGroup;
   submitted: boolean = false;
   loading: boolean = false;
   error!: HttpErrorResponse;
+  fieldsDatatypes: any = {
+    "issueId": "string",
+    "title": "string",
+    "description": "string",
+    "reproducingSteps": "string",
+    "environment": "string",
+    "version": "string",
+    "status": "string",
+    "priority": "string",
+    "createdByUser.userId": "string",
+    "assignedUser.userId": "string",
+    "modifiedByUser.userId": "string",
+    "closedByUser.userId": "string",
+    "tester.userId": "string",
+    "project.projectKey": "string",
+    "createdOn": "date",
+    "assignedOn": "date",
+    "modifiedOn": "date",
+    "closedOn": "date"
+  };
+  dataTypeToInputType: any = {
+    "string": "text",
+    "integer": "number",
+    "date": "date"
+  }
+  filterCriteria: FilterCriteria = {
+    filters: {  },
+    operators: { },
+    dataTypes: {  }
+  };
+  filterSets: FormGroup[] = [];
+  appliedFilters: number = 0;
 
   constructor(
-    private router: Router,
     private issueService: IssueService,
     private formBuilder: FormBuilder
-  ) { }
-
-  ngOnInit(): void {
-    // this.issueCreationForm = this.formBuilder.group({
-    //   issueId: ['', Validators.required],
-    //   title: ['', Validators.required],
-    //   description: ['', Validators.required],
-    //   reproducingSteps: ['', Validators.required],
-    //   environment: ['', Validators.required],
-    //   version: ['', Validators.required],
-    //   priority: ['', Validators.required],
-    //   project: ['', Validators.required]
-    // });
+  ) {
+    this.addFilterSet();
   }
 
-  // get form() {
-  //   return this.issueCreationForm.controls;
-  // }
+  addFilter() {
+    this.addFilterSet();
+  }
 
-  // createIssue(): void {
-  //   this.submitted = true;
+  addFilterSet() {
+    this.filterSets.push(this.createFilterSetFormGroup());
+  }
 
-  //   if(!this.issueCreationForm.valid) {
-  //     return;
-  //   }
+  createFilterSetFormGroup() {
+    return this.formBuilder.group({
+      field: [''],
+      value: [],
+      operator: [''],
+      dataType: []
+    });
+  }
 
-  //   this.loading = true;
+  getInputType(filterSet: FormGroup) {
+    return this.dataTypeToInputType[this.fieldsDatatypes[filterSet.get('field')?.value]];
+  }
 
-  //   this.issueService.createIssue({
-  //     issueId: this.form['issueId'].value,
-  //     title: this.form['title'].value,
-  //     description: this.form['description'].value,
-  //     reproducingSteps: this.form['reproducingSteps'].value,
-  //     environment: this.form['environment'].value,
-  //     version: this.form['version'].value,
-  //     priority: this.form['priority'].value,
-  //   }, this.form['project'].value).subscribe({
-  //     next: () => {
-  //       document.getElementById('createIssueForm')?.click();
-  //       window.location.reload();
-  //     },
-  //     error: error => {
-  //       this.error = error;
-  //       this.loading = false;
-  //     }
-  //   });
-  // }
+  applyFilter(): void {
+    for(let filterSet of this.filterSets) {
+      //Verify the filterSet validity
+      const field = filterSet.get('field')?.value;
+      this.filterCriteria.filters[field] = filterSet.get('value')?.value;
+      this.filterCriteria.operators[field] = filterSet.get('operator')?.value;
+      this.filterCriteria.dataTypes[field] = this.fieldsDatatypes[field] as string;
+    }
 
+    this.issueService.getFilteredIssues(this.filterCriteria).subscribe({
+      next: filteredIssues => {
+        this.onFilter.emit(filteredIssues);
+        document.getElementById('closeIssueFilterModal')?.click();
+        this.appliedFilters = Object.keys(this.filterCriteria.filters).length;
+      },
+      error: error => this.error = error
+    });
+  }
+
+  removeFilterSet(index: number) {
+    let field = this.filterSets[index].value['field'];
+    this.filterSets.splice(index, 1);
+
+    if((!this.filterCriteria.filters[field]) ||
+    (!this.filterCriteria.operators[field]) ||
+    (!this.filterCriteria.dataTypes[field])) {
+      return;
+    }
+
+    this.removeFilter(field);
+  }
+
+  removeFilter(field: string) {
+    delete this.filterCriteria.filters[field];
+    delete this.filterCriteria.operators[field];
+    delete this.filterCriteria.dataTypes[field];
+  }
+
+  getFilters(): any {
+    return Object.keys(this.filterCriteria.filters).map(key => ({
+      field: key,
+      value: this.filterCriteria.filters[key]
+    }));
+  }
 }

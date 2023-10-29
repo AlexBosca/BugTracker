@@ -1,5 +1,5 @@
 <div class="container-fluid mt-5 p-3">
-    <app-issues-filter></app-issues-filter>
+    <app-issues-filter (onFilter)="handleFilteredData($event)"></app-issues-filter>
 
     <app-issues-table [issues]="issues"></app-issues-table>
 </div>
