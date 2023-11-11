@@ -9,7 +9,7 @@ spring:
   sql:
     init:
       schema-locations: classpath:/sql/schema.sql
-      data-locations: classpath:/sql/import-data/import-projects.sql, classpath:/sql/import-data/import-teams.sql, classpath:/sql/import-data/import-users.sql, classpath:/sql/import-data/import-teams-on-project.sql, classpath:/sql/import-data/import-issues.sql, classpath:/sql/import-data/import-users-in-teams.sql
+      data-locations: classpath:/sql/import-data/import-projects.sql, classpath:/sql/import-data/import-teams.sql, classpath:/sql/import-data/import-users.sql, classpath:/sql/import-data/import-confirmation-tokens.sql, classpath:/sql/import-data/import-teams-on-project.sql, classpath:/sql/import-data/import-issues.sql, classpath:/sql/import-data/import-users-in-teams.sql
       mode: always
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/bugtracker
