@@ -55,7 +55,7 @@ public class EntityExceptionHandler {
 
     @ExceptionHandler(UserCredentialsNotValidException.class)
     public ResponseEntity<ErrorResponse> handleCredentialsNotValidException(Exception exception) {
-        return buildErrorResponse(exception, BAD_REQUEST);
+        return buildErrorResponse(exception, UNAUTHORIZED);
     }
 
     @ExceptionHandler(UserPasswordsNotMatchingException.class)
