@@ -130,7 +130,7 @@ public class FilterUtility<T extends BaseEntity> {
             case INTEGER_DATA_TYPE:
                 return builder.equal(fieldPath.as(Integer.class), Integer.parseInt(filterValue.toString()));
             case DATE_DATA_TYPE:
-                return builder.equal(fieldPath.as(LocalDateTime.class), LocalDateTime.parse(filterValue.toString()));
+                return builder.equal(fieldPath.as(LocalDateTime.class), LocalDate.parse(filterValue.toString()).atStartOfDay());
             default:
                 // Handle unsupported data types or provide an error response
                 return null;
