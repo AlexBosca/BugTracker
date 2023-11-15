@@ -28,6 +28,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.example.backend.dao.UserDao;
 import com.example.backend.entity.UserEntity;
+import com.example.backend.exception.user.UserCredentialsNotValidException;
 
 import static com.example.backend.util.ExceptionUtilities.*;
 
@@ -84,8 +85,8 @@ class AppUserDetailsServiceTest {
 
         assertThatThrownBy(() -> {
             appUserDetailsService.loadUserByUsername("john.doe@gmail.com");
-        }).isInstanceOf(UsernameNotFoundException.class)
-        .hasMessage(String.format(USER_WITH_EMAIL_NOT_FOUND, "john.doe@gmail.com"));
+        }).isInstanceOf(UserCredentialsNotValidException.class)
+        .hasMessage(String.format(USER_CREDENTIALS_NOT_VALID, "john.doe@gmail.com"));
     }
 
     @Disabled

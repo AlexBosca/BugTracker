@@ -185,6 +185,7 @@ class ProjectServiceTest {
         TeamEntity existingTeam = TeamEntity.builder()
             .teamId("TEAM1")
             .name("First Team")
+            .projects(new HashSet<ProjectEntity>())
             .build();
 
         when(projectDao.selectProjectByKey("FPC")).thenReturn(Optional.of(existingProject));
