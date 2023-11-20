@@ -72,7 +72,7 @@ class ProjectServiceTest {
 
     @Test
     @DisplayName("Should return a not empty list when there are projects")
-    void shouldGetAllProjectsWhenThereAreProjects() {
+    void getAllProjects_ExistingProjects() {
         ProjectEntity firstExpectedProject = ProjectEntity.builder()
             .projectKey("FPC")
             .name("First Project")
@@ -102,7 +102,7 @@ class ProjectServiceTest {
 
     @Test
     @DisplayName("Should return an empty list when there are no projects")
-    void shouldGetEmptyWhenThereAreNoProjects() {
+    void getAllProjects_NoProjects() {
         when(projectDao.selectAllProjects()).thenReturn(List.of());
 
         assertThat(projectService.getAllProjects()).isEmpty();
@@ -110,7 +110,7 @@ class ProjectServiceTest {
 
     @Test
     @DisplayName("Should return a project by projectKey if exists")
-    void shouldFindProjectByProjectKey() {
+    void getProjectByProjectKey_NoExceptionThrown() {
         ProjectEntity expectedProject = ProjectEntity.builder()
             .projectKey("FPC")
             .name("First Project")
@@ -124,7 +124,7 @@ class ProjectServiceTest {
 
     @Test
     @DisplayName("Should throw an exception when try to return a project by projectKey that doesn't exists")
-    void shouldThrowExceptionWhenProjectToReturnByProjectKeyDoesNotExist() {
+    void getProjectByProjectKey_ProjectNotFoundExceptionThrown() {
         when(projectDao.selectProjectByKey("FPC")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
@@ -135,7 +135,7 @@ class ProjectServiceTest {
 
     @Test
     @DisplayName("Should save project when it doesn't exist")
-    void shouldSaveProjectWhenProjectDoesNotExist() {
+    void saveProject_NoExceptionThrown() {
         ProjectEntity expectedProject = ProjectEntity.builder()
             .projectKey("FPC")
             .name("First Project")
@@ -157,7 +157,7 @@ class ProjectServiceTest {
 
     @Test
     @DisplayName("Should throw an exception when try to save a project that already exists")
-    void shouldThrowExceptionWhenProjectToSaveAlreadyExists() {
+    void saveProject_ProjectAlreadyCreatedExceptionThrown() {
         ProjectEntity existingProject = ProjectEntity.builder()
             .projectKey("FPC")
             .name("First Project")
@@ -174,7 +174,7 @@ class ProjectServiceTest {
 
     @Test
     @DisplayName("Should add existing team to existing project")
-    void shouldAddExistingTeamToExistingProject() {
+    void addTeam_NoExceptionThrown() {
         ProjectEntity existingProject = ProjectEntity.builder()
             .projectKey("FPC")
             .name("First Project")
@@ -209,7 +209,7 @@ class ProjectServiceTest {
 
     @Test
     @DisplayName("Should throw exception when add non-existent team to existing project")
-    void shouldThrowExceptionWhenTeamToAddToProjectDoesNotExist() {
+    void addTeam_TeamIdNotFoundExceptionThrown() {
         ProjectEntity existingProject = ProjectEntity.builder()
             .projectKey("FPC")
             .name("First Project")
@@ -228,7 +228,7 @@ class ProjectServiceTest {
 
     @Test
     @DisplayName("Should throw exception when add existing team to non-existent project")
-    void shouldThrowExceptionWhenAddTeamToProjectThatDoesNotExist() {
+    void addTeam_ProjectNotFoundExceptionThrown() {
         when(projectDao.selectProjectByKey("FPC")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
@@ -239,7 +239,7 @@ class ProjectServiceTest {
 
     @Test
     @DisplayName("Should return a not empty list when there are issues created on given project")
-    void shouldGetAllIssuesOnProjectWhenThereAreIssuesOnGivenProject() {
+    void getAllIssuesOnProjectById_NoExceptionThrown() {
         IssueEntity firstExpectedIssue = IssueEntity.builder()
             .issueId("FPC-0001")
             .title("First Issue Title")

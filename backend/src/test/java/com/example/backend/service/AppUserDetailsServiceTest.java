@@ -66,7 +66,7 @@ class AppUserDetailsServiceTest {
 
     @Test
     @DisplayName("Should load user by email")
-    void shouldLoadUserByEmail() {
+    void loadUserByUsername_NoExceptionThrown() {
         UserEntity expectedUser = UserEntity.builder()
             .firstName("John")
             .lastName("Doe")
@@ -80,7 +80,7 @@ class AppUserDetailsServiceTest {
 
     @Test
     @DisplayName("Should throw an exception when try to load user by email that doesn't exist")
-    void shouldThrowExceptionWhenLoadUserByEmailWhenUserDoesNotExist() {
+    void loadUserByUsername_UserCredentialsNotValidExceptionThrown() {
         when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {

@@ -59,7 +59,7 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("Should return OK status and a not empty list when there are projects")
-    void shouldGetAllProjectsAndOkStatusWhenThereAreProjects() throws Exception {
+    void getAllProjects_ExistingIssues_OkResponse() throws Exception {
         ProjectEntity firstExpectedProject = ProjectEntity.builder()
             .projectKey("PROJECT1")
             .name("First Project")
@@ -95,7 +95,7 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("Should return OK status and an empty list when there are no projects")
-    void shouldGetAllProjectsAndOkStatusWhenThereAreNoProjects() throws Exception {
+    void getAllProjects_NoIssues_OkResponse() throws Exception {
         List<ProjectEntity> expectedProjects = List.of();
 
         when(projectService.getAllProjects()).thenReturn(expectedProjects);
@@ -110,7 +110,7 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("Should return OK status and an empty list when there are no projects")
-    void shouldGetProjectByProjectKeyAndOkStatusWhenProjectExists() throws Exception {
+    void getProject_NoExceptionThrown_OkResponse() throws Exception {
         String givenProjectKey = "PROJECT1";
 
         ProjectEntity expectedProject = ProjectEntity.builder()
@@ -131,7 +131,7 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("Should return OK status and a not empty list when there are issues on project by given projectKey")
-    void shouldGetAllIssuesOnProjectByProjectKeyAndOkStatusWhenProjectExistsAndThereAreIssues() throws Exception {
+    void getIssuesOnProject_ExistingIssuesOnProject_OkResponse() throws Exception {
         String givenProjectKey = "PROJECT1";
 
         IssueEntity firstExpectedIssue = IssueEntity.builder()
@@ -177,7 +177,7 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("Should return OK status and an empty list when there are no issues on project by given projectKey")
-    void shouldGetAllIssuesOnProjectByProjectKeyAndOkStatusWhenProjectExistsAndThereAreNoIssues() throws Exception {
+    void getIssuesOnProject_NoIssuesOnProject_OkResponse() throws Exception {
         String givenProjectKey = "PROJECT1";
 
         List<IssueEntity> expectedIssues = List.of();
@@ -194,7 +194,7 @@ class ProjectControllerTest {
 
     @Test
     @DisplayName("Should return NOT_FOUND status and throw ProjectNotFoundException when the project to return the issues created on does not exist")
-    void shouldThrowProjectNotFoundExceptionndNotFoundStatusWhenProjectDoesNotExist() throws Exception {
+    void getIssuesOnProject_ProjectNotFoundExceptionThrown_OkResponse() throws Exception {
         String givenProjectKey = "PROJECT1";
 
         when(projectService.getAllIssuesOnProjectById(givenProjectKey)).thenThrow(new ProjectNotFoundException(givenProjectKey));

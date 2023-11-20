@@ -94,7 +94,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should return a not empty list when there are issues")
-    void shouldGetAllIssuesWhenThereAreIssues() {
+    void getAllIssues_ExistingIssues() {
         IssueEntity firstExpectedIssue = IssueEntity.builder()
             .issueId("00001")
             .title("First Issue Title")
@@ -124,7 +124,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should return an empty list when there are no issues")
-    void shouldGetEmptyListWhenThereAreNoIssues() {
+    void getAllIssues_NoIssues() {
         when(issueDao.selectAllIssues()).thenReturn(List.of());
 
         assertThat(issueService.getAllIssues()).isEmpty();
@@ -132,7 +132,7 @@ class IssueServiceTest {
     
     @Test
     @DisplayName("Should return an issue by issueId when it exist")
-    void shouldFindIssueByIssueId() {
+    void getIssueByIssueId_NoExceptionThrown() {
         IssueEntity expectedIssue = IssueEntity.builder()
             .issueId("00001")
             .title("First Issue Title")
@@ -146,7 +146,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should throw an exception when try to return an issue by issueId that doesn't exist")
-    void shouldThrowExceptionIfIssueToReturnByIssueIdDoesNotExists() {
+    void getIssueByIssueId_IssueNotFoundExceptionThrown() {
         when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
@@ -157,7 +157,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should save issue related to an existing project by a registered user")
-    void shouldSaveIssueOnExistingProjectByRegisteredUser() {
+    void saveIssue_NoExceptionThrown() {
         IssueEntity issueToSave = IssueEntity.builder()
             .issueId("00001")
             .title("First Issue Title")
@@ -201,7 +201,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should throw an exception when try to save an issue that already exists")
-    void shouldThrowExceptionWhenIssueToSaveAlreadyExists() {
+    void saveIssue_IssueAlreadyCreatedExceptionThrown() {
         IssueEntity existingIssue = IssueEntity.builder()
             .issueId("00001")
             .title("First Issue Title")
@@ -232,7 +232,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should throw an exception when try to save an issue on a project that doesn't exist")
-    void shouldThrowExceptionWhenProjectToSaveIssueOnDoesNotExists() {
+    void saveIssue_ProjectNotFoundExceptionThrown() {
         IssueEntity existingIssue = IssueEntity.builder()
             .issueId("00001")
             .title("First Issue Title")
@@ -249,7 +249,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should throw an exception when try to save an issue by a user that doesn't exist")
-    void shouldThrowExceptionWhenUserToSaveIssueByDoesNotExists() {
+    void saveIssue_UserEmailNotFoundExceptionThrown() {
         IssueEntity existingIssue = IssueEntity.builder()
             .issueId("00001")
             .title("First Issue Title")
@@ -273,7 +273,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should assign existing issue to registered user")
-    void shouldAssignExistingIssueToRegisteredUser() {
+    void assignToUser_NoExceptionThrown() {
         IssueEntity existingIssue = IssueEntity.builder()
             .issueId("00001")
             .title("First Issue Title")
@@ -311,7 +311,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should throw exception when try to assign an issue that doesn't exist to a registered user")
-    void shouldThrowExceptionWhenAssignIssueThatDoesNotExist() {
+    void assignToUser_IssueNotFoundExceptionThrown() {
         when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
@@ -322,7 +322,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should throw exception when try to assign an existing issue to a not registered user")
-    void shouldThrowExceptionWhenAssignIssueNotRegisteredUser() {
+    void assignToUser_UserIdNotFoundExceptionThrown() {
         IssueEntity existingIssue = IssueEntity.builder()
             .issueId("00001")
             .title("First Issue Title")
@@ -340,7 +340,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should close existing issue by registered user")
-    void shouldCloseExistingIssueByRegisteredUser() {
+    void closeByUser_NoExceptionThrown() {
         IssueEntity existingIssue = IssueEntity.builder()
             .issueId("00001")
             .title("First Issue Title")
@@ -378,7 +378,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should throw exception when try to close an issue that doesn't exist by a registered user")
-    void shouldThrowExceptionWhenCloseIssueThatDoesNotExist() {
+    void closeByUser_IssueNotFoundExceptionThrown() {
         when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
@@ -389,7 +389,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should throw exception when try to close an existing issue by a not registered user")
-    void shouldThrowExceptionWhenCloseIssueByNotRegisteredUser() {
+    void closeByUser_UserEmailNotFoundExceptionThrown() {
         IssueEntity existingIssue = IssueEntity.builder()
             .issueId("00001")
             .title("First Issue Title")
@@ -407,7 +407,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should change state of existing issue")
-    void shouldChangeStateOfExistingIssue() {
+    void changeIssueStatus_NoExceptionThrown() {
         IssueEntity existingIssue = IssueEntity.builder()
             .issueId("00001")
             .title("First Issue Title")
@@ -447,7 +447,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should throw exception when try to change state of an issue that doesn't exist")
-    void shouldThrowExceptionWhenChangeStateOfIssueThatDoesNotExist() {
+    void changeIssueStatus_IssueNotFoundExceptionThrown() {
         when(issueDao.selectIssueByIssueId("00001")).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
@@ -458,7 +458,7 @@ class IssueServiceTest {
 
     @Test
     @DisplayName("Should throw exception when try to change state of an existing issue by a not registered user")
-    void shouldThrowExceptionWhenChangeStateOfIssueByNotRegisteredUser() {
+    void changeIssueStatus_UserEmailNotFoundExceptionThrown() {
         IssueEntity existingIssue = IssueEntity.builder()
             .issueId("00001")
             .title("First Issue Title")
