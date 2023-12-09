@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,13 +13,17 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.time.ZoneId;
 
 import com.example.backend.dao.ProjectDao;
 import com.example.backend.dao.TeamDao;
+import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.TeamEntity;
 import com.example.backend.entity.issue.IssueEntity;
@@ -63,7 +68,7 @@ class ProjectServiceTest {
     private ProjectService projectService;
 
     @BeforeEach
-    void  setUp() {
+    void setUp() {
         projectService = new ProjectService(
             projectDao,
             teamDao
@@ -106,6 +111,74 @@ class ProjectServiceTest {
         when(projectDao.selectAllProjects()).thenReturn(List.of());
 
         assertThat(projectService.getAllProjects()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Should return a not empty list when there are projects to filter")
+    void filterProjects_ExistingProjects() {
+        ProjectEntity firstExpectedProject = ProjectEntity.builder()
+            .projectKey("FPC")
+            .name("First Project")
+            .description("First Project Description")
+            .build();
+
+        ProjectEntity secondExpectedProject = ProjectEntity.builder()
+            .projectKey("PROJECT2")
+            .name("Second Project")
+            .description("Second Project Description")
+            .build();
+
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("version", "v1.0");
+
+        Map<String, String> operators = new HashMap<>();
+        operators.put("version", "=");
+
+        Map<String, String> dataTypes = new HashMap<>();
+        dataTypes.put("version", "string");
+
+        FilterCriteria filterCriteria = new FilterCriteria(
+            filters,
+            operators,
+            dataTypes
+        );
+
+        List<ProjectEntity> expectedProjects = List.of(
+            firstExpectedProject,
+            secondExpectedProject
+        );
+
+        when(projectDao.selectAllFilteredProjects(filterCriteria))
+            .thenReturn(List.of(
+                firstExpectedProject,
+                secondExpectedProject
+            ));
+
+        assertThat(projectService.filterProjects(filterCriteria)).isNotEmpty();
+        assertThat(projectService.filterProjects(filterCriteria)).isEqualTo(expectedProjects);
+    }
+
+    @Test
+    @DisplayName("Should return an empty list when there are no projects")
+    void filterProjects_NoProjects() {
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("version", "v1.0");
+
+        Map<String, String> operators = new HashMap<>();
+        operators.put("version", "=");
+
+        Map<String, String> dataTypes = new HashMap<>();
+        dataTypes.put("version", "string");
+
+        FilterCriteria filterCriteria = new FilterCriteria(
+            filters,
+            operators,
+            dataTypes
+        );
+
+        when(projectDao.selectAllFilteredProjects(filterCriteria)).thenReturn(List.of());
+
+        assertThat(projectService.filterProjects(filterCriteria)).isEmpty();
     }
 
     @Test
@@ -239,7 +312,7 @@ class ProjectServiceTest {
 
     @Test
     @DisplayName("Should return a not empty list when there are issues created on given project")
-    void getAllIssuesOnProjectById_NoExceptionThrown() {
+    void getAllIssuesOnProjectById_ExistingIssuesOnProjects() {
         IssueEntity firstExpectedIssue = IssueEntity.builder()
             .issueId("FPC-0001")
             .title("First Issue Title")
@@ -270,5 +343,108 @@ class ProjectServiceTest {
         List<IssueEntity> actualIssues = projectService.getAllIssuesOnProjectById("FPC");
 
         assertThat(actualIssues).isEqualTo(issuesOnProject);
+    }
+
+    @Test
+    @DisplayName("Should return a not empty list when there are issues created on given project")
+    void getAllIssuesOnProjectById_NoIssuesOnProject() {
+        List<IssueEntity> issuesOnProject = List.of();
+
+        ProjectEntity existingProject = ProjectEntity.builder()
+            .projectKey("FPC")
+            .name("First Project")
+            .description("First Project Description")
+            .issues(issuesOnProject)
+            .build();
+
+
+        when(projectDao.selectProjectByKey("FPC")).thenReturn(Optional.of(existingProject));
+
+        List<IssueEntity> actualIssues = projectService.getAllIssuesOnProjectById("FPC");
+
+        assertThat(actualIssues).isEqualTo(issuesOnProject);
+    }
+
+    @Test
+    @DisplayName("Should return a not empty list when there are issues created on given project")
+    void getAllIssuesOnProjectById_ProjectNotFoundExceptionThrown() {
+        when(projectDao.selectProjectByKey("FPC")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> {
+            projectService.getAllIssuesOnProjectById("FPC");
+        }).isInstanceOf(ProjectNotFoundException.class)
+        .hasMessage(String.format(PROJECT_WITH_ID_NOT_FOUND, "FPC"));
+    }
+
+    @Disabled
+    @Test
+    @DisplayName("Should return a not empty list when there are teams assigned on given project")
+    void getAllTeamsOnProjectById_ExistingTeamsOnProjects() {
+        TeamEntity firstExpectedTeam = TeamEntity.builder()
+            .teamId("TEAM1")
+            .name("First Team")
+            .build();
+
+        TeamEntity secondExpectedTeam = TeamEntity.builder()
+            .teamId("TEAM2")
+            .name("Second Team")
+            .build();
+
+        Set<TeamEntity> teamsOnProjectSet = Set.of(
+            firstExpectedTeam,
+            secondExpectedTeam
+        );
+
+        List<TeamEntity> teamsOnProjectList = List.of(
+            firstExpectedTeam,
+            secondExpectedTeam
+        );
+
+        ProjectEntity existingProject = ProjectEntity.builder()
+            .projectKey("FPC")
+            .name("First Project")
+            .description("First Project Description")
+            .teams(teamsOnProjectSet)
+            .build();
+
+
+        when(projectDao.selectProjectByKey("FPC")).thenReturn(Optional.of(existingProject));
+
+        List<TeamEntity> actualTeams = projectService.getAllTeamsOnProjectById("FPC");
+
+        assertThat(actualTeams).isEqualTo(teamsOnProjectList);
+    }
+
+    @Test
+    @DisplayName("Should return an empty list when there are no teams assigned on given project")
+    void getAllIssuesOnProjectById_NoTeamsOnProject() {
+        Set<TeamEntity> teamsOnProjectSet = Set.of();
+        List<TeamEntity> teamsOnProjectList = List.of();
+
+
+        ProjectEntity existingProject = ProjectEntity.builder()
+            .projectKey("FPC")
+            .name("First Project")
+            .description("First Project Description")
+            .teams(teamsOnProjectSet)
+            .build();
+
+
+        when(projectDao.selectProjectByKey("FPC")).thenReturn(Optional.of(existingProject));
+
+        List<TeamEntity> actualIssues = projectService.getAllTeamsOnProjectById("FPC");
+
+        assertThat(actualIssues).isEqualTo(teamsOnProjectList);
+    }
+
+    @Test
+    @DisplayName("Should throw an exception when try to return all teams on a project that doesn't exists")
+    void getAllTeamsOnProjectById_ProjectNotFoundExceptionThrown() {
+        when(projectDao.selectProjectByKey("FPC")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> {
+            projectService.getAllTeamsOnProjectById("FPC");
+        }).isInstanceOf(ProjectNotFoundException.class)
+        .hasMessage(String.format(PROJECT_WITH_ID_NOT_FOUND, "FPC"));
     }
 }

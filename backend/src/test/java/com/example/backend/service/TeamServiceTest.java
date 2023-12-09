@@ -12,13 +12,16 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.time.ZoneId;
 
 import com.example.backend.dao.TeamDao;
 import com.example.backend.dao.UserDao;
+import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.entity.TeamEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.exception.team.TeamAlreadyCreatedException;
@@ -103,6 +106,71 @@ class TeamServiceTest {
         when(teamDao.selectAllTeams()).thenReturn(List.of());
 
         assertThat(teamService.getAllTeams()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Should return a not empty list when there are teams to filter")
+    void filterTeams_ExistingTeams() {
+        TeamEntity firstExpectedTeam = TeamEntity.builder()
+            .teamId("TEAM1")
+            .name("Team")
+            .build();
+
+        TeamEntity secondExpectedTeam = TeamEntity.builder()
+            .teamId("TEAM2")
+            .name("Team")
+            .build();
+
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("name", "Team");
+
+        Map<String, String> operators = new HashMap<>();
+        operators.put("name", "=");
+
+        Map<String, String> dataTypes = new HashMap<>();
+        dataTypes.put("name", "string");
+
+        FilterCriteria filterCriteria = new FilterCriteria(
+            filters,
+            operators,
+            dataTypes
+        );
+
+        List<TeamEntity> expectedTeams = List.of(
+            firstExpectedTeam,
+            secondExpectedTeam
+        );
+
+        when(teamDao.selectAllFilteredTeams(filterCriteria))
+            .thenReturn(List.of(
+                firstExpectedTeam,
+                secondExpectedTeam
+            ));
+
+        assertThat(teamService.filterTeams(filterCriteria)).isNotEmpty();
+        assertThat(teamService.filterTeams(filterCriteria)).isEqualTo(expectedTeams);
+    }
+
+    @Test
+    @DisplayName("Should return an empty list when there are no teams to filter")
+    void filterTeams_NoTeams() {Map<String, Object> filters = new HashMap<>();
+        filters.put("name", "Team");
+
+        Map<String, String> operators = new HashMap<>();
+        operators.put("name", "=");
+
+        Map<String, String> dataTypes = new HashMap<>();
+        dataTypes.put("name", "string");
+
+        FilterCriteria filterCriteria = new FilterCriteria(
+            filters,
+            operators,
+            dataTypes
+        );
+
+        when(teamDao.selectAllFilteredTeams(filterCriteria)).thenReturn(List.of());
+
+        assertThat(teamService.filterTeams(filterCriteria)).isEmpty();
     }
 
     @Test

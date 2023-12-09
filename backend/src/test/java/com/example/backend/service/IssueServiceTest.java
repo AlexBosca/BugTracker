@@ -7,7 +7,9 @@ import static org.mockito.Mockito.when;
 import java.time.Clock;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +27,7 @@ import com.example.backend.dao.IssueCommentDao;
 import com.example.backend.dao.IssueDao;
 import com.example.backend.dao.ProjectDao;
 import com.example.backend.dao.UserDao;
+import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueEntity;
@@ -42,6 +45,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import static com.example.backend.util.ExceptionUtilities.ISSUE_WITH_ID_NOT_FOUND;
+import static com.example.backend.enums.IssuePriority.LOW;
+import static com.example.backend.enums.IssueStatus.NEW;
 import static com.example.backend.util.ExceptionUtilities.ISSUE_ALREADY_CREATED;
 import static com.example.backend.util.ExceptionUtilities.USER_WITH_ID_NOT_FOUND;
 import static com.example.backend.util.ExceptionUtilities.USER_WITH_EMAIL_NOT_FOUND;
@@ -112,12 +117,11 @@ class IssueServiceTest {
             secondExpectedIssue
         );
 
-        when(issueDao.selectAllIssues())
-            .thenReturn(List.of(
-                firstExpectedIssue,
-                secondExpectedIssue
-            ));
-
+        when(issueDao.selectAllIssues()).thenReturn(List.of(
+            firstExpectedIssue,
+            secondExpectedIssue
+        ));
+        
         assertThat(issueService.getAllIssues()).isNotEmpty();
         assertThat(issueService.getAllIssues()).isEqualTo(expectedIssues);  
     }
@@ -128,6 +132,77 @@ class IssueServiceTest {
         when(issueDao.selectAllIssues()).thenReturn(List.of());
 
         assertThat(issueService.getAllIssues()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Should return a not empty list when there are issues to filter")
+    void filterIssues_ExistingIssues() {
+        IssueEntity firstExpectedIssue = IssueEntity.builder()
+            .issueId("FPC-0001")
+            .title("Title")
+            .description("Issue description")
+            .reproducingSteps("Some steps to reproduce the issue")
+            .environment("Environment")
+            .version("v1.0")
+            .status(NEW)
+            .priority(LOW)
+            .build();
+
+        IssueEntity secondExpectedIssue = IssueEntity.builder()
+            .issueId("SPC-0001")
+            .title("Title")
+            .description("Issue description")
+            .reproducingSteps("Some steps to reproduce the issue")
+            .environment("Environment")
+            .version("v1.0")
+            .status(NEW)
+            .priority(LOW)
+            .build();
+
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("version", "v1.0");
+
+        Map<String, String> operators = new HashMap<>();
+        operators.put("version", "=");
+
+        Map<String, String> dataTypes = new HashMap<>();
+        dataTypes.put("version", "string");
+
+        FilterCriteria filterCriteria = new FilterCriteria(
+            filters,
+            operators,
+            dataTypes
+        );
+
+        List<IssueEntity> expectedIssues = List.of(firstExpectedIssue, secondExpectedIssue);
+
+        when(issueDao.selectAllFilteredIssues(filterCriteria)).thenReturn(List.of(firstExpectedIssue, secondExpectedIssue));
+
+        assertThat(issueService.filterIssues(filterCriteria)).isNotEmpty();
+        assertThat(issueService.filterIssues(filterCriteria)).isEqualTo(expectedIssues);
+    }
+
+    @Test
+    @DisplayName("Should return an empty list when there are no issues to filter")
+    void filterIssues_NoIssues() {
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("version", "v1.0");
+
+        Map<String, String> operators = new HashMap<>();
+        operators.put("version", "=");
+
+        Map<String, String> dataTypes = new HashMap<>();
+        dataTypes.put("version", "string");
+
+        FilterCriteria filterCriteria = new FilterCriteria(
+            filters,
+            operators,
+            dataTypes
+        );
+        
+        when(issueDao.selectAllFilteredIssues(filterCriteria)).thenReturn(List.of());
+
+        assertThat(issueService.filterIssues(filterCriteria)).isEmpty();
     }
     
     @Test
@@ -473,4 +548,24 @@ class IssueServiceTest {
         }).isInstanceOf(UserEmailNotFoundException.class)
         .hasMessage(USER_WITH_EMAIL_NOT_FOUND, "john.doe@gmail.com");
     }
+
+    // @Test
+    // @DisplayName("Should add comment to an existing issue by a registered user")
+    // void addComment_NoExceptionThrown() {
+    //     IssueEntity existingIssue = IssueEntity.builder()
+    //         .issueId("00001")
+    //         .title("First Issue Title")
+    //         .description("First Issue Description")
+    //         .status(IssueStatus.NEW)
+    //         .build();
+
+    //     UserEntity registeredUser =  UserEntity.builder()
+    //         .userId("JD_00001")
+    //         .email("john.doe@gmail.com")
+    //         .firstName("John")
+    //         .lastName("Doe")
+    //         .build();
+
+        
+    // }
 }
