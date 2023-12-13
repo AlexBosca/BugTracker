@@ -30,11 +30,8 @@ import static org.springframework.http.HttpStatus.OK;
 @AllArgsConstructor
 public class IssueController {
 
-    @Autowired
     private final IssueService issueService;
-    @Autowired
     private final AuthenticationService authenticationService;
-    @Autowired
     private final MapStructMapper mapper;
 
     @GetMapping
