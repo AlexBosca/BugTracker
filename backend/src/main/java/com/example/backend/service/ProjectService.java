@@ -84,9 +84,7 @@ public class ProjectService {
             .selectTeamByTeamId(teamId)
             .orElseThrow(() -> new TeamIdNotFoundException(teamId));
 
-        Set<TeamEntity> teams = project.getTeams();
-        teams.add(team);
-        project.setTeams(teams);
+        project.addTeam(team);
         team.addProject(project);
 
         projectDao.insertProject(project);

@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.request.IssueRequest;
 import com.example.backend.dto.response.IssueFullResponse;
 import com.example.backend.entity.issue.IssueEntity;
@@ -12,12 +13,14 @@ import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 import com.example.backend.mapper.MapStructMapper;
 import com.example.backend.service.IssueService;
+import com.example.backend.util.FilterCriteriaMatcher;
 import com.example.backend.service.AuthenticationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +35,15 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Clock;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -160,7 +166,7 @@ class IssueControllerTest {
     }
 
     @Test
-    @DisplayName("Should return OK Response when there no are issues to return when calling the getAllIssues endpoint")
+    @DisplayName("Should return OK Response when there are no issues to return when calling the getAllIssues endpoint")
     void getAllIssues_NoIssues_OkResponse() throws Exception {
         List<IssueEntity> expectedIssues = List.of();
 
@@ -169,6 +175,101 @@ class IssueControllerTest {
         List<IssueFullResponse> expectedIssuesResponses = List.of();
 
         mockMvc.perform(get("/issues"))
+            .andExpect(status().isOk())
+            .andExpect(content()
+                .json(objectMapper.writeValueAsString(expectedIssuesResponses)));
+    }
+
+    @Test
+    @DisplayName("Should return OK Response when there are issues to return when calling the getFilteredIssues endpoint")
+    void getFilteredIssues_ExistingIssues_OkResponse() throws Exception {
+        IssueEntity firstExpectedIssue = IssueEntity.builder()
+            .issueId("FPC-0001")
+            .title("Title")
+            .description("Issue description")
+            .reproducingSteps("Some steps to reproduce the issue")
+            .environment("Environment")
+            .version("v1.0")
+            .status(NEW)
+            .priority(LOW)
+            .build();
+
+        IssueEntity secondExpectedIssue = IssueEntity.builder()
+            .issueId("SPC-0001")
+            .title("Title")
+            .description("Issue description")
+            .reproducingSteps("Some steps to reproduce the issue")
+            .environment("Environment")
+            .version("v1.0")
+            .status(NEW)
+            .priority(LOW)
+            .build();
+
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("version", "v1.0");
+
+        Map<String, String> operators = new HashMap<>();
+        operators.put("version", "=");
+
+        Map<String, String> dataTypes = new HashMap<>();
+        dataTypes.put("version", "string");
+
+        FilterCriteria filterCriteria = new FilterCriteria(
+            filters,
+            operators,
+            dataTypes
+        );
+
+        IssueFullResponse firstExpectedIssueResponse = mapStructMapper.toResponse(firstExpectedIssue);
+        IssueFullResponse secondExpectedIssueResponse = mapStructMapper.toResponse(secondExpectedIssue);
+
+        List<IssueEntity> expectedIssues = List.of(
+            firstExpectedIssue,
+            secondExpectedIssue
+        );
+
+        when(issueService.filterIssues(argThat(new FilterCriteriaMatcher(filterCriteria)))).thenReturn(expectedIssues);
+
+        List<IssueFullResponse> expectedIssuesResponses = List.of(
+            firstExpectedIssueResponse,
+            secondExpectedIssueResponse
+        );
+
+        mockMvc.perform(post("/issues/filter")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(filterCriteria)))
+            .andExpect(status().isOk())
+            .andExpect(content()
+                .json(objectMapper.writeValueAsString(expectedIssuesResponses)));
+    }
+
+    @Test
+    @DisplayName("Should return OK Response when there are no issues to return when calling the getFilteredIssues endpoint")
+    void getFilteredIssues_NoIssues_OkResponse() throws Exception {
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("version", "v1.0");
+
+        Map<String, String> operators = new HashMap<>();
+        operators.put("version", "=");
+
+        Map<String, String> dataTypes = new HashMap<>();
+        dataTypes.put("version", "string");
+
+        FilterCriteria filterCriteria = new FilterCriteria(
+            filters,
+            operators,
+            dataTypes
+        );
+
+        List<IssueEntity> expectedIssues = List.of();
+
+        when(issueService.filterIssues(argThat(new FilterCriteriaMatcher(filterCriteria)))).thenReturn(expectedIssues);
+
+        List<IssueFullResponse> expectedIssuesResponses = List.of();
+
+        mockMvc.perform(post("/issues/filter")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(filterCriteria)))
             .andExpect(status().isOk())
             .andExpect(content()
                 .json(objectMapper.writeValueAsString(expectedIssuesResponses)));

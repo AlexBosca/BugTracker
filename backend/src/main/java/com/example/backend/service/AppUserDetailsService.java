@@ -60,7 +60,7 @@ public class AppUserDetailsService implements UserDetailsService {
 
         return userDao
                 .selectUserByUserId(userId)
-                .orElseThrow(UserIdNotFoundException::new);
+                .orElseThrow(() -> new UserIdNotFoundException(userId));
     }
 
     public List<UserEntity> loadAllUsers() {
@@ -221,48 +221,48 @@ public class AppUserDetailsService implements UserDetailsService {
     }
 
     public int enableAppUser(String userId) {
-        boolean isUserPresent = userDao.existsUserByUserId(userId);
+        // boolean isUserPresent = userDao.existsUserByUserId(userId);
 
-        if(!isUserPresent) {
-            throw new UserIdNotFoundException(userId);
-        }
+        // if(!isUserPresent) {
+        //     throw new UserIdNotFoundException(userId);
+        // }
         return userDao.enableUserAccountByUserId(userId);
     }
 
     public int disableAppUser(String userId) {
-        boolean isUserPresent = userDao.existsUserByUserId(userId);
+        // boolean isUserPresent = userDao.existsUserByUserId(userId);
 
-        if(!isUserPresent) {
-            throw new UserIdNotFoundException(userId);
-        }
+        // if(!isUserPresent) {
+        //     throw new UserIdNotFoundException(userId);
+        // }
         return userDao.disableUserAccountByUserId(userId);
     }
 
     public int unlockAppUser(String userId) {
-        boolean isUserPresent = userDao.existsUserByUserId(userId);
+        // boolean isUserPresent = userDao.existsUserByUserId(userId);
 
-        if(!isUserPresent) {
-            throw new UserIdNotFoundException(userId);
-        }
+        // if(!isUserPresent) {
+        //     throw new UserIdNotFoundException(userId);
+        // }
         userDao.resetUserAccountFailedLoginAttemptsByUserId(userId);
         return userDao.unlockUserAccountByUserId(userId);
     }
 
     private int setAccountNonExpired(String userId) {
-        boolean isUserPresent = userDao.existsUserByUserId(userId);
+        // boolean isUserPresent = userDao.existsUserByUserId(userId);
 
-        if(!isUserPresent) {
-            throw new UserIdNotFoundException(userId);
-        }
+        // if(!isUserPresent) {
+        //     throw new UserIdNotFoundException(userId);
+        // }
         return userDao.setUserAccountNonExpiredByUserId(userId);
     }
 
     private int setCredentialExpiresOn(String userId) {
-        boolean isUserPresent = userDao.existsUserByUserId(userId);
+        // boolean isUserPresent = userDao.existsUserByUserId(userId);
 
-        if(!isUserPresent) {
-            throw new UserIdNotFoundException(userId);
-        }
+        // if(!isUserPresent) {
+        //     throw new UserIdNotFoundException(userId);
+        // }
         LocalDateTime credentialsExpirationDate = now(clock).plusDays(CREDENTIALS_VALIDITY_IN_DAYS);
         
         return userDao.setUserCrecentialsExpiresOn(userId, credentialsExpirationDate);

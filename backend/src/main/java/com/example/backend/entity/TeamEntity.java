@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -43,4 +42,31 @@ public class TeamEntity extends BaseEntity {
         this.projects.add(project);
         project.getTeams().add(this);
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((teamId == null) ? 0 : teamId.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TeamEntity other = (TeamEntity) obj;
+        if (teamId == null) {
+            if (other.teamId != null)
+                return false;
+        } else if (!teamId.equals(other.teamId))
+            return false;
+        return true;
+    }
+
+    
 }
