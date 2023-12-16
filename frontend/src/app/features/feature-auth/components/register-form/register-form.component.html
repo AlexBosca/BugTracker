@@ -1,71 +1,76 @@
-<div class="col-md-4 offset-md-3 mt-5">
-    <div class="card">
-        <div class="card-body">
-            <h2 class="card-title text-center fw-bold">Register</h2>
-
-            <div class="text-center my-3">
-                Create a free account or<a routerLink="/login" class="text-center text-decoration-none"> log in</a>
+<!-- Register Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="userModalLabel" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content pb-4">
+            <div class="modal-header">
+                <h3 class="modal-title text-center w-100 py-3" id="userModalLabel">Register</h3>
             </div>
+            <form [formGroup]="registrationForm" (ngSubmit)="register()" class="px-4">
+                <div class="modal-body">
+                    <div *ngIf="error" class="alert alert-danger alert-dismissible mt-1 mb-4">
+                        <i class="bi bi-exclamation-triangle-fill"></i> {{error.error.message}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="form-floating mt-4">
+                        <input type="text" formControlName="firstName" id="firstName" placeholder="" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['firstName'].errors }" />
+                        <label for="firstName">First Name</label>
+                        <div *ngIf="submitted && form['firstName'].errors" class="invalid-feedback">
+                            <div *ngIf="form['firstName'].errors['required']">First name is required</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-floating mt-4">
+                        <input type="text" formControlName="lastName" id="lastName" placeholder="" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['lastName'].errors }" />
+                        <label for="lastName">Last Name</label>
+                        <div *ngIf="submitted && form['lastName'].errors" class="invalid-feedback">
+                            <div *ngIf="form['lastName'].errors['required']">Last Name is required</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-floating mt-4">
+                        <input type="email" formControlName="email" id="email" placeholder="" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['email'].errors }" />
+                        <label for="email">Email</label>
+                        <div *ngIf="submitted && form['email'].errors" class="invalid-feedback">
+                            <div *ngIf="form['email'].errors['required']">Email is required</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-floating mt-4">
+                        <input type="password" formControlName="password" id="password" placeholder="" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['password'].errors }" />
+                        <label for="password">Password</label>
+                        <div *ngIf="submitted && form['password'].errors" class="invalid-feedback">
+                            <div *ngIf="form['password'].errors['required']">Password is required</div>
+                        </div>
+                    </div>
 
-            <form [formGroup]="registrationForm" (ngSubmit)="register()">
-                <div *ngIf="error" class="alert alert-danger alert-dismissible mt-1 mb-3">
-                    <i class="bi bi-exclamation-triangle-fill"></i> {{error.error.message}}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                
-                <div class="form-group mt-3">
-                    <label for="firstName">First Name</label>
-                    <input type="text" formControlName="firstName" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['firstName'].errors }" />
-                    <div *ngIf="submitted && form['firstName'].errors" class="invalid-feedback">
-                        <div *ngIf="form['firstName'].errors['required']">First name is required</div>
+                    <div class="form-floating mt-4">
+                        <select class="form-select" id="role" aria-label="form-select-lg" formControlName="role" [ngClass]="{ 'is-invalid': submitted && form['role'].errors }">
+                            <option value="" selected>Choose your role</option>
+                            <option value="A">Admin</option>
+                            <option value="D">Developer</option>
+                            <option value="T">Tester</option>
+                            <option value="SM">Scrum Master</option>
+                            <option value="PM">Project Manager</option>
+                            <option value="V">Visitor</option>
+                        </select>
+                        <label for="role">Role</label>
+                        <div *ngIf="submitted && form['role'].errors" class="invalid-feedback">
+                            <div *ngIf="form['role'].errors['required']">Role is required</div>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="form-group mt-3">
-                    <label for="lastName">Last Name</label>
-                    <input type="text" formControlName="lastName" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['lastName'].errors }" />
-                    <div *ngIf="submitted && form['lastName'].errors" class="invalid-feedback">
-                        <div *ngIf="form['lastName'].errors['required']">Last Name is required</div>
-                    </div>
-                </div>
-                
-                <div class="form-group mt-3">
-                    <label for="email">Email</label>
-                    <input type="email" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['email'].errors }" />
-                    <div *ngIf="submitted && form['email'].errors" class="invalid-feedback">
-                        <div *ngIf="form['email'].errors['required']">Email is required</div>
-                    </div>
-                </div>
-                
-                <div class="form-group mt-3">
-                    <label for="password">Password</label>
-                    <input type="password" formControlName="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['password'].errors }" />
-                    <div *ngIf="submitted && form['password'].errors" class="invalid-feedback">
-                        <div *ngIf="form['password'].errors['required']">Password is required</div>
-                    </div>
-                </div>
 
-                <div class="form-group mt-3">
-                    <label for="role">Role</label>
-                    <select class="form-select" aria-label=".form-select-lg example" formControlName="role" [ngClass]="{ 'is-invalid': submitted && form['role'].errors }">
-                        <option value="" selected>Choose your role</option>
-                        <option value="A">Admin</option>
-                        <option value="D">Developer</option>
-                        <option value="T">Tester</option>
-                        <option value="SM">Scrum Master</option>
-                        <option value="PM">Project Manager</option>
-                        <option value="V">Visitor</option>
-                    </select>
-                    <div *ngIf="submitted && form['role'].errors" class="invalid-feedback">
-                        <div *ngIf="form['role'].errors['required']">Role is required</div>
+                    <button [disabled]="loading" class="col-md-12 btn btn-primary btn-lg mt-5">
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        Register
+                    </button>
+                    
+                    <div class="row justify-content-center mt-3">
+                        <a (click)="closeModal()" routerLink="/login" class="text-center text-decoration-none">You already have an account?</a>
                     </div>
                 </div>
-
-                <button [disabled]="loading" class="col-md-12 btn btn-primary mt-5">
-                    <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
-                    Register
-                </button>
             </form>
         </div>
     </div>
 </div>
+<!-- End Register Modal -->

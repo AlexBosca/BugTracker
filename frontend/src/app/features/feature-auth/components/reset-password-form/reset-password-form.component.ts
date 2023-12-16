@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-reset-password-form',
@@ -15,6 +16,7 @@ export class ResetPasswordFormComponent implements OnInit {
   loading: boolean = false;
   submitted: boolean = false;
   error!: HttpErrorResponse;
+  resetPasswordModal!: Modal;
 
   constructor(
     private router: Router,
@@ -29,6 +31,10 @@ export class ResetPasswordFormComponent implements OnInit {
       newPassword: ['', Validators.required],
       newPasswordRepeated: ['', Validators.required]
     });
+
+    this.resetPasswordModal = new Modal(document.getElementById('resetPasswordModal') as HTMLElement);
+
+    this.resetPasswordModal.show();
   }
 
   get form() {
@@ -65,5 +71,9 @@ export class ResetPasswordFormComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  closeModal(): void {
+    this.resetPasswordModal.hide();
   }
 }
