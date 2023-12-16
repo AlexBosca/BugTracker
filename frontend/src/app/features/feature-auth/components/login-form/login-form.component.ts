@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs';
 import { UserModel } from '../../models/UserModel';
 import { AuthService } from '../../services/auth.service';
+import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-login-form',
@@ -19,6 +20,7 @@ export class LoginFormComponent implements OnInit {
   error!: HttpErrorResponse;
   returnUrl: string = '';
   previousViewResponse?: string;
+  loginModal!: Modal;
 
   constructor(
     private router: Router,
@@ -40,6 +42,9 @@ export class LoginFormComponent implements OnInit {
     });
     
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.loginModal = new Modal(document.getElementById('loginModal') as HTMLElement);
+
+    this.loginModal.show();
   }
 
   get form() {
@@ -71,5 +76,9 @@ export class LoginFormComponent implements OnInit {
             this.loading = false;
           }
         });
+  }
+
+  closeModal(): void {
+    this.loginModal.hide();
   }
 }

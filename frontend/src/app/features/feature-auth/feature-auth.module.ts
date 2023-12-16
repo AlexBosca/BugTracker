@@ -6,13 +6,15 @@ import { LoginFormComponent } from './components/login-form/login-form.component
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordFormComponent } from './components/reset-password-form/reset-password-form.component';
+import { PageAuthenticationComponent } from './pages/page-authentication/page-authentication.component';
 
 
 @NgModule({
   declarations: [
     LoginFormComponent,
     RegisterFormComponent,
-    ResetPasswordFormComponent
+    ResetPasswordFormComponent,
+    PageAuthenticationComponent
   ],
   imports: [
     CommonModule,

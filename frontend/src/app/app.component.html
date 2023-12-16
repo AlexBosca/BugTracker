@@ -1,8 +1,8 @@
 <div class="container-fluid m-0 p-0 bg-opacity-25 bg-gradient h-100">
   <div class="row m-0 h-100">
-    <app-toolbar class="col-2 m-0 p-0"></app-toolbar>
+    <app-toolbar *ngIf="this.authService.isUserLoggedIn()" class="col-2 m-0 p-0"></app-toolbar>
     <div class="col m-0 p-0">
-      <app-navbar></app-navbar>
+      <app-navbar *ngIf="this.authService.isUserLoggedIn()"></app-navbar>
       <div class="container-fluid h-100 m-0 mt-2">
         <router-outlet></router-outlet>
       </div>

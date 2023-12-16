@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserRegistrationModel } from '../../models/UserRegistrationModel';
 import { AuthService } from '../../services/auth.service';
+import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-register-form',
@@ -16,6 +17,7 @@ export class RegisterFormComponent implements OnInit {
   submitted: boolean = false;
   loading: boolean = false;
   error!: HttpErrorResponse;
+  registerModal!: Modal;
 
   constructor(
     private router: Router,
@@ -31,6 +33,10 @@ export class RegisterFormComponent implements OnInit {
       password: ['', Validators.required],
       role: ['', Validators.required]
     });
+
+    this.registerModal = new Modal(document.getElementById('registerModal') as HTMLElement);
+
+    this.registerModal.show();
   }
 
   get form() {
@@ -68,5 +74,9 @@ export class RegisterFormComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  closeModal(): void {
+    this.registerModal.hide();
   }
 }

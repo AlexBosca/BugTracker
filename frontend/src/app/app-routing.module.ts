@@ -23,7 +23,8 @@ const routes: Routes = [
   {
     path: 'users',
     loadChildren: () => import('./features/feature-users/feature-users.module').then(m => m.FeatureUsersModule),
-    canActivate: [AuthGuard, AdminGuard]
+    canActivate: [AuthGuard, AdminGuard],
+    data: {role: 'ROLE_ADMIN'}
   },
   {
     path: 'auth',
@@ -36,7 +37,8 @@ const routes: Routes = [
   {
     path: '',
     redirectTo: '',
-    pathMatch: 'full'
+    pathMatch: 'full',
+    canActivate: [AuthGuard]
   }
 ];
 

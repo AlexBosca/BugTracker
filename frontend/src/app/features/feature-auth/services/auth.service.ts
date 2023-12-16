@@ -77,4 +77,9 @@ export class AuthService {
 
     return token;
   }
+
+  public hasRole(role: string): boolean {
+    const user = this.getCurrentUser();
+    return user && user.role === role;
+  }
 }
