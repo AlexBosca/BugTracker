@@ -5,14 +5,14 @@
 
     <div class="row mb-4">
         <div class="col">
-            <app-projects-dropdown [projects]="projects"></app-projects-dropdown>
+            <app-projects-dropdown (selectedProjectChange)="onProjectChange($event)" [projects]="projects"></app-projects-dropdown>
         </div>
         
         <div class="col">
             <div class="card my-2 mt-0">
                 <div class="card-body">
                     <h4 class="card-title">Issue Density</h4>
-                    <h5 class="card-subtitle text-muted">Sub-Placeholder</h5>
+                    <h5 class="card-text">Sub-Placeholder</h5>
                 </div>
             </div>
         </div>
@@ -21,7 +21,7 @@
             <div class="card my-2 mt-0">
                 <div class="card-body">
                     <h4 class="card-title">Issue Gap Percentage</h4>
-                    <h5 class="card-subtitle text-muted">Sub-Placeholder</h5>
+                    <h5 class="card-text">Sub-Placeholder</h5>
                 </div>
             </div>
         </div>
@@ -29,12 +29,7 @@
 
     <div class="row mb-4">
         <div class="col">
-            <div class="card my-2 mt-0">
-                <div class="card-body">
-                    <h4 class="card-title">Issue by Status</h4>
-                    <h5 class="card-subtitle">Sub-Placeholder</h5>
-                </div>
-            </div>
+            <app-issues-status-piechart [issues]="issues"></app-issues-status-piechart>
         </div>
         
         <div class="col">
