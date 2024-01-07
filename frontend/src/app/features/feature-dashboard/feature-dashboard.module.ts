@@ -5,13 +5,15 @@ import { FeatureDashboardRoutingModule } from './feature-dashboard-routing.modul
 import { PageDashboardComponent } from './pages/page-dashboard/page-dashboard.component';
 import { ProjectsDropdownComponent } from './components/projects-dropdown/projects-dropdown.component';
 import { IssuesStatusPiechartComponent } from './components/issues-status-piechart/issues-status-piechart.component';
+import { IssuesPriorityPiechartComponent } from './components/issues-priority-piechart/issues-priority-piechart.component';
 
 
 @NgModule({
   declarations: [
     PageDashboardComponent,
     ProjectsDropdownComponent,
-    IssuesStatusPiechartComponent
+    IssuesStatusPiechartComponent,
+    IssuesPriorityPiechartComponent
   ],
   imports: [
     CommonModule,

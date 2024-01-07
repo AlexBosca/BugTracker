@@ -29,18 +29,14 @@ export class IssuesStatusPiechartComponent implements OnInit, OnChanges {
     '#6f6f6f',
   ];
 
-  constructor() { }
-
   ngOnInit(): void {
     Chart.defaults.font.family = "'Bootstrap-icons'";
     Chart.defaults.font.size = 13;
-
-    this.issuesStatusPiechartInit();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const geKey = (issue: IssueModel) => issue.status;
-    this.splitedIssues = this.splitArrayIntoChunksWithKeys(this.issues, geKey);
+    const getKey = (issue: IssueModel) => issue.status;
+    this.splitedIssues = this.splitArrayIntoChunksWithKeys(this.issues, getKey);
     this.issuesStatusPiechartUpdate();
   }
 
@@ -110,7 +106,7 @@ export class IssuesStatusPiechartComponent implements OnInit, OnChanges {
     this.issuesStatusPiechart.update();
   }
 
-  splitArrayIntoChunksWithKeys<T, K>(arr: T[], condition: (item: T) => K): Map<K, T[]> {
+  public splitArrayIntoChunksWithKeys<T, K>(arr: T[], condition: (item: T) => K): Map<K, T[]> {
     const chunksMap = new Map<K, T[]>();
     
     for(const item of arr) {
@@ -126,7 +122,7 @@ export class IssuesStatusPiechartComponent implements OnInit, OnChanges {
     return chunksMap;
   }
 
-  getLengthOfIssuesByStatus(issues: IssueModel[] | undefined): number {
+  public getLengthOfIssuesByStatus(issues: IssueModel[] | undefined): number {
     if(issues === undefined) {
       return 0;
     }
