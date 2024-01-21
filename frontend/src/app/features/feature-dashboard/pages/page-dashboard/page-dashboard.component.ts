@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IssueModel } from 'src/app/features/feature-issues/models/IssueModel';
+import { IssueService } from 'src/app/features/feature-issues/services/issue.service';
 import { ProjectModel } from 'src/app/features/feature-projects/models/ProjectModel';
 import { ProjectService } from 'src/app/features/feature-projects/services/project.service';
 
@@ -16,10 +17,17 @@ export class PageDashboardComponent implements OnInit {
   issues!: IssueModel[];
   error!: HttpErrorResponse;
 
-  constructor(private projectService: ProjectService) { }
+  constructor(
+    private issueService: IssueService,
+    private projectService: ProjectService
+    ) { }
 
   ngOnInit(): void {
     this.fetchProjects();
+
+    if(!this.projectKey) {
+      this.fetchAllIssues();
+    }
   }
 
   fetchProjects(): void {
@@ -32,6 +40,14 @@ export class PageDashboardComponent implements OnInit {
 
   fetchIssuesOnProject(projectKey: string): void {
     this.projectService.getIssuesOnProject(projectKey)
+        .subscribe({
+          next: data => this.issues = data,
+          error: error => this.error = error
+        });
+  }
+
+  fetchAllIssues(): void {
+    this.issueService.getIssues()
         .subscribe({
           next: data => this.issues = data,
           error: error => this.error = error

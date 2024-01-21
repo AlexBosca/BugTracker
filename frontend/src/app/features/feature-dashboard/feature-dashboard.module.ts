@@ -6,6 +6,7 @@ import { PageDashboardComponent } from './pages/page-dashboard/page-dashboard.co
 import { ProjectsDropdownComponent } from './components/projects-dropdown/projects-dropdown.component';
 import { IssuesStatusPiechartComponent } from './components/issues-status-piechart/issues-status-piechart.component';
 import { IssuesPriorityPiechartComponent } from './components/issues-priority-piechart/issues-priority-piechart.component';
+import { IssuesStatusByAssigneeComponent } from './components/issues-status-by-assignee/issues-status-by-assignee.component';
 
 
 @NgModule({
@@ -13,7 +14,8 @@ import { IssuesPriorityPiechartComponent } from './components/issues-priority-pi
     PageDashboardComponent,
     ProjectsDropdownComponent,
     IssuesStatusPiechartComponent,
-    IssuesPriorityPiechartComponent
+    IssuesPriorityPiechartComponent,
+    IssuesStatusByAssigneeComponent
   ],
   imports: [
     CommonModule,
