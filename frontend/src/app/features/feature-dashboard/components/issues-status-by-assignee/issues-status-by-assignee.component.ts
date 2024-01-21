@@ -27,7 +27,7 @@ export class IssuesStatusByAssigneeComponent implements OnInit, OnChanges {
     const closedByUsersKey = (issue: IssueModel) => issue.closedByUser?.firstName + " " + issue.closedByUser?.lastName;
     this.closedIssuesByUser = this.splitArrayIntoChunksWithKeys(this.issues, closedByUsersKey);
 
-    this.issuesStatusByAssigneeInit();
+    this.issuesPriorityPiechartUpdate();
   }
 
   public issuesStatusByAssigneeInit() {

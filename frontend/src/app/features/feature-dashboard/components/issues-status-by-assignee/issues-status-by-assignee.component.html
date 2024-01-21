@@ -3,7 +3,7 @@
         <h4 class="card-title">Assigned vs Resolved Issues by Assignee</h4>
         <div class="container">
             <ng-template [ngIf]="issues.length !== 0" [ngIfElse]="no_issues_overview">
-                <canvas id="issuesStatusByAsignee">{{issuesStatusByAssigneeBarchart}}</canvas>
+                <canvas id="issuesStatusByAssignee">{{issuesStatusByAssigneeBarchart}}</canvas>
             </ng-template>
 
             <ng-template #no_issues_overview>
