@@ -7,6 +7,7 @@ import { ProjectsDropdownComponent } from './components/projects-dropdown/projec
 import { IssuesStatusPiechartComponent } from './components/issues-status-piechart/issues-status-piechart.component';
 import { IssuesPriorityPiechartComponent } from './components/issues-priority-piechart/issues-priority-piechart.component';
 import { IssuesStatusByAssigneeComponent } from './components/issues-status-by-assignee/issues-status-by-assignee.component';
+import { IssuesStatusByTeamComponent } from './components/issues-status-by-team/issues-status-by-team.component';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { IssuesStatusByAssigneeComponent } from './components/issues-status-by-a
     ProjectsDropdownComponent,
     IssuesStatusPiechartComponent,
     IssuesPriorityPiechartComponent,
-    IssuesStatusByAssigneeComponent
+    IssuesStatusByAssigneeComponent,
+    IssuesStatusByTeamComponent
   ],
   imports: [
     CommonModule,

@@ -70,7 +70,7 @@ export class IssuesStatusByAssigneeComponent implements OnInit, OnChanges {
 
     this.usersSet.forEach((userName) => {
       assignedIssuesByUserLengths.push(
-        this.getLengthOfIssuesByPriority(this.assignedIssuesByUser.get(userName))
+        this.getLengthOfIssuesByUserName(this.assignedIssuesByUser.get(userName))
       );
     });
 
@@ -82,7 +82,7 @@ export class IssuesStatusByAssigneeComponent implements OnInit, OnChanges {
 
     this.usersSet.forEach((userName) => {
       closedIssuesByUserLengths.push(
-        this.getLengthOfIssuesByPriority(this.closedIssuesByUser.get(userName))
+        this.getLengthOfIssuesByUserName(this.closedIssuesByUser.get(userName))
       );
     });
 
@@ -117,7 +117,7 @@ export class IssuesStatusByAssigneeComponent implements OnInit, OnChanges {
     return chunksMap;
   }
 
-  public getLengthOfIssuesByPriority(issues: IssueModel[] | undefined): number {
+  public getLengthOfIssuesByUserName(issues: IssueModel[] | undefined): number {
     if(issues === undefined) {
       return 0;
     }
