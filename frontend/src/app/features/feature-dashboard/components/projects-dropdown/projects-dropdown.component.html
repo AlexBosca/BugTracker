@@ -1,0 +1,9 @@
+<div class="card my-2 mt-0">
+    <div class="card-body">
+        <h4 class="card-title">Projects</h4>
+        <select (change)="onProjectChange($event)" class="form-select" aria-label="Default select example">
+            <option value="" disabled selected>Projects</option>
+            <option *ngFor="let project of projects" [value]="project.projectKey">{{project.name}}</option>
+        </select>
+    </div>
+</div>

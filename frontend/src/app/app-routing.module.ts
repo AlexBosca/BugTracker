@@ -6,6 +6,11 @@ import { AccessDeniedComponent } from './core/components/access-denied/access-de
 
 const routes: Routes = [
   {
+    path: 'dashboard',
+    loadChildren: () => import('./features/feature-dashboard/feature-dashboard.module').then(m => m.FeatureDashboardModule),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'issues',
     loadChildren: () => import('./features/feature-issues/feature-issues.module').then(m => m.FeatureIssuesModule),
     canActivate: [AuthGuard]
