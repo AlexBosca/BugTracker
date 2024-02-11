@@ -4,6 +4,7 @@ import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserModel } from '../../feature-auth/models/UserModel';
 import { UserRegistrationModel } from '../../feature-auth/models/UserRegistrationModel';
+import { FilterCriteria } from '../../feature-issues/models/FilterCriteria';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,16 @@ export class UserService {
       .pipe(
         catchError(this.handleError)
       )
+  }
+
+  getFilteredUsers(filter: FilterCriteria): Observable<UserModel[]> {
+    return this.http.post<UserModel[]>(
+      `${this.usersUrl}/filter`,
+      filter
+      )
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   getUser(userId: string): Observable<UserModel> {

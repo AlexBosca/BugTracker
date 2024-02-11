@@ -32,6 +32,5 @@ export class PageIssuesComponent implements OnInit {
 
   handleFilteredData(filteredIssues: IssueModel[]) {
     this.issues = filteredIssues;
-    console.log(this.issues);
   }
 }

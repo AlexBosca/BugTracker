@@ -50,13 +50,12 @@ export class IssueService {
     );
   }
 
-  changeIssueStatus(issueId: string, status: IssueStatusRequest): Observable<void> {
+  changeIssueStatus(issueId: string, status: IssueStatusRequest, userId?: string): Observable<void> {
     let changeStateRequest = `${this.issuesUrl}/${issueId}/${status}`;
     let request = changeStateRequest;
 
     if(status === IssueStatusRequest.assignToDeveloper) {
-      let developerId = this.authService.getCurrentUser().userId;
-      request = `${request}/${developerId}`;
+      request = `${request}/${userId}`;
     }
 
     return this.http.put<void>(

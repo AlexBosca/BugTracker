@@ -1,5 +1,7 @@
 package com.example.backend.service;
 
+import com.example.backend.model.EmailData;
+
 public interface EmailSenderService {
-    void send(String recipientName, String recipientEmail, String confirmationLink);
+    void send(EmailData emailData);
 }

@@ -126,7 +126,7 @@ public class UserEntity extends BaseEntity implements UserDetails {
     }
 
     public String getFullName() {
-        return firstName + lastName;
+        return firstName + " " + lastName;
     }
 
     @Override

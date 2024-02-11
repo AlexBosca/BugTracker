@@ -9,12 +9,13 @@ import com.example.backend.exception.token.TokenNotFoundException;
 import com.example.backend.exception.user.UserCredentialsNotValidException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 import com.example.backend.exception.user.UserPasswordsNotMatchingException;
+import com.example.backend.model.EmailData;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -23,24 +24,36 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Optional;
 
 import static com.example.backend.util.Utilities.CONFIRMATION_LINK;
 import static com.example.backend.util.Utilities.formattedString;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 public class AuthenticationService {
 
-    @Autowired
     private final AppUserDetailsService userDetailsService;
-    @Autowired
+
     private final CredentialValidatorService credentialValidatorService;
-    @Autowired
+
     private final EmailSenderService emailSenderService;
-    @Autowired
-    private final ConfirmationTokenService confirmationTokenService;
     
+    private final ConfirmationTokenService confirmationTokenService;
+
+    
+    
+    public AuthenticationService(AppUserDetailsService userDetailsService,
+                                 CredentialValidatorService credentialValidatorService,
+                                 @Qualifier("confirmation") EmailSenderService emailSenderService,
+                                 ConfirmationTokenService confirmationTokenService) {
+
+        this.userDetailsService = userDetailsService;
+        this.credentialValidatorService = credentialValidatorService;
+        this.emailSenderService = emailSenderService;
+        this.confirmationTokenService = confirmationTokenService;
+    }
+
     public String register(UserEntity user) {
         boolean areCredentialsValid = credentialValidatorService.areCredentialsValid(
                 user.getEmail(),
@@ -56,10 +69,14 @@ public class AuthenticationService {
 
         log.info("Send confirmation mail to user");
 
-        emailSenderService.send(
-                user.getFullName(),
-                user.getEmail(),
-                formattedString(CONFIRMATION_LINK, token));
+        EmailData emailData = EmailData.builder()
+                .recipientName(user.getFullName())
+                .recipientEmail(user.getEmail())
+                .subject("Confirm your email")
+                .confirmationLink(Optional.of(formattedString(CONFIRMATION_LINK, token)))
+                .build();
+
+        emailSenderService.send(emailData);
 
         return token;
     }

@@ -42,7 +42,24 @@
         </div>
     
         <div class="btn-group me-3" role="group" aria-label="Change state group">
-            <button (click)="changeIssueStatus(currentState)" *ngFor="let currentState of possibleActions.get(issue.status)" class="btn btn-secondary me-1">{{currentState}}</button>
+            <div *ngFor="let currentState of possibleActions.get(issue.status)">
+                <ng-template [ngIf]="currentState !== 'Assign'" [ngIfElse]="assignToDeveloper">
+                    <button (click)="changeIssueStatus(currentState)" class="btn btn-secondary me-1">{{currentState}}</button>
+                </ng-template>
+
+                <ng-template #assignToDeveloper>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{currentState}}
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li *ngFor="let user of users">
+                                <a (click)="changeIssueStatus(currentState, user.userId)" class="dropdown-item">{{user.firstName + " " + user.lastName}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </ng-template>
+            </div>
         </div>
     </div>
 </div>
