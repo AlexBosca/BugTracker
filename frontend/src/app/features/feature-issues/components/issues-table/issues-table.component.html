@@ -74,10 +74,10 @@
         <div class="col">
           <span class="badge"
             [ngClass]="{
-              'bg-secondary' : issue.status === IssueStatus.NEW || issue.status === IssueStatus.ASSIGNED || issue.status === IssueStatus.OPEN || issue.status === IssueStatus.REOPENED,
-              'bg-success' : issue.status === IssueStatus.FIXED || issue.status === IssueStatus.VERIFIED || issue.status === IssueStatus.CLOSED,
-              'bg-danger' : issue.status === IssueStatus.DUPLICATE || issue.status === IssueStatus.REJECTED || issue.status === IssueStatus.DEFERRED || issue.status === IssueStatus.NOT_A_BUG,
-              'bg-warning' : issue.status === IssueStatus.PENDING_RETEST || issue.status === IssueStatus.RETEST
+              'bg-secondary' : (issue.status === IssueStatus.NEW) || (issue.status === IssueStatus.ASSIGNED) || (issue.status === IssueStatus.OPEN) || (issue.status === IssueStatus.REOPENED),
+              'bg-success' : (issue.status === IssueStatus.FIXED) || (issue.status === IssueStatus.VERIFIED) || (issue.status === IssueStatus.CLOSED),
+              'bg-danger' : (issue.status === IssueStatus.DUPLICATE) || (issue.status === IssueStatus.REJECTED) || (issue.status === IssueStatus.DEFERRED) || (issue.status === IssueStatus.NOT_A_BUG),
+              'bg-warning' : (issue.status === IssueStatus.PENDING_RETEST) || (issue.status === IssueStatus.RETEST)
             }">
             {{issue.status.split('_').join(' ')}}
           </span>

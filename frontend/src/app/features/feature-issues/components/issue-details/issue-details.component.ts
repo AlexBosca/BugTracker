@@ -5,6 +5,8 @@ import { IssueModel } from '../../models/IssueModel';
 import { IssueStatusRequest } from '../../models/IssueStatusRequest';
 import { Status } from '../../models/status.enum';
 import { IssueService } from '../../services/issue.service';
+import { UserService } from 'src/app/features/feature-users/services/user.service';
+import { UserModel } from 'src/app/features/feature-auth/models/UserModel';
 
 @Component({
   selector: 'app-issue-details',
@@ -48,6 +50,7 @@ export class IssueDetailsComponent implements OnInit {
   readonly DAYS_OFFSET = this.HOURS_OFFSET * 60;
   private issueId!: string | null;
   issue!: IssueModel;
+  users!: UserModel[];
   error!: HttpErrorResponse;
   createdOn!: string;
   modifiedOn!: string | null;
@@ -56,7 +59,8 @@ export class IssueDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private issueService: IssueService
+    private issueService: IssueService,
+    private userService: UserService
     ) { }
 
   ngOnInit(): void {
@@ -67,7 +71,7 @@ export class IssueDetailsComponent implements OnInit {
     );
 
     this.fetchIssue();
-    console.log(this.issue.closedByUser);
+    this.fetchAllUsers();
   }
 
   fetchIssue(): void {
@@ -81,6 +85,14 @@ export class IssueDetailsComponent implements OnInit {
           error: error => this.error = error
         });
     }
+  }
+
+  fetchAllUsers(): void {
+    this.userService.getUsers()
+      .subscribe({
+        next: data => this.users = data,
+        error: error => this.error = error
+      });
   }
 
   initializeDates(issue: IssueModel): void {
@@ -115,16 +127,13 @@ export class IssueDetailsComponent implements OnInit {
     return givenDate.toDateString();
   }
 
-  changeIssueStatus(action: string): void {
+  changeIssueStatus(action: string, userId?: string): void {
     if(this.issueId && action) {
       let possibleState = this.getPossibleStateByAction(action);
       if(possibleState)
-        this.issueService.changeIssueStatus(this.issueId, possibleState)
+        this.issueService.changeIssueStatus(this.issueId, possibleState, userId)
           .subscribe({
-            next: () => {
-              console.log(possibleState);
-              window.location.reload();
-            },
+            next: () => window.location.reload(),
             error: error => {
               this.error = error;
             }

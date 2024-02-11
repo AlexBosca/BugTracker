@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/filter")
-    public ResponseEntity<List<UserFullResponse>> getFilteredProjects(@RequestBody FilterCriteria filterCriteria) {
+    public ResponseEntity<List<UserFullResponse>> getFilteredUsers(@RequestBody FilterCriteria filterCriteria) {
         List<UserEntity> entities = userDetailsService.filterUsers(filterCriteria);
 
         List<UserFullResponse> responses = entities.stream()

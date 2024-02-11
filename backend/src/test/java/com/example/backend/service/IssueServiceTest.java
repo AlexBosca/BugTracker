@@ -72,6 +72,9 @@ class IssueServiceTest {
     @Mock
     private Clock clock;
 
+    @Mock
+    private EmailSenderService emailSenderService;
+
     @Captor
     private ArgumentCaptor<IssueEntity> issueArgumentCaptor;
 
@@ -93,7 +96,8 @@ class IssueServiceTest {
             commentDao,
             projectDao,
             userDao,
-            clock
+            clock,
+            emailSenderService
         );
     }
 

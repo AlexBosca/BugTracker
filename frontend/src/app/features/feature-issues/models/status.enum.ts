@@ -10,6 +10,6 @@ export enum Status {
     CLOSED = 'CLOSED',
     DUPLICATE = 'DUPLICATE',
     REJECTED = 'REJECTED',
-    DEFERRED = 'DEFERED',
+    DEFERRED = 'DEFERRED',
     NOT_A_BUG = 'NOT_A_BUG'
 }

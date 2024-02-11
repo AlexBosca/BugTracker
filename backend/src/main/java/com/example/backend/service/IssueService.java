@@ -15,7 +15,8 @@ import com.example.backend.exception.issue.IssueNotFoundException;
 import com.example.backend.exception.project.ProjectNotFoundException;
 import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
-import lombok.RequiredArgsConstructor;
+import com.example.backend.model.EmailData;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.backend.enums.IssueStatus.NEW;
 import static com.example.backend.util.issue.IssueUtilities.*;
@@ -30,10 +32,8 @@ import static java.time.LocalDateTime.now;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class IssueService {
 
-    @Qualifier("issue-jpa")
     private final IssueDao issueDao;
 
     private final IssueCommentDao commentDao;
@@ -43,6 +43,25 @@ public class IssueService {
     private final UserDao userDao;
     
     private final Clock clock;
+
+    private final EmailSenderService emailSenderService;
+
+    
+
+    public IssueService(@Qualifier("issue-jpa") IssueDao issueDao,
+                        IssueCommentDao commentDao,
+                        ProjectDao projectDao,
+                        UserDao userDao,
+                        Clock clock,
+                        @Qualifier("notification") EmailSenderService emailSenderService) {
+
+        this.issueDao = issueDao;
+        this.commentDao = commentDao;
+        this.projectDao = projectDao;
+        this.userDao = userDao;
+        this.clock = clock;
+        this.emailSenderService = emailSenderService;
+    }
 
     public List<IssueEntity> getAllIssues() {
         log.info(ISSUE_REQUEST_ALL);
@@ -115,6 +134,15 @@ public class IssueService {
 
         // TODO: com/example/backend/dao/ProjectRepository.java:14
         issueDao.updateIssue(issue);
+
+        EmailData emailData = EmailData.builder()
+            .recipientName(assignee.getFullName())
+            .recipientEmail(assignee.getEmail())
+            .subject("Issue assignation")
+            .confirmationLink(Optional.empty())
+            .build();
+
+        emailSenderService.send(emailData);
 
         log.info(ISSUE_ASSIGNED_TO_DEV);
     }
