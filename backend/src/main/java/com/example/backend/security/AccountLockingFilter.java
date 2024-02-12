@@ -43,6 +43,6 @@ public class AccountLockingFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        return path.startsWith(AUTHENTICATION_REQUEST_PATH) && method.equals("POST");
+        return (path.startsWith(AUTHENTICATION_REQUEST_PATH)) && (method.equals("POST") || method.equals("GET"));
     }
 }

@@ -28,17 +28,17 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping
-    public ResponseEntity<String> register(@RequestBody RegistrationRequest request) {
-        String responseBody = authenticationService.register(mapper.toEntity(request));
+    public ResponseEntity<Void> register(@RequestBody RegistrationRequest request) {
+        authenticationService.register(mapper.toEntity(request));
 
-        return new ResponseEntity<>(responseBody, CREATED);
+        return new ResponseEntity<>(CREATED);
     }
 
     @GetMapping(path = "/confirm")
-    public ResponseEntity<String> confirm(@RequestParam("token") String token) {
-        String responseBody = authenticationService.confirmToken(token);
+    public ResponseEntity<Void> confirm(@RequestParam("token") String token) {
+        authenticationService.confirmToken(token);
 
-        return new ResponseEntity<>(responseBody, OK);
+        return new ResponseEntity<>(OK);
     }
 
     @GetMapping
