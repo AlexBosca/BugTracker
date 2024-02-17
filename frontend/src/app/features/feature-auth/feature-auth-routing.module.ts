@@ -4,6 +4,7 @@ import { LoginFormComponent } from './components/login-form/login-form.component
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordFormComponent } from './components/reset-password-form/reset-password-form.component';
 import { PageAuthenticationComponent } from './pages/page-authentication/page-authentication.component';
+import { AccountConfirmationComponent } from './components/account-confirmation/account-confirmation.component';
 
 const routes: Routes = [
   {
@@ -26,6 +27,10 @@ const routes: Routes = [
       {
         path: 'resetPassword',
         component: ResetPasswordFormComponent
+      },
+      {
+        path: 'confirm-account',
+        component: AccountConfirmationComponent
       }
     ]
   }

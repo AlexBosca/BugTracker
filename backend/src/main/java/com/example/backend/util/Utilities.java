@@ -2,7 +2,6 @@ package com.example.backend.util;
 
 public final class Utilities {
 
-    public static final String CONFIRMATION_LINK = "http://localhost:8081/api/v1/bug-tracker/authentication/confirm?token=%s";
     public static final long CREDENTIALS_VALIDITY_IN_DAYS = 60L;
 
     public static final String API_PREFIX = "/api/v1/bug-tracker";
