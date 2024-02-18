@@ -3,7 +3,7 @@ package com.example.backend.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.example.backend.util.EmailTemplateConstants.REGISTRATION_EMAIL_TEMPLATE;
+import static com.example.backend.util.email.EmailTemplateConstants.REGISTRATION_EMAIL_TEMPLATE;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;

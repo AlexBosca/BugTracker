@@ -1,6 +1,6 @@
 package com.example.backend.service;
 
-import static com.example.backend.util.EmailTemplateConstants.NOTIFICATION_EMAIL_TEMPLATE;
+import static com.example.backend.util.email.EmailTemplateConstants.NOTIFICATION_EMAIL_TEMPLATE;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;

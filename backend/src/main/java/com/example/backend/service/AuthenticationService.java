@@ -10,6 +10,8 @@ import com.example.backend.exception.user.UserCredentialsNotValidException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 import com.example.backend.exception.user.UserPasswordsNotMatchingException;
 import com.example.backend.model.EmailData;
+import com.example.backend.model.RegistrationEmailData;
+import com.example.backend.util.email.EmailConstants;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,6 +42,9 @@ public class AuthenticationService {
     private final EmailSenderService emailSenderService;
     
     private final ConfirmationTokenService confirmationTokenService;
+
+    @Value("${application.name}")
+    private String applicationName;
 
     @Value("${email.confirmation-link}")
     private String confirmationLink;
@@ -73,8 +78,11 @@ public class AuthenticationService {
         EmailData emailData = EmailData.builder()
                 .recipientName(user.getFullName())
                 .recipientEmail(user.getEmail())
-                .subject("Confirm your email")
+                .subject(EmailConstants.EMAIL_ACCOUNT_CONFIRMATION_SUBJECT)
+                .title(EmailConstants.EMAIL_ACCOUNT_CONFIRMATION_TITLE)
+                .applicationName(applicationName)
                 .confirmationLink(Optional.of(formattedString(confirmationLink, token)))
+                .notificationContent(Optional.empty())
                 .build();
 
         emailSenderService.send(emailData);

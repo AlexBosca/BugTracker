@@ -23,16 +23,24 @@ public class EmailSenderUtil {
     private final TemplateEngine htmlTemplateEngine;
 
     public void sendEmail(EmailData emailData, String emailTemplate) {
-        Context context = createContext(emailData.getRecipientName(), emailData.getConfirmationLink());
+        Context context = createContext(emailData);
         String emailContent = htmlTemplateEngine.process("html/" + emailTemplate, context);
         sendMimeMessage(emailData.getRecipientEmail(), emailData.getSubject(), emailContent);
     }
 
-    private Context createContext(String recipientEmail, Optional<String> confirmationLink) {
+    private Context createContext(EmailData emailData) {
         Context context = new Context();
-        context.setVariable("name", recipientEmail);
+        context.setVariable("name", emailData.getRecipientName());
 
+        Optional<String> confirmationLink = emailData.getConfirmationLink();
         confirmationLink.ifPresent(link -> context.setVariable("link", link));
+
+        Optional<String> notificationContent = emailData.getNotificationContent();
+        notificationContent.ifPresent(content -> context.setVariable("content", content));
+
+        context.setVariable("title", emailData.getTitle());
+
+        context.setVariable("applicationName", emailData.getApplicationName());
 
         return context;
     }

@@ -26,3 +26,6 @@ logging:
   file:
     path: logs/
     name: logs/application.log
+
+application:
+  name: Bug Tracker System
