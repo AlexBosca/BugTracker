@@ -3,7 +3,7 @@ package com.example.backend.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.example.backend.util.email.EmailTemplateConstants.REGISTRATION_EMAIL_TEMPLATE;
+import static com.example.backend.util.email.EmailTemplateConstants.REGISTRATION_EMAIL_TEMPLATE_PATH;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
@@ -25,6 +25,6 @@ public class ConfirmationEmailSenderService implements EmailSenderService {
     public void send(EmailData emailData) {
         log.info("Compose and send the confirmation mail");
 
-        emailSender.sendEmail(emailData, REGISTRATION_EMAIL_TEMPLATE);
+        emailSender.sendEmail(emailData, REGISTRATION_EMAIL_TEMPLATE_PATH);
     }
 }

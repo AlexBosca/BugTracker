@@ -1,6 +1,6 @@
 package com.example.backend.service;
 
-import static com.example.backend.util.email.EmailTemplateConstants.NOTIFICATION_EMAIL_TEMPLATE;
+import static com.example.backend.util.email.EmailTemplateConstants.NOTIFICATION_EMAIL_TEMPLATE_PATH;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
@@ -25,6 +25,6 @@ public class NotificationEmailSenderService implements EmailSenderService {
     public void send(EmailData emailData) {
         log.info("Compose and send the notification mail");
 
-        emailSender.sendEmail(emailData, NOTIFICATION_EMAIL_TEMPLATE);
+        emailSender.sendEmail(emailData, NOTIFICATION_EMAIL_TEMPLATE_PATH);
     }
 }
