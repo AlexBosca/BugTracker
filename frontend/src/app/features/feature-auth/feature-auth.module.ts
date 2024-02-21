@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordFormComponent } from './components/reset-password-form/reset-password-form.component';
 import { PageAuthenticationComponent } from './pages/page-authentication/page-authentication.component';
+import { AccountConfirmationComponent } from './components/account-confirmation/account-confirmation.component';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import { PageAuthenticationComponent } from './pages/page-authentication/page-au
     LoginFormComponent,
     RegisterFormComponent,
     ResetPasswordFormComponent,
-    PageAuthenticationComponent
+    PageAuthenticationComponent,
+    AccountConfirmationComponent
   ],
   imports: [
     CommonModule,

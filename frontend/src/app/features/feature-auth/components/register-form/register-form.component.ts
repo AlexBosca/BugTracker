@@ -68,6 +68,8 @@ export class RegisterFormComponent implements OnInit {
             }
           }
         );
+
+        this.closeModal();
       },
       error: error => {
         this.error = error;

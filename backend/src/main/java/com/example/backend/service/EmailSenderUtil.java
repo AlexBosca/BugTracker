@@ -1,5 +1,12 @@
 package com.example.backend.service;
 
+import static com.example.backend.util.email.EmailConstants.EMAIL_UTF8_MESSAGE_ENCODING;
+import static com.example.backend.util.email.EmailTemplateConstants.EMAIL_CONTEXT_VARIABLE_APPLICATION_NAME;
+import static com.example.backend.util.email.EmailTemplateConstants.EMAIL_CONTEXT_VARIABLE_CONTENT;
+import static com.example.backend.util.email.EmailTemplateConstants.EMAIL_CONTEXT_VARIABLE_LINK;
+import static com.example.backend.util.email.EmailTemplateConstants.EMAIL_CONTEXT_VARIABLE_NAME;
+import static com.example.backend.util.email.EmailTemplateConstants.EMAIL_CONTEXT_VARIABLE_TITLE;
+
 import java.util.Optional;
 
 import javax.mail.MessagingException;
@@ -22,17 +29,25 @@ public class EmailSenderUtil {
     private final JavaMailSender mailSender;
     private final TemplateEngine htmlTemplateEngine;
 
-    public void sendEmail(EmailData emailData, String emailTemplate) {
-        Context context = createContext(emailData.getRecipientName(), emailData.getConfirmationLink());
-        String emailContent = htmlTemplateEngine.process("html/" + emailTemplate, context);
+    public void sendEmail(EmailData emailData, String emailTemplatePath) {
+        Context context = createContext(emailData);
+        String emailContent = htmlTemplateEngine.process(emailTemplatePath, context);
         sendMimeMessage(emailData.getRecipientEmail(), emailData.getSubject(), emailContent);
     }
 
-    private Context createContext(String recipientEmail, Optional<String> confirmationLink) {
+    private Context createContext(EmailData emailData) {
         Context context = new Context();
-        context.setVariable("name", recipientEmail);
+        context.setVariable(EMAIL_CONTEXT_VARIABLE_NAME, emailData.getRecipientName());
 
-        confirmationLink.ifPresent(link -> context.setVariable("link", link));
+        Optional<String> confirmationLink = emailData.getConfirmationLink();
+        confirmationLink.ifPresent(link -> context.setVariable(EMAIL_CONTEXT_VARIABLE_LINK, link));
+
+        Optional<String> notificationContent = emailData.getNotificationContent();
+        notificationContent.ifPresent(content -> context.setVariable(EMAIL_CONTEXT_VARIABLE_CONTENT, content));
+
+        context.setVariable(EMAIL_CONTEXT_VARIABLE_TITLE, emailData.getTitle());
+
+        context.setVariable(EMAIL_CONTEXT_VARIABLE_APPLICATION_NAME, emailData.getApplicationName());
 
         return context;
     }
@@ -40,7 +55,7 @@ public class EmailSenderUtil {
     private void sendMimeMessage(String recipientEmail, String subject, String emailContent) {
         try {
             final MimeMessage mimeMessage = mailSender.createMimeMessage();
-            final MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+            final MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, EMAIL_UTF8_MESSAGE_ENCODING);
 
             helper.setText(emailContent, true);
             helper.setTo(recipientEmail);

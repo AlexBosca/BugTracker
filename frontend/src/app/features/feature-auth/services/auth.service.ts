@@ -14,6 +14,7 @@ export class AuthService {
   BASIC_AUTH_SESSION_ATTRIBUTE_NAME = 'basicAuth';
   public authenticationUrl = `${environment.apiUrl}/authentication`;
   public resetPasswordUrl = `${this.authenticationUrl}/resetPassword`;
+  public accountConfirmationUrl = `${this.authenticationUrl}/confirm`;
 
   constructor(private http: HttpClient) { }
 
@@ -50,6 +51,12 @@ export class AuthService {
     return this.http.put(
       this.resetPasswordUrl,
       resetPasswordRequest
+    );
+  }
+
+  public conofirmAccount(confirmationToken: string): Observable<any> {
+    return this.http.get(
+      this.accountConfirmationUrl + `?token=${confirmationToken}`
     );
   }
 

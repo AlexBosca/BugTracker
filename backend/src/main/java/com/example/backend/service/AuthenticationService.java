@@ -10,12 +10,15 @@ import com.example.backend.exception.user.UserCredentialsNotValidException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 import com.example.backend.exception.user.UserPasswordsNotMatchingException;
 import com.example.backend.model.EmailData;
+import com.example.backend.model.RegistrationEmailData;
+import com.example.backend.util.email.EmailConstants;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -26,7 +29,6 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.Optional;
 
-import static com.example.backend.util.Utilities.CONFIRMATION_LINK;
 import static com.example.backend.util.Utilities.formattedString;
 
 @Slf4j
@@ -41,7 +43,11 @@ public class AuthenticationService {
     
     private final ConfirmationTokenService confirmationTokenService;
 
-    
+    @Value("${application.name}")
+    private String applicationName;
+
+    @Value("${email.confirmation-link}")
+    private String confirmationLink;
     
     public AuthenticationService(AppUserDetailsService userDetailsService,
                                  CredentialValidatorService credentialValidatorService,
@@ -72,8 +78,11 @@ public class AuthenticationService {
         EmailData emailData = EmailData.builder()
                 .recipientName(user.getFullName())
                 .recipientEmail(user.getEmail())
-                .subject("Confirm your email")
-                .confirmationLink(Optional.of(formattedString(CONFIRMATION_LINK, token)))
+                .subject(EmailConstants.EMAIL_ACCOUNT_CONFIRMATION_SUBJECT)
+                .title(EmailConstants.EMAIL_ACCOUNT_CONFIRMATION_TITLE)
+                .applicationName(applicationName)
+                .confirmationLink(Optional.of(formattedString(confirmationLink, token)))
+                .notificationContent(Optional.empty())
                 .build();
 
         emailSenderService.send(emailData);

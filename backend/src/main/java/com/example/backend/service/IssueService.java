@@ -16,10 +16,13 @@ import com.example.backend.exception.project.ProjectNotFoundException;
 import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 import com.example.backend.model.EmailData;
+import com.example.backend.model.NotificationEmailData;
+import com.example.backend.util.email.EmailConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -46,7 +49,8 @@ public class IssueService {
 
     private final EmailSenderService emailSenderService;
 
-    
+    @Value("${application.name}")
+    private String applicationName;
 
     public IssueService(@Qualifier("issue-jpa") IssueDao issueDao,
                         IssueCommentDao commentDao,
@@ -138,8 +142,11 @@ public class IssueService {
         EmailData emailData = EmailData.builder()
             .recipientName(assignee.getFullName())
             .recipientEmail(assignee.getEmail())
-            .subject("Issue assignation")
+            .subject(EmailConstants.EMAIL_ISSUE_ASSIGNATION_SUBJECT)
+            .title(EmailConstants.EMAIL_ISSUE_ASSIGNATION_TITLE)
+            .applicationName(applicationName)
             .confirmationLink(Optional.empty())
+            .notificationContent(Optional.of(EmailConstants.EMAIL_ISSUE_ASSIGNATION_CONTENT))
             .build();
 
         emailSenderService.send(emailData);
@@ -163,6 +170,18 @@ public class IssueService {
 
         // TODO: com/example/backend/dao/ProjectRepository.java:14
         issueDao.updateIssue(issue);
+
+        EmailData emailData = EmailData.builder()
+            .recipientName(developer.getFullName())
+            .recipientEmail(developer.getEmail())
+            .subject(EmailConstants.EMAIL_ISSUE_CLOSING_SUBJECT)
+            .title(EmailConstants.EMAIL_ISSUE_CLOSING_TITLE)
+            .applicationName(applicationName)
+            .confirmationLink(Optional.empty())
+            .notificationContent(Optional.of(EmailConstants.EMAIL_ISSUE_CLOSING_CONTENT))
+            .build();
+
+        emailSenderService.send(emailData);
 
         log.info(ISSUE_CLOSE_BY_DEV);
     }
