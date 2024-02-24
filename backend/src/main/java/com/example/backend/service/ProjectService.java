@@ -94,7 +94,7 @@ public class ProjectService {
     }
 
     public List<IssueEntity> getAllIssuesOnProjectById(String projectKey) {
-        log.info("Request all issues on project with id: {}", projectKey);
+        log.info(PROJECT_REQUEST_ALL_ISSUES_BY_ID, projectKey);
 
         ProjectEntity project = projectDao
             .selectProjectByKey(projectKey)
@@ -103,13 +103,13 @@ public class ProjectService {
         List<IssueEntity> issuesOnProject = project.getIssues().stream()
             .collect(Collectors.toList());
 
-        log.info("Return all issues on project with id: {}", projectKey);
+        log.info(PROJECT_RETURN_ALL_ISSUES_BY_ID, projectKey);
 
         return issuesOnProject;
     }
 
     public List<TeamEntity> getAllTeamsOnProjectById(String projectKey) {
-        log.info("Request all teams on project with id: {}", projectKey);
+        log.info(PROJECT_REQUEST_ALL_TEAMS_BY_ID, projectKey);
 
         ProjectEntity project = projectDao
             .selectProjectByKey(projectKey)
@@ -118,7 +118,7 @@ public class ProjectService {
         List<TeamEntity> teamsOnProject = project.getTeams().stream()
             .collect(Collectors.toList());
 
-        log.info("Return all issues on project with id: {}", projectKey);
+        log.info(PROJECT_RETURN_ALL_TEAMS_BY_ID, projectKey);
 
         return teamsOnProject;
     }

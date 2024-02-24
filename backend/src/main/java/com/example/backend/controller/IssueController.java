@@ -173,7 +173,7 @@ public class IssueController {
                                                         
         String email = authenticationService.getEmailFromAuthorizationHeader(authorizationHeader);
 
-        log.info("User with id: {} create a comment on issue with id: {}", email, issueId);
+        log.info(ISSUE_CREATE_COMMENT_BY_ID, email, issueId);
 
         issueService.addComment(mapper.toEntity(commentRequest), issueId, email);
 

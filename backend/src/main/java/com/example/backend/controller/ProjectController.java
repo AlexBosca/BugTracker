@@ -91,7 +91,7 @@ public class ProjectController {
 
     @GetMapping(path = "/{projectKey}/issues")
     public ResponseEntity<List<IssueFullResponse>> getAllIssuesOnProject(@PathVariable(name = "projectKey") String projectKey) {
-        log.info("Get issues on project with id: {}", projectKey);
+        log.info(PROJECT_GET_ISSUES_BY_ID, projectKey);
 
         List<IssueEntity> entities = projectService.getAllIssuesOnProjectById(projectKey);
 
@@ -107,7 +107,7 @@ public class ProjectController {
     
     @GetMapping(path = "/{projectKey}/teams")
     public ResponseEntity<List<TeamFullResponse>> getAllTeamsOnProject(@PathVariable(name = "projectKey") String projectKey) {
-        log.info("Get teams on project with id: {}", projectKey);
+        log.info(PROJECT_GET_TEAMS_BY_ID, projectKey);
 
         List<TeamEntity> entities = projectService.getAllTeamsOnProjectById(projectKey);
 

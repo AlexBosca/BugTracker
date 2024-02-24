@@ -8,6 +8,7 @@ public final class IssueUtilities {
     public static final String ISSUE_CREATE = "Create new issue";
     public static final String ISSUE_ASSIGN_TO_DEV = "Assign issue to developer";
     public static final String ISSUE_CHANGE_STATE_MSG = "Move issue with id: {} into state: {}";
+    public static final String ISSUE_CREATE_COMMENT_BY_ID = "User with id: {} create a comment on issue with id: {}";
 
     // Service related
     public static final String ISSUE_REQUEST_ALL = "Request all issues";
