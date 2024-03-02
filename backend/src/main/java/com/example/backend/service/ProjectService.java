@@ -15,52 +15,51 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import static com.example.backend.util.project.ProjectUtilities.*;
+import static com.example.backend.util.issue.IssueLoggingMessages.ISSUE_RETRIEVED;
+import static com.example.backend.util.project.ProjectLoggingMessages.*;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 public class ProjectService {
-
-    @Qualifier("project-jpa")
     private final ProjectDao projectDao;
     
-    @Qualifier("team-jpa")
     private final TeamDao teamDao;
 
+    public ProjectService(@Qualifier("projectJpa") ProjectDao projectDao,
+                          @Qualifier("teamJpa") TeamDao teamDao) {
+        
+        this.projectDao = projectDao;
+        this.teamDao = teamDao;
+    }
+
     public List<ProjectEntity> getAllProjects() {
-        log.info(PROJECT_REQUEST_ALL);
-
         List<ProjectEntity> projects = projectDao.selectAllProjects();
-
-        log.info(PROJECT_RETURN_ALL);
+        logInfo(PROJECT_ALL_RETRIEVED, projects);
 
         return projects;
     }
 
     public List<ProjectEntity> filterProjects(FilterCriteria filterCriteria) {
-        return projectDao.selectAllFilteredProjects(filterCriteria);
+        List<ProjectEntity> projects = projectDao.selectAllFilteredProjects(filterCriteria);
+        logInfo(PROJECT_FILTERED_RETRIEVED, projects);
+
+        return projects;
     }
 
     public ProjectEntity getProjectByProjectKey(String projectKey) {
-        log.info(PROJECT_REQUEST_BY_ID, projectKey);
-        
         ProjectEntity project = projectDao
             .selectProjectByKey(projectKey)
             .orElseThrow(() -> new ProjectNotFoundException(projectKey));
 
-        log.info(PROJECT_RETURN);
+        logInfo(ISSUE_RETRIEVED, project);
 
         return project;
     }
 
     public void saveProject(ProjectEntity project) {
-        log.info(PROJECT_CREATE);
-
         boolean isProjectPresent = projectDao
             .existsProjectWithProjectKey(project.getProjectKey());
 
@@ -69,13 +68,10 @@ public class ProjectService {
         }
 
         projectDao.insertProject(project);
-
-        log.info(PROJECT_CREATED);
+        logInfo(PROJECT_CREATED, project);
     }
 
     public void addTeam(String projectKey, String teamId) {
-        log.info(PROJECT_ADD_TEAM_BY_ID, teamId, projectKey);
-
         ProjectEntity project = projectDao
             .selectProjectByKey(projectKey)
             .orElseThrow(() -> new ProjectNotFoundException(projectKey));
@@ -89,13 +85,9 @@ public class ProjectService {
 
         projectDao.insertProject(project);
         teamDao.insertTeam(team);
-
-        log.info(PROJECT_TEAM_ADDED);
     }
 
     public List<IssueEntity> getAllIssuesOnProjectById(String projectKey) {
-        log.info(PROJECT_REQUEST_ALL_ISSUES_BY_ID, projectKey);
-
         ProjectEntity project = projectDao
             .selectProjectByKey(projectKey)
             .orElseThrow(() -> new ProjectNotFoundException(projectKey));
@@ -103,14 +95,12 @@ public class ProjectService {
         List<IssueEntity> issuesOnProject = project.getIssues().stream()
             .collect(Collectors.toList());
 
-        log.info(PROJECT_RETURN_ALL_ISSUES_BY_ID, projectKey);
+        logInfo(PROJECT_ISSUES_RETRIEVED, issuesOnProject);
 
         return issuesOnProject;
     }
 
     public List<TeamEntity> getAllTeamsOnProjectById(String projectKey) {
-        log.info(PROJECT_REQUEST_ALL_TEAMS_BY_ID, projectKey);
-
         ProjectEntity project = projectDao
             .selectProjectByKey(projectKey)
             .orElseThrow(() -> new ProjectNotFoundException(projectKey));
@@ -118,8 +108,10 @@ public class ProjectService {
         List<TeamEntity> teamsOnProject = project.getTeams().stream()
             .collect(Collectors.toList());
 
-        log.info(PROJECT_RETURN_ALL_TEAMS_BY_ID, projectKey);
-
         return teamsOnProject;
+    }
+
+    private void logInfo(String var1, Object var2) {
+        log.info(var1, "Service", var2);
     }
 }

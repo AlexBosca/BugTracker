@@ -11,7 +11,7 @@ import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.filter.FilterUtility;
 import com.example.backend.entity.ProjectEntity;
 
-@Repository("project-jpa")
+@Repository("projectJpa")
 public class ProjectJPADataAccessService implements ProjectDao {
 
     private final FilterUtility<ProjectEntity> filterUtility;

@@ -16,7 +16,6 @@ import com.example.backend.exception.project.ProjectNotFoundException;
 import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 import com.example.backend.model.EmailData;
-import com.example.backend.model.NotificationEmailData;
 import com.example.backend.util.email.EmailConstants;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,14 +28,15 @@ import java.time.Clock;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.backend.enums.IssueStatus.ASSIGNED;
+import static com.example.backend.enums.IssueStatus.CLOSED;
 import static com.example.backend.enums.IssueStatus.NEW;
-import static com.example.backend.util.issue.IssueUtilities.*;
+import static com.example.backend.util.issue.IssueLoggingMessages.*;
 import static java.time.LocalDateTime.now;
 
 @Slf4j
 @Service
 public class IssueService {
-
     private final IssueDao issueDao;
 
     private final IssueCommentDao commentDao;
@@ -52,7 +52,7 @@ public class IssueService {
     @Value("${application.name}")
     private String applicationName;
 
-    public IssueService(@Qualifier("issue-jpa") IssueDao issueDao,
+    public IssueService(@Qualifier("issueJpa") IssueDao issueDao,
                         IssueCommentDao commentDao,
                         ProjectDao projectDao,
                         UserDao userDao,
@@ -68,35 +68,30 @@ public class IssueService {
     }
 
     public List<IssueEntity> getAllIssues() {
-        log.info(ISSUE_REQUEST_ALL);
-
         List<IssueEntity> issues = issueDao.selectAllIssues();
-
-        log.info(ISSUE_RETURN_ALL);
+        logInfo(ISSUES_ALL_RETRIEVED, issues);
 
         return issues;
     }
 
     public List<IssueEntity> filterIssues(FilterCriteria filterCriteria) {
+        List<IssueEntity> issues = issueDao.selectAllFilteredIssues(filterCriteria);
+        logInfo(ISSUES_FILTERED_RETRIEVED, issues);
 
-        return issueDao.selectAllFilteredIssues(filterCriteria);
+        return issues;
     }
 
     public IssueEntity getIssueByIssueId(String issueId) {
-        log.info(ISSUE_REQUEST_BY_ID, issueId);
-
         IssueEntity issue = issueDao
             .selectIssueByIssueId(issueId)
             .orElseThrow(() -> new IssueNotFoundException(issueId));
 
-        log.info(ISSUE_RETURN);
+        logInfo(ISSUE_RETRIEVED, issue);
 
         return issue;
     }
 
     public void saveIssue(IssueEntity issue, String projectKey, String email) {
-        log.info(ISSUE_CREATE_ON_PROJECT, projectKey);
-
         ProjectEntity project = projectDao
             .selectProjectByKey(projectKey)
             .orElseThrow(() -> new ProjectNotFoundException(projectKey));
@@ -118,13 +113,10 @@ public class IssueService {
         issue.setCreatedOn(now(clock));
 
         issueDao.insertIssue(issue);
-
-        log.info(ISSUE_CREATED);
+        logInfo(ISSUE_CREATED, issue);
     }
 
     public void assignToUser(String issueId, String assigneeId) {
-        log.info(ISSUE_ASSIGN_BY_ID_TO_DEV, issueId, assigneeId);
-
         IssueEntity issue = issueDao
             .selectIssueByIssueId(issueId)
             .orElseThrow(() -> new IssueNotFoundException(issueId));
@@ -138,6 +130,7 @@ public class IssueService {
 
         // TODO: com/example/backend/dao/ProjectRepository.java:14
         issueDao.updateIssue(issue);
+        logInfo(ISSUE_STATUS_UPDATED, ASSIGNED);
 
         EmailData emailData = EmailData.builder()
             .recipientName(assignee.getFullName())
@@ -150,13 +143,9 @@ public class IssueService {
             .build();
 
         emailSenderService.send(emailData);
-
-        log.info(ISSUE_ASSIGNED_TO_DEV);
     }
 
     public void closeByUser(String issueId, String developerEmail) {
-        log.info(ISSUE_CLOSE_BY_EMAIL_BY_DEV, issueId, developerEmail);
-
         IssueEntity issue = issueDao
             .selectIssueByIssueId(issueId)
             .orElseThrow(() -> new IssueNotFoundException(issueId));
@@ -170,6 +159,7 @@ public class IssueService {
 
         // TODO: com/example/backend/dao/ProjectRepository.java:14
         issueDao.updateIssue(issue);
+        logInfo(ISSUE_STATUS_UPDATED, CLOSED);
 
         EmailData emailData = EmailData.builder()
             .recipientName(developer.getFullName())
@@ -182,13 +172,9 @@ public class IssueService {
             .build();
 
         emailSenderService.send(emailData);
-
-        log.info(ISSUE_CLOSE_BY_DEV);
     }
 
     public void changeIssueStatus(String issueId, IssueStatus status, String developerEmail) {
-        log.info(ISSUE_CHANGE_STATUS_BY_ID, issueId, status);
-
         IssueEntity issue = issueDao
             .selectIssueByIssueId(issueId)
             .orElseThrow(() -> new IssueNotFoundException(issueId));
@@ -205,13 +191,10 @@ public class IssueService {
 
         // TODO: com/example/backend/dao/ProjectRepository.java:14
         issueDao.updateIssue(issue);
-
-        log.info(ISSUE_CHANGED_STATUS);
+        logInfo(ISSUE_STATUS_UPDATED, status);
     }
 
-    public void addComment(IssueCommentEntity issueComment, String issueId, String email) {
-        log.info(ISSUE_USER_ADD_COMMENT_BY_ID, email, issueId);
-        
+    public void addComment(IssueCommentEntity comment, String issueId, String email) {
         IssueEntity issue = issueDao
             .selectIssueByIssueId(issueId)
             .orElseThrow(() -> new IssueNotFoundException(issueId));
@@ -220,12 +203,15 @@ public class IssueService {
             .selectUserByEmail(email)
             .orElseThrow(() -> new UserEmailNotFoundException(email));
 
-        issueComment.setCreatedOnIssue(issue);
-        issueComment.setCreatedOn(now(clock));
-        issueComment.setCreatedByUser(user);
+        comment.setCreatedOnIssue(issue);
+        comment.setCreatedOn(now(clock));
+        comment.setCreatedByUser(user);
 
-        commentDao.insertComment(issueComment);
+        commentDao.insertComment(comment);
+        logInfo(ISSUE_COMMENT_CREATED, comment);
+    }
 
-        log.info(ISSUE_COMMENT_ADDED);
+    private void logInfo(String var1, Object var2) {
+        log.info(var1, "Service", var2);
     }
 }

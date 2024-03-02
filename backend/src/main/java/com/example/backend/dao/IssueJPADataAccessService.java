@@ -11,7 +11,12 @@ import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.filter.FilterUtility;
 import com.example.backend.entity.issue.IssueEntity;
 
-@Repository("issue-jpa")
+import lombok.extern.slf4j.Slf4j;
+
+import static com.example.backend.util.database.DatabaseLoggingMessages.*;
+
+@Slf4j
+@Repository("issueJpa")
 public class IssueJPADataAccessService implements IssueDao {
 
     private final FilterUtility<IssueEntity> filterUtility;
@@ -24,7 +29,10 @@ public class IssueJPADataAccessService implements IssueDao {
 
     @Override
     public List<IssueEntity> selectAllIssues() {
-       return issueRepository.findAll();
+        List<IssueEntity> issues = issueRepository.findAll();
+        log.info(DATA_ALL_RETRIEVED);
+
+        return issues;
     }
 
     @Override
