@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectService {
     private final ProjectDao projectDao;
-    
     private final TeamDao teamDao;
 
     public ProjectService(@Qualifier("projectJpa") ProjectDao projectDao,

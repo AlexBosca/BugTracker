@@ -20,13 +20,16 @@ import static com.example.backend.util.team.TeamUtilities.*;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 public class TeamService {
-
-    @Qualifier("team-jpa")
     private final TeamDao teamDao;
-    
     private final UserDao userDao;
+
+    public TeamService(@Qualifier("teamJpa") TeamDao teamDao,
+                       @Qualifier("userJpa") UserDao userDao) {
+                        
+        this.teamDao = teamDao;
+        this.userDao = userDao;
+    }
 
     public List<TeamEntity> getAllTeams() {
         log.info(TEAM_REQUEST_ALL);

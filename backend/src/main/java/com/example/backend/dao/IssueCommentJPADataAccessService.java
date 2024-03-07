@@ -6,7 +6,7 @@ import com.example.backend.entity.issue.IssueCommentEntity;
 
 import lombok.RequiredArgsConstructor;
 
-@Repository("comment-jpa")
+@Repository("commentJpa")
 @RequiredArgsConstructor
 public class IssueCommentJPADataAccessService implements IssueCommentDao {
 

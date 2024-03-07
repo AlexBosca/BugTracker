@@ -38,27 +38,21 @@ import static java.time.LocalDateTime.now;
 @Service
 public class IssueService {
     private final IssueDao issueDao;
-
     private final IssueCommentDao commentDao;
-    
     private final ProjectDao projectDao;
-    
     private final UserDao userDao;
-    
     private final Clock clock;
-
     private final EmailSenderService emailSenderService;
 
     @Value("${application.name}")
     private String applicationName;
 
     public IssueService(@Qualifier("issueJpa") IssueDao issueDao,
-                        IssueCommentDao commentDao,
+                        @Qualifier("commentJpa") IssueCommentDao commentDao,
                         ProjectDao projectDao,
                         UserDao userDao,
                         Clock clock,
                         @Qualifier("notification") EmailSenderService emailSenderService) {
-
         this.issueDao = issueDao;
         this.commentDao = commentDao;
         this.projectDao = projectDao;

@@ -11,8 +11,14 @@ import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.filter.FilterUtility;
 import com.example.backend.entity.TeamEntity;
 
-@Repository("team-jpa")
+import lombok.extern.slf4j.Slf4j;
+
+import static com.example.backend.util.database.DatabaseLoggingMessages.*;
+
+@Slf4j
+@Repository("teamJpa")
 public class TeamJPADataAccessService implements TeamDao {
+    
     private final FilterUtility<TeamEntity> filterUtility;
     private final TeamRepository teamRepository;
 
