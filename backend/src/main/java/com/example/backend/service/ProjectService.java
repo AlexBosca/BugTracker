@@ -53,7 +53,7 @@ public class ProjectService {
             .selectProjectByKey(projectKey)
             .orElseThrow(() -> new ProjectNotFoundException(projectKey));
 
-        logInfo(ISSUE_RETRIEVED, project);
+        logInfo(PROJECT_RETRIEVED, project);
 
         return project;
     }

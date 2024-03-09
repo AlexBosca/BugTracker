@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.example.backend.util.Utilities.CREDENTIALS_VALIDITY_IN_DAYS;
-import static com.example.backend.util.user.UserUtilities.*;
+import static com.example.backend.util.user.UserLoggingMessages.*;
 
 
 @Slf4j
@@ -53,51 +53,44 @@ public class AppUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UserCredentialsNotValidException {
-        log.info(USER_REQUEST_BY_EMAIL, email);
-
         UserEntity user = userDao
             .selectUserByEmail(email)
             .orElseThrow(UserCredentialsNotValidException::new);
 
-        log.info(USER_RETURN);
+        logInfo(USER_RETRIEVED, user);
         
         return user;
     }
 
     public UserEntity loadUserByUserId(String userId) throws UserIdNotFoundException {
-        log.info(USER_REQUEST_BY_ID, userId);
-
         UserEntity user = userDao
             .selectUserByUserId(userId)
             .orElseThrow(UserIdNotFoundException::new);
 
-        log.info(USER_RETURN);
+        logInfo(USER_RETRIEVED, user);
         
         return user;
     }
 
     public List<UserEntity> loadAllUsers() {
-        log.info(USER_REQUEST_ALL);
-
         List<UserEntity> users = userDao.selectAllUsers();
-
-        log.info(USER_RETURN_ALL);
+        logInfo(USER_ALL_RETRIEVED, users);
 
         return users;
     }
 
     public List<UserEntity> filterUsers(FilterCriteria filterCriteria) {
-        return userDao.selectAllFilteredUsers(filterCriteria);
+        List<UserEntity> users = userDao.selectAllFilteredUsers(filterCriteria);
+        logInfo(USER_FILTERED_RETRIEVED, users);
+
+        return users;
     }
 
     public String signUpUser(UserEntity user) {
-        log.info(USER_REQUEST_BY_EMAIL, user.getEmail());
-
         Optional<UserEntity> presentUserOptional = userDao
                 .selectUserByEmail(user.getEmail());
 
         if(presentUserOptional.isPresent()) {
-            log.info(USER_RETURN, user.getEmail());
             UserEntity presentUser = presentUserOptional.get();
 
             if (!presentUser.getFirstName().equals(user.getFirstName()) ||
@@ -285,5 +278,9 @@ public class AppUserDetailsService implements UserDetailsService {
         LocalDateTime credentialsExpirationDate = now(clock).plusDays(CREDENTIALS_VALIDITY_IN_DAYS);
         
         return userDao.setUserCrecentialsExpiresOn(userId, credentialsExpirationDate);
+    }
+
+    private void logInfo(String var1, Object var2) {
+        log.info(var1, "Service", var2);
     }
 }
