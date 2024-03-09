@@ -2,7 +2,6 @@ package com.example.backend.service;
 
 import com.example.backend.dao.ConfirmationTokenDao;
 import com.example.backend.entity.ConfirmationTokenEntity;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,11 +12,12 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 public class ConfirmationTokenService {
-
-    @Qualifier("confirmationToken-jpa")
     private final ConfirmationTokenDao confirmationTokenDao;
+
+    public ConfirmationTokenService(@Qualifier("confirmationTokenJpa") ConfirmationTokenDao confirmationTokenDao) {
+        this.confirmationTokenDao = confirmationTokenDao;
+    }
 
     public Optional<ConfirmationTokenEntity> getTokenByUserId(String userId) {
         log.info("Return confirmation token for user with userId: {}", userId);

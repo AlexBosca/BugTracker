@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.example.backend.util.email.EmailTemplateConstants.REGISTRATION_EMAIL_TEMPLATE_PATH;
+import static com.example.backend.util.email.EmailConstants.EMAIL_ACCOUNT_CONFIRMATION_COMPOSE_AND_SEND;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
@@ -23,7 +24,7 @@ public class ConfirmationEmailSenderService implements EmailSenderService {
     @Transactional
     @Async
     public void send(EmailData emailData) {
-        log.info("Compose and send the confirmation mail");
+        log.info(EMAIL_ACCOUNT_CONFIRMATION_COMPOSE_AND_SEND);
 
         emailSender.sendEmail(emailData, REGISTRATION_EMAIL_TEMPLATE_PATH);
     }

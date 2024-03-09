@@ -14,5 +14,8 @@ public final class EmailConstants {
 
     public static final String EMAIL_UTF8_MESSAGE_ENCODING = "utf-8";
 
+    public static final String EMAIL_ACCOUNT_CONFIRMATION_COMPOSE_AND_SEND = "Compose and send the confirmation mail";
+    public static final String EMAIL_NOTIFICATION_COMPOSE_AND_SEND = "Compose and send the notification mail";
+
     private EmailConstants() {}
 }

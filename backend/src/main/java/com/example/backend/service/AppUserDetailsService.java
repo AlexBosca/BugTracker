@@ -30,55 +30,67 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.example.backend.util.Utilities.CREDENTIALS_VALIDITY_IN_DAYS;
+import static com.example.backend.util.user.UserLoggingMessages.*;
 
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class AppUserDetailsService implements UserDetailsService {
-
-    @Qualifier("user-jpa")
     private final UserDao userDao;
-    @Autowired
     private final PasswordEncoder passwordEncoder;
-    @Autowired
     private final ConfirmationTokenService confirmationTokenService;
-    @Autowired
-    private final Clock clock;
+    private final Clock clock;    
+
+    public AppUserDetailsService(@Qualifier("userJpa") UserDao userDao,
+                                 PasswordEncoder passwordEncoder,
+                                 ConfirmationTokenService confirmationTokenService,
+                                 Clock clock) {
+        this.userDao = userDao;
+        this.passwordEncoder = passwordEncoder;
+        this.confirmationTokenService = confirmationTokenService;
+        this.clock = clock;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UserCredentialsNotValidException {
-        log.info("Loading user with email: {}", email);
+        UserEntity user = userDao
+            .selectUserByEmail(email)
+            .orElseThrow(UserCredentialsNotValidException::new);
+
+        logInfo(USER_RETRIEVED, user);
         
-        return userDao
-                .selectUserByEmail(email)
-                .orElseThrow(UserCredentialsNotValidException::new);
+        return user;
     }
 
     public UserEntity loadUserByUserId(String userId) throws UserIdNotFoundException {
-        log.info("Loading user with userId: {}", userId);
+        UserEntity user = userDao
+            .selectUserByUserId(userId)
+            .orElseThrow(UserIdNotFoundException::new);
 
-        return userDao
-                .selectUserByUserId(userId)
-                .orElseThrow(() -> new UserIdNotFoundException(userId));
+        logInfo(USER_RETRIEVED, user);
+        
+        return user;
     }
 
     public List<UserEntity> loadAllUsers() {
-        return userDao.selectAllUsers();
+        List<UserEntity> users = userDao.selectAllUsers();
+        logInfo(USER_ALL_RETRIEVED, users);
+
+        return users;
     }
 
     public List<UserEntity> filterUsers(FilterCriteria filterCriteria) {
-        return userDao.selectAllFilteredUsers(filterCriteria);
+        List<UserEntity> users = userDao.selectAllFilteredUsers(filterCriteria);
+        logInfo(USER_FILTERED_RETRIEVED, users);
+
+        return users;
     }
 
     public String signUpUser(UserEntity user) {
-        log.info("Searching for user with email: {}", user.getEmail());
-
         Optional<UserEntity> presentUserOptional = userDao
                 .selectUserByEmail(user.getEmail());
 
         if(presentUserOptional.isPresent()) {
-            log.info("User with email: {}, successfully found", user.getEmail());
             UserEntity presentUser = presentUserOptional.get();
 
             if (!presentUser.getFirstName().equals(user.getFirstName()) ||
@@ -266,5 +278,9 @@ public class AppUserDetailsService implements UserDetailsService {
         LocalDateTime credentialsExpirationDate = now(clock).plusDays(CREDENTIALS_VALIDITY_IN_DAYS);
         
         return userDao.setUserCrecentialsExpiresOn(userId, credentialsExpirationDate);
+    }
+
+    private void logInfo(String var1, Object var2) {
+        log.info(var1, "Service", var2);
     }
 }

@@ -5,13 +5,21 @@ import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
 import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.filter.FilterUtility;
 import com.example.backend.entity.ProjectEntity;
+import com.example.backend.entity.issue.IssueEntity;
+import com.example.backend.exception.DataAccessServiceException;
 
-@Repository("project-jpa")
+import lombok.extern.slf4j.Slf4j;
+
+import static com.example.backend.util.database.DatabaseLoggingMessages.*;
+
+@Slf4j
+@Repository("projectJpa")
 public class ProjectJPADataAccessService implements ProjectDao {
 
     private final FilterUtility<ProjectEntity> filterUtility;
@@ -24,36 +32,92 @@ public class ProjectJPADataAccessService implements ProjectDao {
 
     @Override
     public void deleteProjectByProjectKey(String projectKey) {
-        projectRepository.deleteByProjectKey(projectKey);
+        try {
+            projectRepository.deleteByProjectKey(projectKey);
+            log.info(ENTITY_DELETED, projectKey);
+        } catch (DataAccessException e) {
+            log.error(ENTITY_DELETE_ERROR, e.getMessage());
+            throw new DataAccessServiceException();
+        }
     }
 
     @Override
     public boolean existsProjectWithProjectKey(String projectKey) {
-        return projectRepository.existsByProjectKey(projectKey);
+        try {
+            boolean exists = projectRepository.existsByProjectKey(projectKey);
+            
+            if(exists) {
+                log.info(ENTITY_EXISTS, projectKey);
+            } else {
+                log.info(ENTITY_NOT_EXISTS, projectKey);
+            }
+
+            return exists;
+        } catch (DataAccessException e) {
+            log.error(ENTITY_EXISTS_ERROR, e.getMessage());
+            throw new DataAccessServiceException();
+        }
     }
 
     @Override
     public void insertProject(ProjectEntity project) {
-        projectRepository.save(project);
+        try {
+            projectRepository.save(project);
+            log.info(ENTITY_SAVED);
+        } catch (DataAccessException e) {
+            log.error(ENTITY_SAVE_ERROR, e.getMessage());
+            throw new DataAccessServiceException();
+        }
     }
 
     @Override
     public List<ProjectEntity> selectAllProjects() {
-        return projectRepository.findAll();
+        try {
+            List<ProjectEntity> projects = projectRepository.findAll();
+            log.info(ENTITIES_FETCHED, projects);
+
+            return projects;
+        } catch (DataAccessException e) {
+            log.error(ENTITY_FETCH_ERROR, e.getMessage());
+            throw new DataAccessServiceException();
+        }
     }
 
     @Override
     public List<ProjectEntity> selectAllFilteredProjects(FilterCriteria filterCriteria) {
-        return filterUtility.filterEntities(filterCriteria);
+        List<ProjectEntity> filterProjects = filterUtility.filterEntities(filterCriteria);
+        log.info(ENTITIES_FILTERED_FETCHED, filterCriteria);
+
+        return filterProjects;
     }
 
     @Override
     public Optional<ProjectEntity> selectProjectByKey(String projectKey) {
-        return projectRepository.findByProjectKey(projectKey);
+        try {
+            Optional<ProjectEntity> project = projectRepository.findByProjectKey(projectKey);
+
+            if(project.isPresent()) {
+                log.info(ENTITY_FETCHED, projectKey);
+            } else {
+                log.warn(ENTITY_NOT_FOUND, projectKey);
+            }
+
+            return project;
+        } catch (DataAccessException e) {
+            log.error(ENTITY_FETCH_ERROR, e.getMessage());
+            throw new DataAccessServiceException();
+        }
     }
 
     @Override
     public void updateProject(ProjectEntity project) {
-        projectRepository.save(project);
+        try {
+            // issueRepository.update(issue);
+            projectRepository.save(project);
+            log.info(ENTITY_UPDATED);
+        } catch (DataAccessException e) {
+            log.error(ENTITY_UPDATE_ERROR, e.getMessage());
+            throw new DataAccessServiceException();
+        }
     }
 }

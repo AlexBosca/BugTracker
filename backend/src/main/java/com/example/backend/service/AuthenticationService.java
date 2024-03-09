@@ -34,13 +34,9 @@ import static com.example.backend.util.Utilities.formattedString;
 @Slf4j
 @Service
 public class AuthenticationService {
-
     private final AppUserDetailsService userDetailsService;
-
     private final CredentialValidatorService credentialValidatorService;
-
     private final EmailSenderService emailSenderService;
-    
     private final ConfirmationTokenService confirmationTokenService;
 
     @Value("${application.name}")

@@ -10,7 +10,7 @@ import com.example.backend.entity.ConfirmationTokenEntity;
 
 import lombok.RequiredArgsConstructor;
 
-@Repository("confirmationToken-jpa")
+@Repository("confirmationTokenJpa")
 @RequiredArgsConstructor
 public class ConfirmationTokenJPADataAccessService implements ConfirmationTokenDao {
 

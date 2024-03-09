@@ -19,14 +19,16 @@ import com.example.backend.mapper.MapStructMapper;
 import com.example.backend.service.AppUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-
-
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
+import static com.example.backend.util.user.UserLoggingMessages.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping(path = "users")
 @RequiredArgsConstructor
@@ -37,55 +39,52 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserFullResponse>> getAllUsers() {
-        List<UserEntity> entities = userDetailsService.loadAllUsers();
+        List<UserEntity> users = userDetailsService.loadAllUsers();
+        logInfo(USER_ALL_RETRIEVED, users);
 
-        List<UserFullResponse> responses = entities.stream()
-                .map(mapper::toResponse)
-                .collect(Collectors.toList());
+        List<UserFullResponse> responses = users.stream()
+            .map(mapper::toResponse)
+            .collect(Collectors.toList());
                 
-        return new ResponseEntity<>(
-            responses,
-            OK
-        );
+        return new ResponseEntity<>(responses, OK);
     }
 
     @PostMapping(path = "/filter")
     public ResponseEntity<List<UserFullResponse>> getFilteredUsers(@RequestBody FilterCriteria filterCriteria) {
-        List<UserEntity> entities = userDetailsService.filterUsers(filterCriteria);
+        List<UserEntity> users = userDetailsService.filterUsers(filterCriteria);
+        logInfo(USER_FILTERED_RETRIEVED, users);
 
-        List<UserFullResponse> responses = entities.stream()
+        List<UserFullResponse> responses = users.stream()
             .map(mapper::toResponse)
             .collect(Collectors.toList());
 
-        return new ResponseEntity<>(
-            responses,
-            OK
-        );
+        return new ResponseEntity<>(responses, OK);
     }
 
     @GetMapping(path = "/{userId}")
     public ResponseEntity<UserFullResponse> getUser(@PathVariable(name = "userId") String userId) {
-        return new ResponseEntity<>(
-                mapper.toResponse(userDetailsService.loadUserByUserId(userId)),
-                OK
-        );
+        UserEntity user = userDetailsService.loadUserByUserId(userId);
+        logInfo(USER_RETRIEVED, user);
+
+        UserFullResponse userResponse = mapper.toResponse(user);
+
+        return new ResponseEntity<>(userResponse, OK);
     }
 
     @PostMapping
     public ResponseEntity<Void> createUser(@RequestBody RegistrationRequest request) {
-        userDetailsService.saveUser(mapper.toEntity(request));
+        UserEntity user = mapper.toEntity(request);
+
+        userDetailsService.saveUser(user);
+        logInfo(USER_CREATED, user);
         
-        return new ResponseEntity<>(OK);
+        return new ResponseEntity<>(CREATED);
     }
 
     @PutMapping(path = "/{userId}")
-    public ResponseEntity<Void> updateUser(
-        @PathVariable(name = "userId") String userId,
-        @RequestBody UserRequest request) {
-        userDetailsService.updateUser(
-            userId,
-            request
-        );
+    public ResponseEntity<Void> updateUser(@PathVariable(name = "userId") String userId, @RequestBody UserRequest request) {
+        userDetailsService.updateUser(userId, request);
+        logInfo(USER_UPDATED, userId);
 
         return new ResponseEntity<>(OK);
     }
@@ -121,7 +120,12 @@ public class UserController {
     @DeleteMapping(path = "/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable(name = "userId") String userId) {
         userDetailsService.deleteUserByUserId(userId);
+        logInfo(USER_DELETED, userId);
 
         return new ResponseEntity<>(OK);
+    }
+
+    private void logInfo(String var1, Object var2) {
+        log.info(var1, "Controller", var2);
     }
 }

@@ -32,11 +32,13 @@ import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @ControllerAdvice
-@RequiredArgsConstructor
 public class EntityExceptionHandler {
 
-    @Autowired
-    private Clock clock;
+    private final Clock clock;
+
+    public EntityExceptionHandler(Clock clock) {
+        this.clock = clock;
+    }
 
     @ExceptionHandler(EmailAlreadyConfirmedException.class)
     public ResponseEntity<ErrorResponse> handleEmailAlreadyConfirmedException(Exception exception) {
@@ -155,7 +157,7 @@ public class EntityExceptionHandler {
 //            exceptionInfo.setStackTrace(ExceptionUtils.getStackTrace(exception));
 //        }
 
-        log.error("An invalid request was rejected for reason: {}", message);
+        // log.error("An invalid request was rejected for reason: {}", message);
 
         return new ResponseEntity<>(errorResponse, httpStatus);
     }

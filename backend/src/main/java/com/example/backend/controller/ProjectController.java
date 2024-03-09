@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.example.backend.util.project.ProjectUtilities.*;
+import static com.example.backend.util.project.ProjectLoggingMessages.*;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -33,57 +33,50 @@ public class ProjectController {
 
     @GetMapping
     public ResponseEntity<List<ProjectFullResponse>> getAllProjects() {
-        log.info(PROJECT_GET_ALL);
+        List<ProjectEntity> projects = projectService.getAllProjects();
+        logInfo(PROJECT_ALL_RETRIEVED, projects);
 
-        List<ProjectEntity> entities = projectService.getAllProjects();
-
-        List<ProjectFullResponse> responses = entities.stream()
+        List<ProjectFullResponse> projectsResponses = projects.stream()
             .map(mapper::toResponse)
             .collect(Collectors.toList());
 
-        return new ResponseEntity<>(
-            responses,
-            OK
-        );
+        return new ResponseEntity<>(projectsResponses, OK);
     }
 
     @PostMapping(path = "/filter")
     public ResponseEntity<List<ProjectFullResponse>> getFilteredProjects(@RequestBody FilterCriteria filterCriteria) {
-        List<ProjectEntity> entities = projectService.filterProjects(filterCriteria);
+        List<ProjectEntity> projects = projectService.filterProjects(filterCriteria);
+        logInfo(PROJECT_FILTERED_RETRIEVED, projects);
 
-        List<ProjectFullResponse> responses = entities.stream()
+        List<ProjectFullResponse> projectsResponses = projects.stream()
             .map(mapper::toResponse)
             .collect(Collectors.toList());
 
-        return new ResponseEntity<>(
-            responses,
-            OK
-        );
+        return new ResponseEntity<>(projectsResponses, OK);
     }
 
     @GetMapping(path = "/{projectKey}")
     public ResponseEntity<ProjectFullResponse> getProject(@PathVariable(name = "projectKey") String projectKey) {
-        log.info(PROJECT_GET_BY_ID, projectKey);
+        ProjectEntity project = projectService.getProjectByProjectKey(projectKey);
+        logInfo(PROJECT_RETRIEVED, project);
+
+        ProjectFullResponse projectResponse = mapper.toResponse(project);
         
-        return new ResponseEntity<>(
-            mapper.toResponse(projectService.getProjectByProjectKey(projectKey)),
-            OK
-        );
+        return new ResponseEntity<>(projectResponse, OK);
     }
 
     @PostMapping
     public ResponseEntity<Void> createProject(@RequestBody ProjectRequest request) {
-        log.info(PROJECT_CREATE_NEW);
+        ProjectEntity project = mapper.toEntity(request);
         
-        projectService.saveProject(mapper.toEntity(request));
+        projectService.saveProject(project);
+        logInfo(PROJECT_CREATED, project);
 
         return new ResponseEntity<>(CREATED);
     }
 
     @PutMapping(path = "/{projectKey}/addTeam/{teamId}")
     public ResponseEntity<Void> addTeamToProject(@PathVariable(name = "projectKey") String projectKey, @PathVariable(name = "teamId") String teamId) {
-        log.info(PROJECT_ADD_TEAM);
-        
         projectService.addTeam(projectKey, teamId);
 
         return new ResponseEntity<>(OK);
@@ -91,24 +84,18 @@ public class ProjectController {
 
     @GetMapping(path = "/{projectKey}/issues")
     public ResponseEntity<List<IssueFullResponse>> getAllIssuesOnProject(@PathVariable(name = "projectKey") String projectKey) {
-        log.info("Get issues on project with id: {}", projectKey);
+        List<IssueEntity> issues = projectService.getAllIssuesOnProjectById(projectKey);
+        logInfo(PROJECT_ISSUES_RETRIEVED, issues);
 
-        List<IssueEntity> entities = projectService.getAllIssuesOnProjectById(projectKey);
-
-        List<IssueFullResponse> responses = entities.stream()
+        List<IssueFullResponse> issuesResponses = issues.stream()
             .map(mapper::toResponse)
             .collect(Collectors.toList());
 
-        return new ResponseEntity<>(
-            responses,
-            OK
-        );
+        return new ResponseEntity<>(issuesResponses, OK);
     }
     
     @GetMapping(path = "/{projectKey}/teams")
     public ResponseEntity<List<TeamFullResponse>> getAllTeamsOnProject(@PathVariable(name = "projectKey") String projectKey) {
-        log.info("Get teams on project with id: {}", projectKey);
-
         List<TeamEntity> entities = projectService.getAllTeamsOnProjectById(projectKey);
 
         List<TeamFullResponse> responses = entities.stream()
@@ -119,5 +106,9 @@ public class ProjectController {
             responses,
             OK
         );
+    }
+
+    private void logInfo(String var1, Object var2) {
+        log.info(var1, "Controller", var2);
     }
 }
