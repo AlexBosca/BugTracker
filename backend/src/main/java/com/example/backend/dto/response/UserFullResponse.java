@@ -20,7 +20,6 @@ public class UserFullResponse {
     private String role;
     private boolean isAccountLocked;
     private boolean isEnabled;
-    private Collection<TeamSlimResponse> teams;
     private Collection<IssueSlimResponse> issuesCreated;
     private Collection<IssueSlimResponse> issuesAssigned;
     private Collection<IssueSlimResponse> issuesClosed;

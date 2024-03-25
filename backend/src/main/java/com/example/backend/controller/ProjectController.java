@@ -4,9 +4,7 @@ import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.request.ProjectRequest;
 import com.example.backend.dto.response.IssueFullResponse;
 import com.example.backend.dto.response.ProjectFullResponse;
-import com.example.backend.dto.response.TeamFullResponse;
 import com.example.backend.entity.ProjectEntity;
-import com.example.backend.entity.TeamEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.mapper.MapStructMapper;
 import com.example.backend.service.ProjectService;
@@ -75,13 +73,6 @@ public class ProjectController {
         return new ResponseEntity<>(CREATED);
     }
 
-    @PutMapping(path = "/{projectKey}/addTeam/{teamId}")
-    public ResponseEntity<Void> addTeamToProject(@PathVariable(name = "projectKey") String projectKey, @PathVariable(name = "teamId") String teamId) {
-        projectService.addTeam(projectKey, teamId);
-
-        return new ResponseEntity<>(OK);
-    }
-
     @GetMapping(path = "/{projectKey}/issues")
     public ResponseEntity<List<IssueFullResponse>> getAllIssuesOnProject(@PathVariable(name = "projectKey") String projectKey) {
         List<IssueEntity> issues = projectService.getAllIssuesOnProjectById(projectKey);
@@ -92,20 +83,6 @@ public class ProjectController {
             .collect(Collectors.toList());
 
         return new ResponseEntity<>(issuesResponses, OK);
-    }
-    
-    @GetMapping(path = "/{projectKey}/teams")
-    public ResponseEntity<List<TeamFullResponse>> getAllTeamsOnProject(@PathVariable(name = "projectKey") String projectKey) {
-        List<TeamEntity> entities = projectService.getAllTeamsOnProjectById(projectKey);
-
-        List<TeamFullResponse> responses = entities.stream()
-            .map(mapper::toResponse)
-            .collect(Collectors.toList());
-
-        return new ResponseEntity<>(
-            responses,
-            OK
-        );
     }
 
     private void logInfo(String var1, Object var2) {

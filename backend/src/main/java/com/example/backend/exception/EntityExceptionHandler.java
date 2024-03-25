@@ -6,8 +6,6 @@ import com.example.backend.exception.issue.IssueAlreadyCreatedException;
 import com.example.backend.exception.issue.IssueNotFoundException;
 import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectNotFoundException;
-import com.example.backend.exception.team.TeamAlreadyCreatedException;
-import com.example.backend.exception.team.TeamIdNotFoundException;
 import com.example.backend.exception.token.TokenExpiredException;
 import com.example.backend.exception.token.TokenNotFoundException;
 import com.example.backend.exception.user.UserAccountDisabledException;
@@ -102,16 +100,6 @@ public class EntityExceptionHandler {
 
     @ExceptionHandler(ProjectAlreadyCreatedException.class)
     public ResponseEntity<ErrorResponse> handleProjectAlreadyCreatedException(Exception exception) {
-        return buildErrorResponse(exception, BAD_REQUEST);
-    }
-
-    @ExceptionHandler(TeamIdNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleTeamIdNotFoundException(Exception exception) {
-        return buildErrorResponse(exception, NOT_FOUND);
-    }
-
-    @ExceptionHandler(TeamAlreadyCreatedException.class)
-    public ResponseEntity<ErrorResponse> handleTeamAlreadyCreatedException(Exception exception) {
         return buildErrorResponse(exception, BAD_REQUEST);
     }
 
