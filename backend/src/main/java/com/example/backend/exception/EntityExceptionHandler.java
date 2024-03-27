@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -28,7 +29,6 @@ import java.time.Clock;
 
 import static org.springframework.http.HttpStatus.*;
 
-@Slf4j
 @ControllerAdvice
 public class EntityExceptionHandler {
 
@@ -36,6 +36,11 @@ public class EntityExceptionHandler {
 
     public EntityExceptionHandler(Clock clock) {
         this.clock = clock;
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+        return buildErrorResponse(exception.getBindingResult().getFieldError().getDefaultMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(EmailAlreadyConfirmedException.class)
@@ -130,16 +135,15 @@ public class EntityExceptionHandler {
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Exception exception,
                                                              HttpStatus httpStatus) {
-        return buildErrorResponse(exception, exception.getMessage(), httpStatus);
+        return buildErrorResponse(exception.getMessage(), httpStatus);
     }
 
-    private ResponseEntity<ErrorResponse> buildErrorResponse(Exception exception,
-                                                             String message,
+    private ResponseEntity<ErrorResponse> buildErrorResponse(String message,
                                                              HttpStatus httpStatus) {
         ErrorResponse errorResponse = new ErrorResponse(
                 clock,
                 httpStatus,
-                exception.getMessage());
+                message);
 
 //        if(printStackTrace && isTraceOn(request)){
 //            exceptionInfo.setStackTrace(ExceptionUtils.getStackTrace(exception));

@@ -20,6 +20,8 @@ import static org.springframework.http.HttpStatus.OK;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 @RequestMapping(path = "projects")
@@ -64,7 +66,7 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createProject(@RequestBody ProjectRequest request) {
+    public ResponseEntity<Void> createProject(@Valid @RequestBody ProjectRequest request) {
         ProjectEntity project = mapper.toEntity(request);
         
         projectService.saveProject(project);

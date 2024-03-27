@@ -144,6 +144,9 @@ DROP TABLE IF EXISTS projects CASCADE;
 
 CREATE TABLE projects (
     id bigint NOT NULL,
+    start_date timestamp without time zone,
+    target_end_date timestamp without time zone,
+    actual_end_date timestamp without time zone,
     description character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
     project_key character varying(255) NOT NULL
