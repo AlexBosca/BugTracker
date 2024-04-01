@@ -2,6 +2,7 @@ package com.example.backend.dto.request;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -16,16 +17,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class ProjectRequest {
-    @NotNull(message = "Project key is mandatory")
+    @NotBlank(message = "project key is mandatory")
     private String projectKey;
-    @NotNull(message = "Project name is mandatory")
+    @NotBlank(message = "project name is mandatory")
     private String name;
-    @NotNull(message = "Project description is mandatory")
+    @NotBlank(message = "project description is mandatory")
     private String description;
-    @NotNull(message = "Project start date is mandatory")
+    @NotNull(message = "project start date is mandatory")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startDate;
-    @NotNull(message = "Project target end date is mandatory")
+    @NotNull(message = "project target end date is mandatory")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime targetEndDate;
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")

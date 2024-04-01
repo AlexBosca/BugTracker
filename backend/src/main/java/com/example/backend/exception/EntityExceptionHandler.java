@@ -16,16 +16,16 @@ import com.example.backend.exception.user.UserIdNotFoundException;
 import com.example.backend.exception.user.UserPasswordsNotMatchingException;
 import com.example.backend.exception.user.UserRoleNotFoundException;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.Clock;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -40,7 +40,15 @@ public class EntityExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-        return buildErrorResponse(exception.getBindingResult().getFieldError().getDefaultMessage(), BAD_REQUEST);
+        List<String> errors = new ArrayList<>();
+
+        if(exception instanceof MethodArgumentNotValidException) {
+            for (FieldError fieldError : exception.getBindingResult().getFieldErrors()) {
+                errors.add(fieldError.getDefaultMessage());
+            }
+        }
+
+        return buildErrorResponse(errors, BAD_REQUEST);
     }
 
     @ExceptionHandler(EmailAlreadyConfirmedException.class)
@@ -131,6 +139,25 @@ public class EntityExceptionHandler {
     @ExceptionHandler(UserRoleNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserRoleNotFoundException(Exception exception) {
         return buildErrorResponse(exception, NOT_FOUND);
+    }
+
+    private ResponseEntity<ErrorResponse> buildErrorResponse(List<String> errors,
+                                                             HttpStatus httpStatus) {
+        StringBuilder stringBuilder = new StringBuilder("Validation error: ");
+
+        for(String error : errors) {
+            if(errors.indexOf(error) < errors.size() - 2) {
+                stringBuilder.append(error);
+                stringBuilder.append(", ");
+            } else if(errors.indexOf(error) < errors.size() - 1) {
+                stringBuilder.append(error);
+                stringBuilder.append(" and ");
+            } else {
+                stringBuilder.append(error);
+            }
+        }
+
+        return buildErrorResponse(stringBuilder.toString(), httpStatus);
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Exception exception,
