@@ -6,8 +6,6 @@ import com.example.backend.exception.issue.IssueAlreadyCreatedException;
 import com.example.backend.exception.issue.IssueNotFoundException;
 import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectNotFoundException;
-import com.example.backend.exception.team.TeamAlreadyCreatedException;
-import com.example.backend.exception.team.TeamIdNotFoundException;
 import com.example.backend.exception.token.TokenExpiredException;
 import com.example.backend.exception.token.TokenNotFoundException;
 import com.example.backend.exception.user.UserAccountDisabledException;
@@ -18,19 +16,19 @@ import com.example.backend.exception.user.UserIdNotFoundException;
 import com.example.backend.exception.user.UserPasswordsNotMatchingException;
 import com.example.backend.exception.user.UserRoleNotFoundException;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.Clock;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
 
-@Slf4j
 @ControllerAdvice
 public class EntityExceptionHandler {
 
@@ -38,6 +36,19 @@ public class EntityExceptionHandler {
 
     public EntityExceptionHandler(Clock clock) {
         this.clock = clock;
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+        List<String> errors = new ArrayList<>();
+
+        if(exception instanceof MethodArgumentNotValidException) {
+            for (FieldError fieldError : exception.getBindingResult().getFieldErrors()) {
+                errors.add(fieldError.getDefaultMessage());
+            }
+        }
+
+        return buildErrorResponse(errors, BAD_REQUEST);
     }
 
     @ExceptionHandler(EmailAlreadyConfirmedException.class)
@@ -105,16 +116,6 @@ public class EntityExceptionHandler {
         return buildErrorResponse(exception, BAD_REQUEST);
     }
 
-    @ExceptionHandler(TeamIdNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleTeamIdNotFoundException(Exception exception) {
-        return buildErrorResponse(exception, NOT_FOUND);
-    }
-
-    @ExceptionHandler(TeamAlreadyCreatedException.class)
-    public ResponseEntity<ErrorResponse> handleTeamAlreadyCreatedException(Exception exception) {
-        return buildErrorResponse(exception, BAD_REQUEST);
-    }
-
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<ErrorResponse> handleTokenExpiredException(Exception exception) {
         return buildErrorResponse(exception, UNAUTHORIZED);
@@ -140,18 +141,36 @@ public class EntityExceptionHandler {
         return buildErrorResponse(exception, NOT_FOUND);
     }
 
-    private ResponseEntity<ErrorResponse> buildErrorResponse(Exception exception,
+    private ResponseEntity<ErrorResponse> buildErrorResponse(List<String> errors,
                                                              HttpStatus httpStatus) {
-        return buildErrorResponse(exception, exception.getMessage(), httpStatus);
+        StringBuilder stringBuilder = new StringBuilder("Validation error: ");
+
+        for(String error : errors) {
+            if(errors.indexOf(error) < errors.size() - 2) {
+                stringBuilder.append(error);
+                stringBuilder.append(", ");
+            } else if(errors.indexOf(error) < errors.size() - 1) {
+                stringBuilder.append(error);
+                stringBuilder.append(" and ");
+            } else {
+                stringBuilder.append(error);
+            }
+        }
+
+        return buildErrorResponse(stringBuilder.toString(), httpStatus);
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(Exception exception,
-                                                             String message,
+                                                             HttpStatus httpStatus) {
+        return buildErrorResponse(exception.getMessage(), httpStatus);
+    }
+
+    private ResponseEntity<ErrorResponse> buildErrorResponse(String message,
                                                              HttpStatus httpStatus) {
         ErrorResponse errorResponse = new ErrorResponse(
                 clock,
                 httpStatus,
-                exception.getMessage());
+                message);
 
 //        if(printStackTrace && isTraceOn(request)){
 //            exceptionInfo.setStackTrace(ExceptionUtils.getStackTrace(exception));

@@ -4,17 +4,14 @@ import com.example.backend.entity.issue.IssueEntity;
 import lombok.*;
 
 import javax.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import static javax.persistence.CascadeType.ALL;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
-@Setter
 @Builder
 @Table(name = "projects")
 public class ProjectEntity extends BaseEntity {
@@ -28,22 +25,15 @@ public class ProjectEntity extends BaseEntity {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @ManyToMany(
-        fetch = FetchType.LAZY,
-        cascade = CascadeType.PERSIST
-    )
-    @JoinTable(
-            name = "teams_on_project",
-            joinColumns = @JoinColumn(name = "project_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"))
-    private Set<TeamEntity> teams;
+    @Column(name = "start_date", nullable = false)
+    private LocalDateTime startDate;
+
+    @Column(name = "target_end_date", nullable = false)
+    private LocalDateTime targetEndDate;
+
+    @Column(name = "actual_end_date")
+    private LocalDateTime actualEndDate;
 
     @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
     private Collection<IssueEntity> issues;
-
-    public void addTeam(TeamEntity team) {
-        team.getProjects().add(this);
-        this.teams.add(team);
-
-    }
 }

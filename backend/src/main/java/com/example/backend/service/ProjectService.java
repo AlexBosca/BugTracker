@@ -1,14 +1,11 @@
 package com.example.backend.service;
 
 import com.example.backend.dao.ProjectDao;
-import com.example.backend.dao.TeamDao;
 import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.entity.ProjectEntity;
-import com.example.backend.entity.TeamEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectNotFoundException;
-import com.example.backend.exception.team.TeamIdNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,13 +22,10 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectService {
     private final ProjectDao projectDao;
-    private final TeamDao teamDao;
 
-    public ProjectService(@Qualifier("projectJpa") ProjectDao projectDao,
-                          @Qualifier("teamJpa") TeamDao teamDao) {
+    public ProjectService(@Qualifier("projectJpa") ProjectDao projectDao) {
         
         this.projectDao = projectDao;
-        this.teamDao = teamDao;
     }
 
     public List<ProjectEntity> getAllProjects() {
@@ -70,22 +64,6 @@ public class ProjectService {
         logInfo(PROJECT_CREATED, project);
     }
 
-    public void addTeam(String projectKey, String teamId) {
-        ProjectEntity project = projectDao
-            .selectProjectByKey(projectKey)
-            .orElseThrow(() -> new ProjectNotFoundException(projectKey));
-
-        TeamEntity team = teamDao
-            .selectTeamByTeamId(teamId)
-            .orElseThrow(() -> new TeamIdNotFoundException(teamId));
-
-        project.addTeam(team);
-        team.addProject(project);
-
-        projectDao.insertProject(project);
-        teamDao.insertTeam(team);
-    }
-
     public List<IssueEntity> getAllIssuesOnProjectById(String projectKey) {
         ProjectEntity project = projectDao
             .selectProjectByKey(projectKey)
@@ -97,17 +75,6 @@ public class ProjectService {
         logInfo(PROJECT_ISSUES_RETRIEVED, issuesOnProject);
 
         return issuesOnProject;
-    }
-
-    public List<TeamEntity> getAllTeamsOnProjectById(String projectKey) {
-        ProjectEntity project = projectDao
-            .selectProjectByKey(projectKey)
-            .orElseThrow(() -> new ProjectNotFoundException(projectKey));
-
-        List<TeamEntity> teamsOnProject = project.getTeams().stream()
-            .collect(Collectors.toList());
-
-        return teamsOnProject;
     }
 
     private void logInfo(String var1, Object var2) {

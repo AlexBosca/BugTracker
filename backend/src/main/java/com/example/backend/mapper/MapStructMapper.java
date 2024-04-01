@@ -3,7 +3,6 @@ package com.example.backend.mapper;
 import com.example.backend.dto.request.*;
 import com.example.backend.dto.response.*;
 import com.example.backend.entity.ProjectEntity;
-import com.example.backend.entity.TeamEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueCommentEntity;
 import com.example.backend.entity.issue.IssueEntity;
@@ -42,9 +41,4 @@ public interface MapStructMapper {
     ProjectEntity toEntity(ProjectRequest request);
     ProjectFullResponse toResponse(ProjectEntity project);
     ProjectEntity toEntity(ProjectFullResponse response);
-
-    TeamRequest toRequest(TeamEntity team);
-    TeamEntity toEntity(TeamRequest request);
-    TeamFullResponse toResponse(TeamEntity team);
-    TeamEntity toEntity(TeamFullResponse response);
 }

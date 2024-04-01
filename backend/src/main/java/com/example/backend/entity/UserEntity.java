@@ -76,12 +76,6 @@ public class UserEntity extends BaseEntity implements UserDetails {
     private UserRole role;
 
     @JsonManagedReference
-    @ManyToMany(
-        mappedBy = "colleagues",
-        fetch = EAGER)
-    private Collection<TeamEntity> teams;
-
-    @JsonManagedReference
     @OneToMany(
         mappedBy = "createdByUser",
         fetch = EAGER)

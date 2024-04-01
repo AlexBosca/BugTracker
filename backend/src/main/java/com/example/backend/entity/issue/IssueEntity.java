@@ -94,4 +94,16 @@ public class IssueEntity extends BaseEntity {
     public void setIssueIdPostPersist() {
         issueId = String.format("%s-%04d", this.getProject().getProjectKey(), this.getId());
     }
+
+    @Override
+    public String toString() {
+        return "IssueEntity [issueId=" + issueId + ", title=" + title + ", description=" + description
+                + ", reproducingSteps=" + reproducingSteps + ", environment=" + environment + ", version=" + version
+                + ", status=" + status + ", priority=" + priority + ", createdByUser=" + createdByUser.getUserId() + ", createdOn="
+                + createdOn + ", assignedUser=" + assignedUser + ", assignedOn=" + assignedOn + ", modifiedByUser="
+                + modifiedByUser + ", modifiedOn=" + modifiedOn + ", closedByUser=" + closedByUser + ", closedOn="
+                + closedOn + ", tester=" + tester + ", discussion=" + discussion + ", project=" + project + "]";
+    }
+
+    
 }
