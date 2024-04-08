@@ -14,7 +14,7 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 @Setter
 public class ErrorResponse {
 
-    @JsonFormat(shape = STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
     private int code;
     private String status;

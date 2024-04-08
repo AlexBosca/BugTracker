@@ -4,13 +4,10 @@ import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.request.ProjectRequest;
 import com.example.backend.dto.response.IssueFullResponse;
 import com.example.backend.dto.response.ProjectFullResponse;
-import com.example.backend.dto.response.TeamFullResponse;
 import com.example.backend.entity.ProjectEntity;
-import com.example.backend.entity.TeamEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectNotFoundException;
-import com.example.backend.exception.team.TeamIdNotFoundException;
 import com.example.backend.mapper.MapStructMapper;
 import com.example.backend.service.ProjectService;
 import com.example.backend.util.FilterCriteriaMatcher;
@@ -28,27 +25,33 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import static java.time.ZonedDateTime.of;
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static com.example.backend.util.ExceptionUtilities.PROJECT_ALREADY_CREATED;
 import static com.example.backend.util.ExceptionUtilities.PROJECT_WITH_ID_NOT_FOUND;
-import static com.example.backend.util.ExceptionUtilities.TEAM_WITH_ID_NOT_FOUND;
+import static com.example.backend.util.Utilities.formattedString;
 
 @Profile("test")
 @ActiveProfiles("test")
@@ -75,6 +78,15 @@ class ProjectControllerTest {
 
     @Captor
     private ArgumentCaptor<ProjectEntity> projectCaptor;
+
+    private static ZonedDateTime NOW = of(2022,
+                                            12,
+                                            26, 
+                                            11, 
+                                            30, 
+                                            0, 
+                                            0, 
+                                            ZoneId.of("GMT"));
 
     @Test
     @DisplayName("Should return OK status and a not empty list when there are projects")
@@ -200,7 +212,7 @@ class ProjectControllerTest {
     }
 
     @Test
-    @DisplayName("Should return OK status and an empty list when there are no projects")
+    @DisplayName("Should return OK Response when no exception was thrown when calling the getProject endpoint")
     void getProject_NoExceptionThrown_OkResponse() throws Exception {
         String givenProjectKey = "PROJECT1";
 
@@ -223,10 +235,15 @@ class ProjectControllerTest {
     @Test
     @DisplayName("Should return CREATED Response when no exception was thrown when calling the createProject endpoint")
     void createProject_NoExceptionThrown_CreatedResponse() throws Exception {
+        LocalDateTime expectedStartDate = LocalDateTime.of(2024, 4, 5, 12, 0);
+        LocalDateTime expectedTargetEndDate = LocalDateTime.of(2025, 4, 5, 12, 0);
+
         ProjectEntity expectedProject = ProjectEntity.builder()
             .projectKey("PROJECT1")
             .name("First Project")
             .description("First Project Description")
+            .startDate(expectedStartDate)
+            .targetEndDate(expectedTargetEndDate)
             .build();
 
         ProjectRequest projectRequest = mapStructMapper.toRequest(expectedProject);
@@ -243,19 +260,30 @@ class ProjectControllerTest {
         assertThat(actualProject.getProjectKey()).isEqualTo(expectedProject.getProjectKey());
         assertThat(actualProject.getName()).isEqualTo(expectedProject.getName());
         assertThat(actualProject.getDescription()).isEqualTo(expectedProject.getDescription());
+        assertThat(actualProject.getStartDate()).isEqualTo(expectedProject.getStartDate());
+        assertThat(actualProject.getTargetEndDate()).isEqualTo(expectedProject.getTargetEndDate());
     }
 
     @Test
-    @DisplayName("Should return BAD REQUEST Response and resolve exception when ProjectAlreadyCreatedException was thrown when calling the createProject endpoint")
-    void createProject_ProjectAlreadyCreatedExceptionThrown_ResolveExceptionAndBadRequestResponse() throws Exception {
+    @DisplayName("Should return BAD REQUEST Response and resolve ProjectAlreadyCreatedException when calling the createProject endpoint for an already created project")
+    void createProject_ProjectAlreadyCreated_ResolveProjectAlreadyCreatedExceptionAndBadRequestResponse() throws Exception {
         String givenProjectKey = "PROJECT1";
+
+        LocalDateTime expectedStartDate = LocalDateTime.of(2024, 4, 5, 12, 0);
+        LocalDateTime expectedTargetEndDate = LocalDateTime.of(2025, 4, 5, 12, 0);
+
         ProjectEntity expectedProject = ProjectEntity.builder()
             .projectKey("PROJECT1")
             .name("First Project")
             .description("First Project Description")
+            .startDate(expectedStartDate)
+            .targetEndDate(expectedTargetEndDate)
             .build();
 
         ProjectRequest projectRequest = mapStructMapper.toRequest(expectedProject);
+
+        when(clock.getZone()).thenReturn(NOW.getZone());
+        when(clock.instant()).thenReturn(NOW.toInstant());
 
         doThrow(new ProjectAlreadyCreatedException(givenProjectKey)).when(projectService).saveProject(any());
 
@@ -263,6 +291,10 @@ class ProjectControllerTest {
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(projectRequest)))
             .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.timestamp").value(NOW.format(ofPattern("yyyy-MM-dd HH:mm:ss"))))
+            .andExpect(jsonPath("$.code").value(BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.status").value(BAD_REQUEST.name()))
+            .andExpect(jsonPath("$.message").value(formattedString(PROJECT_ALREADY_CREATED, givenProjectKey)))
             .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(ProjectAlreadyCreatedException.class))
             .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(PROJECT_ALREADY_CREATED, givenProjectKey)));
 
@@ -273,53 +305,156 @@ class ProjectControllerTest {
         assertThat(actualProject.getProjectKey()).isEqualTo(expectedProject.getProjectKey());
         assertThat(actualProject.getName()).isEqualTo(expectedProject.getName());
         assertThat(actualProject.getDescription()).isEqualTo(expectedProject.getDescription());
+        assertThat(actualProject.getStartDate()).isEqualTo(expectedProject.getStartDate());
+        assertThat(actualProject.getTargetEndDate()).isEqualTo(expectedProject.getTargetEndDate());
     }
 
     @Test
-    @DisplayName("Should return OK Response when no exception was thrown when calling the addTeamToProject endpoint")
-    void addTeamToProject_NoExceptionThrown_OkResponse() throws Exception {
-        String givenProjectKey = "PROJECT1";
-        String givenTeamId = "TEAM1";
+    @DisplayName("Should return BAD REQUEST Response and resolve MethodArgumentNotValidException when calling the createProject endpoint and project key is missing")
+    void createProject_ProjectKeyMissing_ResolveMethodArgumentNotValidExceptionAndBadRequestResponse() throws Exception {
+        LocalDateTime expectedStartDate = LocalDateTime.of(2024, 4, 5, 12, 0);
+        LocalDateTime expectedTargetEndDate = LocalDateTime.of(2025, 4, 5, 12, 0);
 
-        mockMvc.perform(put("/projects/{projectKey}/addTeam/{teamId}", givenProjectKey, givenTeamId)
-                .contentType(APPLICATION_JSON))
-            .andExpect(status().isOk());
+        ProjectEntity expectedProject = ProjectEntity.builder()
+            .name("First Project")
+            .description("First Project Description")
+            .startDate(expectedStartDate)
+            .targetEndDate(expectedTargetEndDate)
+            .build();
 
-        verify(projectService).addTeam(givenProjectKey, givenTeamId);
+        ProjectRequest projectRequest = mapStructMapper.toRequest(expectedProject);
+
+        when(clock.getZone()).thenReturn(NOW.getZone());
+        when(clock.instant()).thenReturn(NOW.toInstant());
+
+        mockMvc.perform(post("/projects")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(projectRequest)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.timestamp").value(NOW.format(ofPattern("yyyy-MM-dd HH:mm:ss"))))
+            .andExpect(jsonPath("$.code").value(BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.status").value(BAD_REQUEST.name()))
+            .andExpect(jsonPath("$.message").exists())      // TODO: replace exists method call with value method call with actual message value
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(MethodArgumentNotValidException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isNotBlank());
     }
 
     @Test
-    @DisplayName("Should return NOT_FOUND Response when ProjectNotFoundException was thrown when calling the addTeamToProject endpoint")
-    void addTeamToProject_ProjectNotFoundExceptionThrown_OkResponse() throws Exception {
-        String givenProjectKey = "PROJECT1";
-        String givenTeamId = "TEAM1";
+    @DisplayName("Should return BAD REQUEST Response and resolve MethodArgumentNotValidException when calling the createProject endpoint and project name is missing")
+    void createProject_ProjectNameMissing_ResolveMethodArgumentNotValidExceptionAndBadRequestResponse() throws Exception {
+        LocalDateTime expectedStartDate = LocalDateTime.of(2024, 4, 5, 12, 0);
+        LocalDateTime expectedTargetEndDate = LocalDateTime.of(2025, 4, 5, 12, 0);
 
-        doThrow(new ProjectNotFoundException(givenProjectKey)).when(projectService).addTeam(givenProjectKey, givenTeamId);
+        ProjectEntity expectedProject = ProjectEntity.builder()
+            .projectKey("PROJECT1")
+            .description("First Project Description")
+            .startDate(expectedStartDate)
+            .targetEndDate(expectedTargetEndDate)
+            .build();
 
-        mockMvc.perform(put("/projects/{projectKey}/addTeam/{teamId}", givenProjectKey, givenTeamId)
-                .contentType(APPLICATION_JSON))
-            .andExpect(status().isNotFound())
-            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(ProjectNotFoundException.class))
-            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(PROJECT_WITH_ID_NOT_FOUND, givenProjectKey)));
+        ProjectRequest projectRequest = mapStructMapper.toRequest(expectedProject);
 
-        verify(projectService).addTeam(givenProjectKey, givenTeamId);
+        when(clock.getZone()).thenReturn(NOW.getZone());
+        when(clock.instant()).thenReturn(NOW.toInstant());
+
+        mockMvc.perform(post("/projects")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(projectRequest)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.timestamp").value(NOW.format(ofPattern("yyyy-MM-dd HH:mm:ss"))))
+            .andExpect(jsonPath("$.code").value(BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.status").value(BAD_REQUEST.name()))
+            .andExpect(jsonPath("$.message").exists())      // TODO: replace exists method call with value method call with actual message value
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(MethodArgumentNotValidException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isNotBlank());
     }
 
     @Test
-    @DisplayName("Should return NOT_FOUND Response when TeamIdNotFoundException was thrown when calling the addTeamToProject endpoint")
-    void addTeamToProject_TeamIdNotFoundExceptionThrown_OkResponse() throws Exception {
-        String givenProjectKey = "PROJECT1";
-        String givenTeamId = "TEAM1";
+    @DisplayName("Should return BAD REQUEST Response and resolve MethodArgumentNotValidException when calling the createProject endpoint and project description is missing")
+    void createProject_ProjectDescriptionMissing_ResolveMethodArgumentNotValidExceptionAndBadRequestResponse() throws Exception {
+        LocalDateTime expectedStartDate = LocalDateTime.of(2024, 4, 5, 12, 0);
+        LocalDateTime expectedTargetEndDate = LocalDateTime.of(2025, 4, 5, 12, 0);
 
-        doThrow(new TeamIdNotFoundException(givenTeamId)).when(projectService).addTeam(givenProjectKey, givenTeamId);
+        ProjectEntity expectedProject = ProjectEntity.builder()
+            .projectKey("PROJECT1")
+            .name("First Project")
+            .startDate(expectedStartDate)
+            .targetEndDate(expectedTargetEndDate)
+            .build();
 
-        mockMvc.perform(put("/projects/{projectKey}/addTeam/{teamId}", givenProjectKey, givenTeamId)
-                .contentType(APPLICATION_JSON))
-            .andExpect(status().isNotFound())
-            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(TeamIdNotFoundException.class))
-            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(TEAM_WITH_ID_NOT_FOUND, givenTeamId)));
+        ProjectRequest projectRequest = mapStructMapper.toRequest(expectedProject);
 
-        verify(projectService).addTeam(givenProjectKey, givenTeamId);
+        when(clock.getZone()).thenReturn(NOW.getZone());
+        when(clock.instant()).thenReturn(NOW.toInstant());
+
+        mockMvc.perform(post("/projects")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(projectRequest)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.timestamp").value(NOW.format(ofPattern("yyyy-MM-dd HH:mm:ss"))))
+            .andExpect(jsonPath("$.code").value(BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.status").value(BAD_REQUEST.name()))
+            .andExpect(jsonPath("$.message").exists())      // TODO: replace exists method call with value method call with actual message value
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(MethodArgumentNotValidException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isNotBlank());
+    }
+
+    @Test
+    @DisplayName("Should return BAD REQUEST Response and resolve MethodArgumentNotValidException when calling the createProject endpoint and project start date is missing")
+    void createProject_ProjectStartDateMissing_ResolveMethodArgumentNotValidExceptionAndBadRequestResponse() throws Exception {
+        LocalDateTime expectedTargetEndDate = LocalDateTime.of(2025, 4, 5, 12, 0);
+
+        ProjectEntity expectedProject = ProjectEntity.builder()
+            .projectKey("PROJECT1")
+            .name("First Project")
+            .description("First Project Description")
+            .targetEndDate(expectedTargetEndDate)
+            .build();
+
+        ProjectRequest projectRequest = mapStructMapper.toRequest(expectedProject);
+
+        when(clock.getZone()).thenReturn(NOW.getZone());
+        when(clock.instant()).thenReturn(NOW.toInstant());
+
+        mockMvc.perform(post("/projects")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(projectRequest)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.timestamp").value(NOW.format(ofPattern("yyyy-MM-dd HH:mm:ss"))))
+            .andExpect(jsonPath("$.code").value(BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.status").value(BAD_REQUEST.name()))
+            .andExpect(jsonPath("$.message").exists())      // TODO: replace exists method call with value method call with actual message value
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(MethodArgumentNotValidException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isNotBlank());
+    }
+
+    @Test
+    @DisplayName("Should return BAD REQUEST Response and resolve MethodArgumentNotValidException when calling the createProject endpoint and project target end date is missing")
+    void createProject_ProjectTargetEndDateMissing_ResolveMethodArgumentNotValidExceptionAndBadRequestResponse() throws Exception {
+        LocalDateTime expectedStartDate = LocalDateTime.of(2024, 4, 5, 12, 0);
+
+        ProjectEntity expectedProject = ProjectEntity.builder()
+            .projectKey("PROJECT1")
+            .name("First Project")
+            .description("First Project Description")
+            .startDate(expectedStartDate)
+            .build();
+
+        ProjectRequest projectRequest = mapStructMapper.toRequest(expectedProject);
+
+        when(clock.getZone()).thenReturn(NOW.getZone());
+        when(clock.instant()).thenReturn(NOW.toInstant());
+
+        mockMvc.perform(post("/projects")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(projectRequest)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.timestamp").value(NOW.format(ofPattern("yyyy-MM-dd HH:mm:ss"))))
+            .andExpect(jsonPath("$.code").value(BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.status").value(BAD_REQUEST.name()))
+            .andExpect(jsonPath("$.message").exists())      // TODO: replace exists method call with value method call with actual message value
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(MethodArgumentNotValidException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isNotBlank());
     }
 
     @Test
@@ -393,85 +528,6 @@ class ProjectControllerTest {
         when(projectService.getAllIssuesOnProjectById(givenProjectKey)).thenThrow(new ProjectNotFoundException(givenProjectKey));
 
         mockMvc.perform(get("/projects/{projectKey}/issues", givenProjectKey))
-            .andExpect(status().isNotFound())
-            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(ProjectNotFoundException.class))
-            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(PROJECT_WITH_ID_NOT_FOUND, "PROJECT1")));
-    }
-
-    @Test
-    @DisplayName("Should return OK status and a not empty list when there are teams on project by given projectKey")
-    void getAllTeamsOnProject_ExistingTeamsOnProject_OkResponse() throws Exception {
-        String givenProjectKey = "PROJECT1";
-
-        TeamEntity firstExpectedTeam = TeamEntity.builder()
-            .teamId("TEAM1")
-            .name("First Team")
-            .build();
-
-        TeamEntity secondExpectedTeam = TeamEntity.builder()
-            .teamId("TEAM2")
-            .name("Second Team")
-            .build();
-
-        TeamFullResponse firstExpectedIssueResponse = mapStructMapper.toResponse(firstExpectedTeam);
-        TeamFullResponse secondExpectedIssueResponse = mapStructMapper.toResponse(secondExpectedTeam);
-
-        Set<TeamEntity> expectedTeamsSet = Set.of(
-            firstExpectedTeam,
-            secondExpectedTeam
-        );
-
-        List<TeamEntity> expectedTeamsList = List.of(
-            firstExpectedTeam,
-            secondExpectedTeam
-        );
-
-        ProjectEntity expectedProject = ProjectEntity.builder()
-            .projectKey("PROJECT1")
-            .name("First Project")
-            .description("First Project Description")
-            .teams(expectedTeamsSet)
-            .build();
-
-        when(projectService.getProjectByProjectKey(givenProjectKey)).thenReturn(expectedProject);
-        when(projectService.getAllTeamsOnProjectById(givenProjectKey)).thenReturn(expectedTeamsList);
-
-        List<TeamFullResponse> expectesIssuesResponses = List.of(
-            firstExpectedIssueResponse,
-            secondExpectedIssueResponse
-        );
-
-        mockMvc.perform(get("/projects/{projectKey}/teams", givenProjectKey))
-            .andExpect(status().isOk())
-            .andExpect(content()
-                .json(objectMapper.writeValueAsString(expectesIssuesResponses)));
-    }
-
-    @Test
-    @DisplayName("Should return OK status and an empty list when there are no teams on project by given projectKey")
-    void getAllTeamsOnProjectById_NoTeamsOnProject_OkResponse() throws Exception {
-        String givenProjectKey = "PROJECT1";
-
-        List<TeamEntity> expectedTeams = List.of();
-        
-        when(projectService.getAllTeamsOnProjectById(givenProjectKey)).thenReturn(expectedTeams);
-
-        List<IssueFullResponse> expectedTeamsResponses = List.of();
-
-        mockMvc.perform(get("/projects/{projectKey}/teams", givenProjectKey))
-            .andExpect(status().isOk())
-            .andExpect(content()
-                .json(objectMapper.writeValueAsString(expectedTeamsResponses)));
-    }
-
-    @Test
-    @DisplayName("Should return NOT_FOUND status and throw ProjectNotFoundException when the project to return the teams assigned on does not exist")
-    void getAllTeamsOnProjectById_ProjectNotFoundExceptionThrown_OkResponse() throws Exception {
-        String givenProjectKey = "PROJECT1";
-
-        when(projectService.getAllTeamsOnProjectById(givenProjectKey)).thenThrow(new ProjectNotFoundException(givenProjectKey));
-
-        mockMvc.perform(get("/projects/{projectKey}/teams", givenProjectKey))
             .andExpect(status().isNotFound())
             .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(ProjectNotFoundException.class))
             .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(PROJECT_WITH_ID_NOT_FOUND, "PROJECT1")));

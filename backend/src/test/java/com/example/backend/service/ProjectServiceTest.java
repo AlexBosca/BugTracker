@@ -22,14 +22,11 @@ import java.util.Set;
 import java.time.ZoneId;
 
 import com.example.backend.dao.ProjectDao;
-import com.example.backend.dao.TeamDao;
 import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.entity.ProjectEntity;
-import com.example.backend.entity.TeamEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectNotFoundException;
-import com.example.backend.exception.team.TeamIdNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -40,7 +37,6 @@ import static java.time.ZonedDateTime.of;
 
 import static com.example.backend.util.ExceptionUtilities.PROJECT_WITH_ID_NOT_FOUND;
 import static com.example.backend.util.ExceptionUtilities.PROJECT_ALREADY_CREATED;
-import static com.example.backend.util.ExceptionUtilities.TEAM_WITH_ID_NOT_FOUND;
 
 @Profile("test")
 @ActiveProfiles("test")
@@ -49,9 +45,6 @@ class ProjectServiceTest {
 
     @Mock
     private ProjectDao projectDao;
-
-    @Mock
-    private TeamDao teamDao;
 
     private static ZonedDateTime NOW = of(2022,
                                             12,
@@ -70,8 +63,7 @@ class ProjectServiceTest {
     @BeforeEach
     void setUp() {
         projectService = new ProjectService(
-            projectDao,
-            teamDao
+            projectDao
         );
     }
 
@@ -246,71 +238,6 @@ class ProjectServiceTest {
     }
 
     @Test
-    @DisplayName("Should add existing team to existing project")
-    void addTeam_NoExceptionThrown() {
-        ProjectEntity existingProject = ProjectEntity.builder()
-            .projectKey("FPC")
-            .name("First Project")
-            .description("First Project Description")
-            .teams(new HashSet<TeamEntity>())
-            .build();
-
-        TeamEntity existingTeam = TeamEntity.builder()
-            .teamId("TEAM1")
-            .name("First Team")
-            .projects(new HashSet<ProjectEntity>())
-            .build();
-
-        when(projectDao.selectProjectByKey("FPC")).thenReturn(Optional.of(existingProject));
-        when(teamDao.selectTeamByTeamId("TEAM1")).thenReturn(Optional.of(existingTeam));
-
-        projectService.addTeam("FPC", "TEAM1");
-
-        verify(projectDao, times(1)).insertProject(projectArgumentCaptor.capture());
-
-        ProjectEntity capturedProject = projectArgumentCaptor.getValue();
-
-        assertThat(capturedProject.getProjectKey()).isEqualTo(existingProject.getProjectKey());
-        assertThat(capturedProject.getName()).isEqualTo(existingProject.getName());
-        assertThat(capturedProject.getDescription()).isEqualTo(existingProject.getDescription());
-        assertThat(
-            capturedProject.getTeams().stream()
-                .filter(team -> "TEAM1".equals(team.getTeamId()))
-                .findAny()
-        ).isEqualTo(Optional.of(existingTeam));
-    }
-
-    @Test
-    @DisplayName("Should throw exception when add non-existent team to existing project")
-    void addTeam_TeamIdNotFoundExceptionThrown() {
-        ProjectEntity existingProject = ProjectEntity.builder()
-            .projectKey("FPC")
-            .name("First Project")
-            .description("First Project Description")
-            .teams(new HashSet<TeamEntity>())
-            .build();
-
-        when(projectDao.selectProjectByKey("FPC")).thenReturn(Optional.of(existingProject));
-        when(teamDao.selectTeamByTeamId("TEAM1")).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> {
-            projectService.addTeam("FPC", "TEAM1");
-        }).isInstanceOf(TeamIdNotFoundException.class)
-        .hasMessage(String.format(TEAM_WITH_ID_NOT_FOUND, "TEAM1"));
-    }
-
-    @Test
-    @DisplayName("Should throw exception when add existing team to non-existent project")
-    void addTeam_ProjectNotFoundExceptionThrown() {
-        when(projectDao.selectProjectByKey("FPC")).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> {
-            projectService.addTeam("FPC", "TEAM1");
-        }).isInstanceOf(ProjectNotFoundException.class)
-        .hasMessage(String.format(PROJECT_WITH_ID_NOT_FOUND, "FPC"));
-    }
-
-    @Test
     @DisplayName("Should return a not empty list when there are issues created on given project")
     void getAllIssuesOnProjectById_ExistingIssuesOnProjects() {
         IssueEntity firstExpectedIssue = IssueEntity.builder()
@@ -372,78 +299,6 @@ class ProjectServiceTest {
 
         assertThatThrownBy(() -> {
             projectService.getAllIssuesOnProjectById("FPC");
-        }).isInstanceOf(ProjectNotFoundException.class)
-        .hasMessage(String.format(PROJECT_WITH_ID_NOT_FOUND, "FPC"));
-    }
-
-    @Disabled
-    @Test
-    @DisplayName("Should return a not empty list when there are teams assigned on given project")
-    void getAllTeamsOnProjectById_ExistingTeamsOnProjects() {
-        TeamEntity firstExpectedTeam = TeamEntity.builder()
-            .teamId("TEAM1")
-            .name("First Team")
-            .build();
-
-        TeamEntity secondExpectedTeam = TeamEntity.builder()
-            .teamId("TEAM2")
-            .name("Second Team")
-            .build();
-
-        Set<TeamEntity> teamsOnProjectSet = Set.of(
-            firstExpectedTeam,
-            secondExpectedTeam
-        );
-
-        List<TeamEntity> teamsOnProjectList = List.of(
-            firstExpectedTeam,
-            secondExpectedTeam
-        );
-
-        ProjectEntity existingProject = ProjectEntity.builder()
-            .projectKey("FPC")
-            .name("First Project")
-            .description("First Project Description")
-            .teams(teamsOnProjectSet)
-            .build();
-
-
-        when(projectDao.selectProjectByKey("FPC")).thenReturn(Optional.of(existingProject));
-
-        List<TeamEntity> actualTeams = projectService.getAllTeamsOnProjectById("FPC");
-
-        assertThat(actualTeams).isEqualTo(teamsOnProjectList);
-    }
-
-    @Test
-    @DisplayName("Should return an empty list when there are no teams assigned on given project")
-    void getAllIssuesOnProjectById_NoTeamsOnProject() {
-        Set<TeamEntity> teamsOnProjectSet = Set.of();
-        List<TeamEntity> teamsOnProjectList = List.of();
-
-
-        ProjectEntity existingProject = ProjectEntity.builder()
-            .projectKey("FPC")
-            .name("First Project")
-            .description("First Project Description")
-            .teams(teamsOnProjectSet)
-            .build();
-
-
-        when(projectDao.selectProjectByKey("FPC")).thenReturn(Optional.of(existingProject));
-
-        List<TeamEntity> actualIssues = projectService.getAllTeamsOnProjectById("FPC");
-
-        assertThat(actualIssues).isEqualTo(teamsOnProjectList);
-    }
-
-    @Test
-    @DisplayName("Should throw an exception when try to return all teams on a project that doesn't exists")
-    void getAllTeamsOnProjectById_ProjectNotFoundExceptionThrown() {
-        when(projectDao.selectProjectByKey("FPC")).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> {
-            projectService.getAllTeamsOnProjectById("FPC");
         }).isInstanceOf(ProjectNotFoundException.class)
         .hasMessage(String.format(PROJECT_WITH_ID_NOT_FOUND, "FPC"));
     }
