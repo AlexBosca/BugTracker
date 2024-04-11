@@ -1,5 +1,21 @@
 package com.example.backend.service;
 
+import static com.example.backend.util.ExceptionUtilities.PROJECT_ALREADY_CREATED;
+import static com.example.backend.util.ExceptionUtilities.PROJECT_WITH_ID_NOT_FOUND;
+import static java.time.ZonedDateTime.of;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,29 +27,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.time.ZoneId;
-
 import com.example.backend.dao.ProjectDao;
 import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectNotFoundException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static java.time.ZonedDateTime.of;
-
-import static com.example.backend.util.ExceptionUtilities.PROJECT_WITH_ID_NOT_FOUND;
-import static com.example.backend.util.ExceptionUtilities.PROJECT_ALREADY_CREATED;
 
 @Profile("test")
 @ActiveProfiles("test")
