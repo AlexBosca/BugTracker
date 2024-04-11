@@ -1,22 +1,25 @@
 package com.example.backend.service;
 
+import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_ALL_RETRIEVED;
+import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_CREATED;
+import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_FILTERED_RETRIEVED;
+import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_ISSUES_RETRIEVED;
+import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_RETRIEVED;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
 import com.example.backend.dao.ProjectDao;
 import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectNotFoundException;
-import lombok.AllArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-
-import static com.example.backend.util.issue.IssueLoggingMessages.ISSUE_RETRIEVED;
-import static com.example.backend.util.project.ProjectLoggingMessages.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
