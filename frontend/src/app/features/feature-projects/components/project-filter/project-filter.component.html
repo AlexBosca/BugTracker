@@ -3,19 +3,19 @@
         <h3 class="col"><strong>Projects</strong></h3>
         <!-- Caption to add -->
         <!-- Button trigger modal -->
-        <button type="button" class="col-1 btn btn-secondary rounded-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <button type="button" class="col-1 btn btn-secondary rounded-3" data-bs-toggle="modal" data-bs-target="#projectModal">
             Create Project
         </button>
-    
+
         <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
             <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-name" id="exampleModalLabel">Create Project</h5>
+                <h5 class="modal-name" id="projectModalLabel">Create Project</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                
+
                     <form [formGroup]="projectCreationForm" (ngSubmit)="createProject()">
                         <div class="modal-body">
                             <div *ngIf="error" class="alert alert-danger alert-dismissible mt-1 mb-3">
@@ -30,7 +30,7 @@
                                     <div *ngIf="form['projectKey'].errors['required']">Project Key is required</div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group mt-2">
                                 <label for="name">Name</label>
                                 <input type="text" formControlName="name" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['name'].errors }" />
@@ -38,7 +38,7 @@
                                     <div *ngIf="form['name'].errors['required']">Name is required</div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group mt-2">
                                 <label for="description">Description</label>
                                 <input type="text" formControlName="description" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['description'].errors }" />
@@ -46,11 +46,27 @@
                                     <div *ngIf="form['description'].errors['required']">Description is required</div>
                                 </div>
                             </div>
+
+                            <div class="form-group mt-2">
+                                <label for="startDate">Start Date</label>
+                                <input type="datetime-local" formControlName="startDate" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['startDate'].errors }" />
+                                <div *ngIf="submitted && form['startDate'].errors" class="invalid-feedback">
+                                    <div *ngIf="form['startDate'].errors['required']">Start Date is required</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label for="targetEndDate">Target End Date</label>
+                                <input type="datetime-local" formControlName="targetEndDate" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['targetEndDate'].errors }" />
+                                <div *ngIf="submitted && form['targetEndDate'].errors" class="invalid-feedback">
+                                    <div *ngIf="form['targetEndDate'].errors['required']">Target End Date is required</div>
+                                </div>
+                            </div>
                         </div>
-        
+
                         <div class="modal-footer">
                             <button type="button" id="createProjectForm" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            
+
                             <button [disabled]="loading" class="btn btn-primary">
                                 <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
                                 Create
@@ -99,9 +115,6 @@
                                         <i class="bi bi-x-lg"></i>
                                     </button>
                                 </form>
-                                <!-- <div *ngIf="submitted && form['firstName'].errors" class="invalid-feedback">
-                                    <div *ngIf="form['firstName'].errors['required']">First Name is required</div>
-                                </div> -->
                             </div>
 
                             <div class="row mt-3">

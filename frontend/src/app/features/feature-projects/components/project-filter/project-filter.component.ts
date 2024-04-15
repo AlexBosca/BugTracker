@@ -3,6 +3,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProjectService } from '../../services/project.service';
 import { FilterCriteria } from 'src/app/features/feature-issues/models/FilterCriteria';
+import { DatePipe, formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-project-filter',
@@ -112,7 +113,9 @@ export class ProjectFilterComponent implements OnInit {
     this.projectCreationForm = this.formBuilder.group({
       projectKey: ['', Validators.required],
       name: ['', Validators.required],
-      description: ['', Validators.required]
+      description: ['', Validators.required],
+      startDate: ['', Validators.required],
+      targetEndDate: ['', Validators.required]
     });
   }
 
@@ -132,7 +135,9 @@ export class ProjectFilterComponent implements OnInit {
     this.projectService.createProject({
       projectKey: this.form['projectKey'].value,
       name: this.form['name'].value,
-      description: this.form['description'].value
+      description: this.form['description'].value,
+      startDate: this.formatDateTimeForBackend(this.form['startDate'].value),
+      targetEndDate: this.formatDateTimeForBackend(this.form['targetEndDate'].value)
     }).subscribe({
       next: () => {
         document.getElementById('createProjectForm')?.click();
@@ -143,5 +148,10 @@ export class ProjectFilterComponent implements OnInit {
         this.loading = true;
       }
     });
+  }
+
+  formatDateTimeForBackend(dateTimeLocal: string): string {
+    const date = new Date(dateTimeLocal);
+    return date.toISOString().slice(0, 19).replace('T', ' ');
   }
 }
