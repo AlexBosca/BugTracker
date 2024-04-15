@@ -11,7 +11,10 @@ import java.util.Collection;
 import static javax.persistence.CascadeType.ALL;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@Setter
 @Builder
 @Table(name = "projects")
 public class ProjectEntity extends BaseEntity {
