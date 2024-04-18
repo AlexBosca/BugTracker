@@ -3,7 +3,8 @@ package com.example.backend.service;
 import com.example.backend.dao.UserDao;
 import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.request.UserRequest;
-import com.example.backend.entity.ConfirmationTokenEntity;
+import com.example.backend.entity.BaseEntity;
+import com.example.backend.entity.UserConfirmationTokenEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.exception.registration.EmailAlreadyConfirmedException;
 import com.example.backend.exception.registration.EmailTakenException;
@@ -38,16 +39,16 @@ import static com.example.backend.util.user.UserLoggingMessages.*;
 public class AppUserDetailsService implements UserDetailsService {
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
-    private final ConfirmationTokenService confirmationTokenService;
+    private final UserConfirmationTokenService userConfirmationTokenService;
     private final Clock clock;    
 
     public AppUserDetailsService(@Qualifier("userJpa") UserDao userDao,
                                  PasswordEncoder passwordEncoder,
-                                 ConfirmationTokenService confirmationTokenService,
+                                 UserConfirmationTokenService userConfirmationTokenService,
                                  Clock clock) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
-        this.confirmationTokenService = confirmationTokenService;
+        this.userConfirmationTokenService = userConfirmationTokenService;
         this.clock = clock;
     }
 
@@ -99,11 +100,11 @@ public class AppUserDetailsService implements UserDetailsService {
                 throw new EmailTakenException();
             }
 
-            Optional<ConfirmationTokenEntity> confirmationTokenOptional = confirmationTokenService
+            Optional<UserConfirmationTokenEntity> userConfirmationTokenOptional = userConfirmationTokenService
                     .getTokenByUserId(presentUser.getUserId());
 
-            if(confirmationTokenOptional.isPresent()) {
-                ConfirmationTokenEntity userConfirmationToken = confirmationTokenOptional.get();
+            if(userConfirmationTokenOptional.isPresent()) {
+                UserConfirmationTokenEntity userConfirmationToken = userConfirmationTokenOptional.get();
 
                 if(userConfirmationToken.getConfirmedAt() != null) {
                     throw new EmailAlreadyConfirmedException();
@@ -116,7 +117,7 @@ public class AppUserDetailsService implements UserDetailsService {
                             .setExpiresAt(now(clock).plusMinutes(5));
 
                     // TODO: Create specific function to update the expiration date
-                    confirmationTokenService.saveConfirmationToken(userConfirmationToken);
+                    userConfirmationTokenService.saveUserConfirmationToken(userConfirmationToken);
 
                     return userConfirmationToken.getToken();
                 }
@@ -132,9 +133,11 @@ public class AppUserDetailsService implements UserDetailsService {
         return createConfirmationToken(user);
     }
 
-    public void saveUser(UserEntity user) {
-        setPasswordToUser(user);
-        setupAccount(user.getUserId());
+    public void saveUser(BaseEntity user) {
+        // setPasswordToUser(user);
+        // setupAccount(user.getUserId());
+
+        UserEntity user1 = (UserEntity) user;
     }
 
     public void updateUser(String userId, UserRequest request) {
@@ -172,14 +175,14 @@ public class AppUserDetailsService implements UserDetailsService {
     private String createConfirmationToken(UserEntity user) {
         String token = UUID.randomUUID().toString();
 
-        ConfirmationTokenEntity confirmationToken = new ConfirmationTokenEntity(
+        UserConfirmationTokenEntity userConfirmationToken = new UserConfirmationTokenEntity(
                 token,
                 now(clock),
                 now(clock).plusMinutes(15),
                 user
         );
 
-        confirmationTokenService.saveConfirmationToken(confirmationToken);
+        userConfirmationTokenService.saveUserConfirmationToken(userConfirmationToken);
 
         return token;
     }

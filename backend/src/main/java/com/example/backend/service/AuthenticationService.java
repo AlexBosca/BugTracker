@@ -1,7 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.request.ResetPasswordRequest;
-import com.example.backend.entity.ConfirmationTokenEntity;
+import com.example.backend.entity.UserConfirmationTokenEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.exception.registration.EmailAlreadyConfirmedException;
 import com.example.backend.exception.token.TokenExpiredException;
@@ -37,7 +37,7 @@ public class AuthenticationService {
     private final AppUserDetailsService userDetailsService;
     private final CredentialValidatorService credentialValidatorService;
     private final EmailSenderService emailSenderService;
-    private final ConfirmationTokenService confirmationTokenService;
+    private final UserConfirmationTokenService userConfirmationTokenService;
 
     @Value("${application.name}")
     private String applicationName;
@@ -48,12 +48,12 @@ public class AuthenticationService {
     public AuthenticationService(AppUserDetailsService userDetailsService,
                                  CredentialValidatorService credentialValidatorService,
                                  @Qualifier("confirmation") EmailSenderService emailSenderService,
-                                 ConfirmationTokenService confirmationTokenService) {
+                                 UserConfirmationTokenService userConfirmationTokenService) {
 
         this.userDetailsService = userDetailsService;
         this.credentialValidatorService = credentialValidatorService;
         this.emailSenderService = emailSenderService;
-        this.confirmationTokenService = confirmationTokenService;
+        this.userConfirmationTokenService = userConfirmationTokenService;
     }
 
     public String register(UserEntity user) {
@@ -88,23 +88,23 @@ public class AuthenticationService {
 
     @Transactional
     public String confirmToken(String token) {
-        ConfirmationTokenEntity confirmationToken = confirmationTokenService
+        UserConfirmationTokenEntity userConfirmationToken = userConfirmationTokenService
                 .getToken(token)
                 .orElseThrow(TokenNotFoundException::new);
 
-        if (confirmationToken.getConfirmedAt() != null) {
+        if (userConfirmationToken.getConfirmedAt() != null) {
             throw new EmailAlreadyConfirmedException();
         }
 
-        LocalDateTime expiredAt = confirmationToken.getExpiresAt();
+        LocalDateTime expiredAt = userConfirmationToken.getExpiresAt();
 
         if (expiredAt.isBefore(LocalDateTime.now())) {
             throw new TokenExpiredException();
         }
 
-        confirmationTokenService.setConfirmedAt(token);
+        userConfirmationTokenService.setConfirmedAt(token);
 
-        userDetailsService.setupAccount(confirmationToken.getUser().getUserId());
+        userDetailsService.setupAccount(userConfirmationToken.getUser().getUserId());
 
         return "confirmed";
     }
