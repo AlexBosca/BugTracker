@@ -13,11 +13,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.dao.ProjectDao;
+import com.example.backend.dao.UserDao;
 import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.entity.ProjectEntity;
+import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectNotFoundException;
+import com.example.backend.exception.user.UserIdNotFoundException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,10 +28,12 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class ProjectService {
     private final ProjectDao projectDao;
+    private final UserDao userDao;
 
-    public ProjectService(@Qualifier("projectJpa") ProjectDao projectDao) {
-        
+    public ProjectService(@Qualifier("projectJpa") ProjectDao projectDao,
+                          @Qualifier("userJpa") UserDao userDao) {
         this.projectDao = projectDao;
+        this.userDao = userDao;
     }
 
     public List<ProjectEntity> getAllProjects() {
@@ -65,6 +70,20 @@ public class ProjectService {
 
         projectDao.insertProject(project);
         logInfo(PROJECT_CREATED, project);
+    }
+
+    public void assignUserOnProject(String projectKey,
+                                    String userId) {
+        ProjectEntity project = projectDao
+            .selectProjectByKey(projectKey)
+            .orElseThrow(() -> new ProjectNotFoundException(projectKey));
+        
+        UserEntity user = userDao
+            .selectUserByUserId(userId)
+            .orElseThrow(() -> new UserIdNotFoundException(userId));
+
+        project.getAssignedUsers().add(user);
+        projectDao.insertProject(project);
     }
 
     public List<IssueEntity> getAllIssuesOnProjectById(String projectKey) {

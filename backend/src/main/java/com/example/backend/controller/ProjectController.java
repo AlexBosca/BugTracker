@@ -86,6 +86,15 @@ public class ProjectController {
         return new ResponseEntity<>(CREATED);
     }
 
+    @PostMapping("/{projectKey}/assignUser/{userId}")
+    public ResponseEntity<Void> assignUserToProject(@PathVariable("projectKey") String projectKey,
+                                                    @PathVariable("userId") String userId) {
+        projectService.assignUserOnProject(projectKey, userId);
+
+        return new ResponseEntity<>(OK);
+    }
+    
+
     @GetMapping(path = "/{projectKey}/issues")
     public ResponseEntity<List<IssueFullResponse>> getAllIssuesOnProject(@PathVariable(name = "projectKey") String projectKey) {
         List<IssueEntity> issues = projectService.getAllIssuesOnProjectById(projectKey);

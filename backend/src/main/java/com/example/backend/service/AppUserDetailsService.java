@@ -65,7 +65,7 @@ public class AppUserDetailsService implements UserDetailsService {
     public UserEntity loadUserByUserId(String userId) throws UserIdNotFoundException {
         UserEntity user = userDao
             .selectUserByUserId(userId)
-            .orElseThrow(UserIdNotFoundException::new);
+            .orElseThrow(() -> new UserIdNotFoundException(userId));
 
         logInfo(USER_RETRIEVED, user);
         
