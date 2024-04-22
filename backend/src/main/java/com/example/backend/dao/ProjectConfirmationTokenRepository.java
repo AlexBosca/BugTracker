@@ -27,6 +27,6 @@ public interface ProjectConfirmationTokenRepository extends JpaRepository<Projec
     int updateConfirmedAt(String token,
                           LocalDateTime confirmedAt);
 
-    boolean existsByProjectKey(String projectKey);
+    boolean existsByProjectProjectKey(String projectKey);
     boolean existsByToken(String token);
 }

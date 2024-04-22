@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ProjectConfirmationTokenDao {
     List<ProjectConfirmationTokenEntity> selectAllProjectConfirmationTokens();
-    Optional<ProjectConfirmationTokenEntity> selectProjectConfirmationTokenByUserId(String projectKey);
+    Optional<ProjectConfirmationTokenEntity> selectProjectConfirmationTokenByProjectKey(String projectKey);
     Optional<ProjectConfirmationTokenEntity> selectProjectConfirmationTokenByToken(String token);
     void insertProjectConfirmationToken(ProjectConfirmationTokenEntity projectConfirmationToken);
     int updateProjectConfirmedAtByToken(String token, LocalDateTime confirmedAt);

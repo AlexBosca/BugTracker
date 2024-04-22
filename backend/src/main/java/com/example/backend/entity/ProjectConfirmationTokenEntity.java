@@ -27,7 +27,7 @@ public class ProjectConfirmationTokenEntity extends BaseEntity {
     @ManyToOne
     @JoinColumn(
             nullable = false,
-            name = "project_key"
+            name = "project_id"
     )
     private ProjectEntity project;
 

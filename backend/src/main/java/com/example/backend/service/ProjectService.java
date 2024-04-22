@@ -25,10 +25,13 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class ProjectService {
     private final ProjectDao projectDao;
+    private final ProjectConfirmationTokenService projectConfirmationTokenService;
 
-    public ProjectService(@Qualifier("projectJpa") ProjectDao projectDao) {
+    public ProjectService(@Qualifier("projectJpa") ProjectDao projectDao,
+                          ProjectConfirmationTokenService projectConfirmationTokenService) {
         
         this.projectDao = projectDao;
+        this.projectConfirmationTokenService = projectConfirmationTokenService;
     }
 
     public List<ProjectEntity> getAllProjects() {

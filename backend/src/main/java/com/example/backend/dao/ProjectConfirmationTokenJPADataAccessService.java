@@ -33,7 +33,7 @@ public class ProjectConfirmationTokenJPADataAccessService implements ProjectConf
     }
 
     @Override
-    public Optional<ProjectConfirmationTokenEntity> selectProjectConfirmationTokenByUserId(String userId) {
+    public Optional<ProjectConfirmationTokenEntity> selectProjectConfirmationTokenByProjectKey(String userId) {
         return projectConfirmationTokenRepository.findByProjectKey(userId);
     }
 
@@ -49,7 +49,7 @@ public class ProjectConfirmationTokenJPADataAccessService implements ProjectConf
 
     @Override
     public boolean existsProjectConfirmationTokenByProjectKey(String projectKey) {
-        return projectConfirmationTokenRepository.existsByProjectKey(projectKey);
+        return projectConfirmationTokenRepository.existsByProjectProjectKey(projectKey);
 
     }
 
