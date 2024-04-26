@@ -38,11 +38,15 @@ public class ProjectEntity extends BaseEntity {
     @Column(name = "actual_end_date")
     private LocalDateTime actualEndDate;
 
+    @ManyToOne
+    @JoinColumn(name = "project_manager_id", referencedColumnName = "id")
+    private UserEntity projectManager;
+
     @OneToMany(mappedBy = "project", cascade = ALL, orphanRemoval = true)
     private Collection<IssueEntity> issues;
 
     @ManyToMany
-    @JoinTable(name = "project_aasigned_ussers",
+    @JoinTable(name = "project_assigned_ussers",
                joinColumns = @JoinColumn(name = "project_id"),
                inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<UserEntity> assignedUsers;

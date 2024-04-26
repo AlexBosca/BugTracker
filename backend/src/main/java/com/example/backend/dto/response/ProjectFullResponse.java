@@ -17,4 +17,5 @@ public class ProjectFullResponse {
     private String name;
     private String description;
     private Collection<IssueSlimResponse> issues;
+    private UserSlimResponse projectManager;
 }

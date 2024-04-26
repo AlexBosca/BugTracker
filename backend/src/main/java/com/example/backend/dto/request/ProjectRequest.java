@@ -31,4 +31,6 @@ public class ProjectRequest {
     private LocalDateTime targetEndDate;
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime actualEndDate;
+    @NotBlank(message = "project manager id is mandatory")
+    private String projectManagerId;
 }

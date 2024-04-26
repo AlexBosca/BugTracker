@@ -18,9 +18,11 @@ import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueEntity;
+import com.example.backend.enums.UserRole;
 import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
+import com.example.backend.exception.user.UserUnexpectedRoleException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,14 +62,28 @@ public class ProjectService {
         return project;
     }
 
-    public void saveProject(ProjectEntity project) {
+    public void saveProject(ProjectEntity project, String projectManagerId) {
         boolean isProjectPresent = projectDao
             .existsProjectWithProjectKey(project.getProjectKey());
+
+        UserEntity projectManager = userDao
+            .selectUserByUserId(projectManagerId)
+            .orElseThrow(() -> new UserIdNotFoundException(projectManagerId));
+
+        boolean hasUserProjectManagerRole = projectManager
+            .getRole()
+            .equals(UserRole.ROLE_PROJECT_MANAGER);
+
+        if(!hasUserProjectManagerRole) {
+            throw new UserUnexpectedRoleException(projectManagerId, projectManager.getRole().getName(), UserRole.ROLE_PROJECT_MANAGER.getName());
+        }
+
 
         if(isProjectPresent) {
             throw new ProjectAlreadyCreatedException(project.getProjectKey());
         }
 
+        project.setProjectManager(projectManager);
         projectDao.insertProject(project);
         logInfo(PROJECT_CREATED, project);
     }

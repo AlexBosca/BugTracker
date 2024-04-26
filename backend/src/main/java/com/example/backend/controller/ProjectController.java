@@ -80,7 +80,7 @@ public class ProjectController {
     public ResponseEntity<Void> createProject(@Valid @RequestBody ProjectRequest request) {
         ProjectEntity project = mapper.toEntity(request);
         
-        projectService.saveProject(project);
+        projectService.saveProject(project, request.getProjectManagerId());
         logInfo(PROJECT_CREATED, project);
 
         return new ResponseEntity<>(CREATED);
