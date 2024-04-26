@@ -37,6 +37,8 @@ public class SecurityConfig {
             return http.authorizeHttpRequests(authorize -> authorize
                     .antMatchers("/authentication/account/{userId}/disable").hasAuthority(UserPrivilege.USER_UPDATE.getCode())
                     .antMatchers("/users/**").hasRole(UserRole.ROLE_ADMIN.getName())
+                    .antMatchers(HttpMethod.POST, "/projects/{projectKey}/assignUser/{userId}").hasAnyRole(UserRole.ROLE_ADMIN.getName(), UserRole.ROLE_PROJECT_MANAGER.getName())
+                    .antMatchers(HttpMethod.POST, "/projects/{projectKey}/assignUsers").hasAnyRole(UserRole.ROLE_ADMIN.getName(), UserRole.ROLE_PROJECT_MANAGER.getName())
                     .antMatchers(HttpMethod.POST, "/projects").hasAnyRole(UserRole.ROLE_ADMIN.getName(), UserRole.ROLE_PROJECT_MANAGER.getName())
                     .antMatchers("/authentication/**").permitAll()
                     .anyRequest().authenticated())
