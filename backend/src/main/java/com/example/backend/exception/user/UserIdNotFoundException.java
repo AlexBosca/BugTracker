@@ -9,7 +9,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @ResponseStatus(value = NOT_FOUND)
 public class UserIdNotFoundException extends BaseRuntimeException {
 
-    public UserIdNotFoundException(String... args) {
-        super(USER_WITH_ID_NOT_FOUND, args);
+    public UserIdNotFoundException(String userId) {
+        super(USER_WITH_ID_NOT_FOUND, userId);
     }
 }

@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,6 +21,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.example.backend.enums.UserPrivilege;
+import com.example.backend.enums.UserRole;
 import com.example.backend.service.AuthenticationService;
 
 @Configuration
@@ -34,7 +36,10 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             return http.authorizeHttpRequests(authorize -> authorize
                     .antMatchers("/authentication/account/{userId}/disable").hasAuthority(UserPrivilege.USER_UPDATE.getCode())
-                    .antMatchers("/users/**").hasRole("ADMIN")
+                    .antMatchers("/users/**").hasRole(UserRole.ROLE_ADMIN.getName())
+                    .antMatchers(HttpMethod.POST, "/projects/{projectKey}/assignUser/{userId}").hasAnyRole(UserRole.ROLE_ADMIN.getName(), UserRole.ROLE_PROJECT_MANAGER.getName())
+                    .antMatchers(HttpMethod.POST, "/projects/{projectKey}/assignUsers").hasAnyRole(UserRole.ROLE_ADMIN.getName(), UserRole.ROLE_PROJECT_MANAGER.getName())
+                    .antMatchers(HttpMethod.POST, "/projects").hasAnyRole(UserRole.ROLE_ADMIN.getName(), UserRole.ROLE_PROJECT_MANAGER.getName())
                     .antMatchers("/authentication/**").permitAll()
                     .anyRequest().authenticated())
             .cors(Customizer.withDefaults())

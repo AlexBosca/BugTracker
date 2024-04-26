@@ -15,6 +15,7 @@ import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 import com.example.backend.exception.user.UserPasswordsNotMatchingException;
 import com.example.backend.exception.user.UserRoleNotFoundException;
+import com.example.backend.exception.user.UserUnexpectedRoleException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -139,6 +140,11 @@ public class EntityExceptionHandler {
     @ExceptionHandler(UserRoleNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserRoleNotFoundException(Exception exception) {
         return buildErrorResponse(exception, NOT_FOUND);
+    }
+
+    @ExceptionHandler(UserUnexpectedRoleException.class)
+    public ResponseEntity<ErrorResponse> handleUserUnexpectedRoleException(Exception exception) {
+        return buildErrorResponse(exception, BAD_REQUEST);
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(List<String> errors,

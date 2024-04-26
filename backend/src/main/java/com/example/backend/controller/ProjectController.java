@@ -9,6 +9,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -80,10 +81,25 @@ public class ProjectController {
     public ResponseEntity<Void> createProject(@Valid @RequestBody ProjectRequest request) {
         ProjectEntity project = mapper.toEntity(request);
         
-        projectService.saveProject(project);
+        projectService.saveProject(project, request.getProjectManagerId());
         logInfo(PROJECT_CREATED, project);
 
         return new ResponseEntity<>(CREATED);
+    }
+
+    @PostMapping("/{projectKey}/assignUser/{userId}")
+    public ResponseEntity<Void> assignUserToProject(@PathVariable("projectKey") String projectKey,
+                                                    @PathVariable("userId") String userId) {
+        projectService.assignUserOnProject(projectKey, userId);
+
+        return new ResponseEntity<>(OK);
+    }
+    
+    @PostMapping("/{projectKey}/assignUsers")
+    public ResponseEntity<Void> assignUsersToProject(@PathVariable("projectKey") String projectKey,
+                                                     @RequestBody Set<String> usersIds) {
+        projectService.assignUsersOnProject(projectKey, usersIds);
+        return new ResponseEntity<>(OK);
     }
 
     @GetMapping(path = "/{projectKey}/issues")

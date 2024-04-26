@@ -81,4 +81,8 @@ public enum UserRole implements GrantedAuthority {
                 .findFirst()
                 .orElseThrow(() -> new UserRoleNotFoundException(code));
     }
+
+    public String getName() {
+        return this.name().replace("ROLE_", "");
+    }
 }

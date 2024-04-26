@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static java.time.LocalDateTime.now;
 import static javax.persistence.FetchType.EAGER;
@@ -98,6 +99,9 @@ public class UserEntity extends BaseEntity implements UserDetails {
         mappedBy = "createdByUser",
         fetch = EAGER)
     private Collection<IssueCommentEntity> commentsCreated;
+    
+    @ManyToMany(mappedBy = "assignedUsers")
+    private Set<ProjectEntity> assignedProjects;
 
     public UserEntity(String firstName,
                    String lastName,
