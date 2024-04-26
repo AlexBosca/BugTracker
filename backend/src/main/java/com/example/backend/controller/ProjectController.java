@@ -9,6 +9,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -94,6 +95,12 @@ public class ProjectController {
         return new ResponseEntity<>(OK);
     }
     
+    @PostMapping("/{projectKey}/assignUsers")
+    public ResponseEntity<Void> assignUsersToProject(@PathVariable("projectKey") String projectKey,
+                                                     @RequestBody Set<String> usersIds) {
+        projectService.assignUsersOnProject(projectKey, usersIds);
+        return new ResponseEntity<>(OK);
+    }
 
     @GetMapping(path = "/{projectKey}/issues")
     public ResponseEntity<List<IssueFullResponse>> getAllIssuesOnProject(@PathVariable(name = "projectKey") String projectKey) {

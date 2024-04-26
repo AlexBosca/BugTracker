@@ -46,7 +46,7 @@ public class ProjectEntity extends BaseEntity {
     private Collection<IssueEntity> issues;
 
     @ManyToMany
-    @JoinTable(name = "project_assigned_ussers",
+    @JoinTable(name = "project_assigned_users",
                joinColumns = @JoinColumn(name = "project_id"),
                inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<UserEntity> assignedUsers;

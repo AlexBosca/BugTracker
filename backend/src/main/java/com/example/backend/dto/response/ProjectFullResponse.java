@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.Set;
 
 @Builder
 @AllArgsConstructor
@@ -18,4 +19,5 @@ public class ProjectFullResponse {
     private String description;
     private Collection<IssueSlimResponse> issues;
     private UserSlimResponse projectManager;
+    private Set<UserSlimResponse> assignedUsers;
 }

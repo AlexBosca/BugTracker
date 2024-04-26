@@ -7,6 +7,7 @@ import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_IS
 import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_RETRIEVED;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -99,6 +100,25 @@ public class ProjectService {
             .orElseThrow(() -> new UserIdNotFoundException(userId));
 
         project.getAssignedUsers().add(user);
+        projectDao.insertProject(project);
+    }
+
+    public void assignUsersOnProject(String projectKey,
+                                     Set<String> usersIds) {
+        ProjectEntity project = projectDao
+            .selectProjectByKey(projectKey)
+            .orElseThrow(() -> new ProjectNotFoundException(projectKey));
+
+        Set<UserEntity> users = usersIds
+            .stream()
+            .map(userId -> userDao
+                .selectUserByUserId(userId)
+                .orElseThrow(() -> new UserIdNotFoundException(userId)))
+            .collect(Collectors.toSet());
+
+        Set<UserEntity> assignedUsers = project.getAssignedUsers();
+        assignedUsers.addAll(users);
+        project.setAssignedUsers(assignedUsers);
         projectDao.insertProject(project);
     }
 
