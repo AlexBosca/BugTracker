@@ -2,16 +2,20 @@ package com.example.backend.controller;
 
 import static com.example.backend.util.ExceptionUtilities.PROJECT_ALREADY_CREATED;
 import static com.example.backend.util.ExceptionUtilities.PROJECT_WITH_ID_NOT_FOUND;
+import static com.example.backend.util.ExceptionUtilities.USER_ROLE_MISMATCH;
+import static com.example.backend.util.ExceptionUtilities.USER_WITH_ID_NOT_FOUND;
 import static com.example.backend.util.Utilities.formattedString;
 import static java.time.ZonedDateTime.of;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,9 +54,13 @@ import com.example.backend.dto.request.ProjectRequest;
 import com.example.backend.dto.response.IssueFullResponse;
 import com.example.backend.dto.response.ProjectFullResponse;
 import com.example.backend.entity.ProjectEntity;
+import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueEntity;
+import com.example.backend.enums.UserRole;
 import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectNotFoundException;
+import com.example.backend.exception.user.UserIdNotFoundException;
+import com.example.backend.exception.user.UserUnexpectedRoleException;
 import com.example.backend.mapper.MapStructMapper;
 import com.example.backend.service.ProjectService;
 import com.example.backend.util.FilterCriteriaMatcher;
@@ -237,10 +246,25 @@ class ProjectControllerTest {
     }
 
     @Test
+    @DisplayName("Should return NOT FOUND Response and resolve ProjectNotFoundException when calling the getProject endpoint for a non existing project")
+    void getProject_ProjectNotFoundExceptionThrown_NotFoundResponse() throws Exception {
+        String givenProjectKey = "PROJECT1";
+
+        when(projectService.getProjectByProjectKey(givenProjectKey)).thenThrow(new ProjectNotFoundException(givenProjectKey));
+
+        mockMvc.perform(get("/projects/{projectKey}", givenProjectKey))
+            .andExpect(status().isNotFound())
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(ProjectNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(PROJECT_WITH_ID_NOT_FOUND, "PROJECT1")));
+    }
+
+    @Test
     @DisplayName("Should return CREATED Response when no exception was thrown when calling the createProject endpoint")
     void createProject_NoExceptionThrown_CreatedResponse() throws Exception {
         LocalDateTime expectedStartDate = LocalDateTime.of(2024, 4, 5, 12, 0);
         LocalDateTime expectedTargetEndDate = LocalDateTime.of(2025, 4, 5, 12, 0);
+
+        String exisitngProjectManagerId = "JC_12345";
 
         ProjectEntity expectedProject = ProjectEntity.builder()
             .projectKey("PROJECT1")
@@ -251,13 +275,106 @@ class ProjectControllerTest {
             .build();
 
         ProjectRequest projectRequest = mapStructMapper.toRequest(expectedProject);
+        projectRequest.setProjectManagerId(exisitngProjectManagerId);
 
         mockMvc.perform(post("/projects")
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(projectRequest)))
             .andExpect(status().isCreated());
 
-        verify(projectService).saveProject(projectCaptor.capture());
+        verify(projectService).saveProject(projectCaptor.capture(), eq(exisitngProjectManagerId));
+
+        ProjectEntity actualProject = projectCaptor.getValue();
+
+        assertThat(actualProject.getProjectKey()).isEqualTo(expectedProject.getProjectKey());
+        assertThat(actualProject.getName()).isEqualTo(expectedProject.getName());
+        assertThat(actualProject.getDescription()).isEqualTo(expectedProject.getDescription());
+        assertThat(actualProject.getStartDate()).isEqualTo(expectedProject.getStartDate());
+        assertThat(actualProject.getTargetEndDate()).isEqualTo(expectedProject.getTargetEndDate());
+    }
+
+    @Test
+    @DisplayName("Should return NOT FOUND Response and resolve UserIdNotFoundException when calling the createProject endpoint for a non existing project and a non existing user")
+    void createProject_UserIdNotFoundExceptionThrown_NotFoundResponse() throws Exception {
+        LocalDateTime expectedStartDate = LocalDateTime.of(2024, 4, 5, 12, 0);
+        LocalDateTime expectedTargetEndDate = LocalDateTime.of(2025, 4, 5, 12, 0);
+
+        String exisitngProjectManagerId = "JC_12345";
+
+        ProjectEntity expectedProject = ProjectEntity.builder()
+            .projectKey("PROJECT1")
+            .name("First Project")
+            .description("First Project Description")
+            .startDate(expectedStartDate)
+            .targetEndDate(expectedTargetEndDate)
+            .build();
+
+        ProjectRequest projectRequest = mapStructMapper.toRequest(expectedProject);
+        projectRequest.setProjectManagerId(exisitngProjectManagerId);
+
+        when(clock.getZone()).thenReturn(NOW.getZone());
+        when(clock.instant()).thenReturn(NOW.toInstant());
+
+        doThrow(new UserIdNotFoundException(exisitngProjectManagerId)).when(projectService).saveProject(any(), eq(exisitngProjectManagerId));
+
+        mockMvc.perform(post("/projects")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(projectRequest)))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.timestamp").value(NOW.format(ofPattern("yyyy-MM-dd HH:mm:ss"))))
+            .andExpect(jsonPath("$.code").value(NOT_FOUND.value()))
+            .andExpect(jsonPath("$.status").value(NOT_FOUND.name()))
+            .andExpect(jsonPath("$.message").value(formattedString(USER_WITH_ID_NOT_FOUND, exisitngProjectManagerId)))
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(UserIdNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(USER_WITH_ID_NOT_FOUND, exisitngProjectManagerId)));
+
+        verify(projectService).saveProject(projectCaptor.capture(), eq(exisitngProjectManagerId));
+
+        ProjectEntity actualProject = projectCaptor.getValue();
+
+        assertThat(actualProject.getProjectKey()).isEqualTo(expectedProject.getProjectKey());
+        assertThat(actualProject.getName()).isEqualTo(expectedProject.getName());
+        assertThat(actualProject.getDescription()).isEqualTo(expectedProject.getDescription());
+        assertThat(actualProject.getStartDate()).isEqualTo(expectedProject.getStartDate());
+        assertThat(actualProject.getTargetEndDate()).isEqualTo(expectedProject.getTargetEndDate());
+    }
+
+    @Test
+    @DisplayName("Should return BAD REQUEST Response and resolve UserUnexpectedRoleException when calling the createProject endpoint for a non existing project and an existing use without ROLE_PROJECT_MANAGER")
+    void createProject_UserUnexpectedRoleExceptionThrown_NotFoundResponse() throws Exception {
+        LocalDateTime expectedStartDate = LocalDateTime.of(2024, 4, 5, 12, 0);
+        LocalDateTime expectedTargetEndDate = LocalDateTime.of(2025, 4, 5, 12, 0);
+
+        String exisitngProjectManagerId = "JC_12345";
+
+        ProjectEntity expectedProject = ProjectEntity.builder()
+            .projectKey("PROJECT1")
+            .name("First Project")
+            .description("First Project Description")
+            .startDate(expectedStartDate)
+            .targetEndDate(expectedTargetEndDate)
+            .build();
+
+        ProjectRequest projectRequest = mapStructMapper.toRequest(expectedProject);
+        projectRequest.setProjectManagerId(exisitngProjectManagerId);
+
+        when(clock.getZone()).thenReturn(NOW.getZone());
+        when(clock.instant()).thenReturn(NOW.toInstant());
+
+        doThrow(new UserUnexpectedRoleException(exisitngProjectManagerId, UserRole.ROLE_DEVELOPER.getName(), UserRole.ROLE_PROJECT_MANAGER.getName())).when(projectService).saveProject(any(), eq(exisitngProjectManagerId));
+
+        mockMvc.perform(post("/projects")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(projectRequest)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.timestamp").value(NOW.format(ofPattern("yyyy-MM-dd HH:mm:ss"))))
+            .andExpect(jsonPath("$.code").value(BAD_REQUEST.value()))
+            .andExpect(jsonPath("$.status").value(BAD_REQUEST.name()))
+            .andExpect(jsonPath("$.message").value(formattedString(USER_ROLE_MISMATCH, exisitngProjectManagerId, UserRole.ROLE_DEVELOPER.getName(),  UserRole.ROLE_PROJECT_MANAGER.getName())))
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(UserUnexpectedRoleException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(USER_ROLE_MISMATCH, exisitngProjectManagerId, UserRole.ROLE_DEVELOPER.getName(),  UserRole.ROLE_PROJECT_MANAGER.getName())));
+
+        verify(projectService).saveProject(projectCaptor.capture(), eq(exisitngProjectManagerId));
 
         ProjectEntity actualProject = projectCaptor.getValue();
 
@@ -272,6 +389,7 @@ class ProjectControllerTest {
     @DisplayName("Should return BAD REQUEST Response and resolve ProjectAlreadyCreatedException when calling the createProject endpoint for an already created project")
     void createProject_ProjectAlreadyCreated_ResolveProjectAlreadyCreatedExceptionAndBadRequestResponse() throws Exception {
         String givenProjectKey = "PROJECT1";
+        String exisitngProjectManagerId = "JC_12345";
 
         LocalDateTime expectedStartDate = LocalDateTime.of(2024, 4, 5, 12, 0);
         LocalDateTime expectedTargetEndDate = LocalDateTime.of(2025, 4, 5, 12, 0);
@@ -285,11 +403,12 @@ class ProjectControllerTest {
             .build();
 
         ProjectRequest projectRequest = mapStructMapper.toRequest(expectedProject);
+        projectRequest.setProjectManagerId(exisitngProjectManagerId);
 
         when(clock.getZone()).thenReturn(NOW.getZone());
         when(clock.instant()).thenReturn(NOW.toInstant());
 
-        doThrow(new ProjectAlreadyCreatedException(givenProjectKey)).when(projectService).saveProject(any());
+        doThrow(new ProjectAlreadyCreatedException(givenProjectKey)).when(projectService).saveProject(any(), eq(exisitngProjectManagerId));
 
         mockMvc.perform(post("/projects")
                 .contentType(APPLICATION_JSON)
@@ -302,7 +421,7 @@ class ProjectControllerTest {
             .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(ProjectAlreadyCreatedException.class))
             .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(PROJECT_ALREADY_CREATED, givenProjectKey)));
 
-        verify(projectService).saveProject(projectCaptor.capture());
+        verify(projectService).saveProject(projectCaptor.capture(), eq(exisitngProjectManagerId));
 
         ProjectEntity actualProject = projectCaptor.getValue();
 
