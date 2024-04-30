@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -578,6 +577,64 @@ class ProjectControllerTest {
             .andExpect(jsonPath("$.message").exists())      // TODO: replace exists method call with value method call with actual message value
             .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(MethodArgumentNotValidException.class))
             .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isNotBlank());
+    }
+
+    @Test
+    @DisplayName("Should return OK status when no exception was thrown when calling the assignUserToProject endpoint")
+    void assignUserToProject_NoExceptionThrown_OkResponse() throws Exception {
+        String givenProjectKey = "PROJECT1";
+        String givenUserId = "JC_12345";
+
+        mockMvc.perform(post("/projects/{projectKey}/assignUser/{userId}", givenProjectKey, givenUserId))
+            .andExpect(status().isOk());
+
+        verify(projectService).assignUserOnProject(givenProjectKey, givenUserId);
+    }
+
+    @Test
+    @DisplayName("Should return NOT FOUND status when ProjectNotFoundException was thrown when calling the assignUserToProject endpoint")
+    void assignUserToProject_ProjectNotFoundExceptionThrown_NotFoundResponse() throws Exception {
+        String givenProjectKey = "PROJECT1";
+        String givenUserId = "JC_12345";
+
+        doThrow(new ProjectNotFoundException(givenProjectKey)).when(projectService).assignUserOnProject(givenProjectKey, givenUserId);
+
+        when(clock.getZone()).thenReturn(NOW.getZone());
+        when(clock.instant()).thenReturn(NOW.toInstant());
+
+        mockMvc.perform(post("/projects/{projectKey}/assignUser/{userId}", givenProjectKey, givenUserId))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.timestamp").value(NOW.format(ofPattern("yyyy-MM-dd HH:mm:ss"))))
+            .andExpect(jsonPath("$.code").value(NOT_FOUND.value()))
+            .andExpect(jsonPath("$.status").value(NOT_FOUND.name()))
+            .andExpect(jsonPath("$.message").value(formattedString(PROJECT_WITH_ID_NOT_FOUND, givenProjectKey)))
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(ProjectNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(PROJECT_WITH_ID_NOT_FOUND, givenProjectKey)));
+
+        verify(projectService).assignUserOnProject(givenProjectKey, givenUserId);
+    }
+
+    @Test
+    @DisplayName("Should return NOT FOUND status when UserIdNotFoundException was thrown when calling the assignUserToProject endpoint")
+    void assignUserToProject_UserIdNotFoundExceptionThrown_NotFoundResponse() throws Exception {
+        String givenProjectKey = "PROJECT1";
+        String givenUserId = "JC_12345";
+
+        doThrow(new UserIdNotFoundException(givenUserId)).when(projectService).assignUserOnProject(givenProjectKey, givenUserId);
+
+        when(clock.getZone()).thenReturn(NOW.getZone());
+        when(clock.instant()).thenReturn(NOW.toInstant());
+
+        mockMvc.perform(post("/projects/{projectKey}/assignUser/{userId}", givenProjectKey, givenUserId))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.timestamp").value(NOW.format(ofPattern("yyyy-MM-dd HH:mm:ss"))))
+            .andExpect(jsonPath("$.code").value(NOT_FOUND.value()))
+            .andExpect(jsonPath("$.status").value(NOT_FOUND.name()))
+            .andExpect(jsonPath("$.message").value(formattedString(USER_WITH_ID_NOT_FOUND, givenUserId)))
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(UserIdNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(USER_WITH_ID_NOT_FOUND, givenUserId)));
+
+        verify(projectService).assignUserOnProject(givenProjectKey, givenUserId);
     }
 
     @Test
