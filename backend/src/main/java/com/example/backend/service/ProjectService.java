@@ -111,6 +111,7 @@ public class ProjectService {
 
         Set<UserEntity> users = usersIds
             .stream()
+            .sorted()
             .map(userId -> userDao
                 .selectUserByUserId(userId)
                 .orElseThrow(() -> new UserIdNotFoundException(userId)))
