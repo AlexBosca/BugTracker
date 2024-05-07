@@ -30,6 +30,7 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -635,6 +636,88 @@ class ProjectControllerTest {
             .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(USER_WITH_ID_NOT_FOUND, givenUserId)));
 
         verify(projectService).assignUserOnProject(givenProjectKey, givenUserId);
+    }
+
+    @Test
+    @DisplayName("Should return OK status when no exception was thrown when calling the assignUsersToProject endpoint")
+    void assignUsersToProject_NoExceptionThrown_OkResponse() throws Exception {
+        String givenProjectKey = "PROJECT1";
+        String firstGivenUserId = "JC_12345";
+        String secondGivenUserId = "JD_12346";
+
+        Set<String> usersIdsToBeAssigned = Set.of(
+            firstGivenUserId,
+            secondGivenUserId
+        );
+
+        mockMvc.perform(post("/projects/{projectKey}/assignUsers", givenProjectKey)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(usersIdsToBeAssigned)))
+            .andExpect(status().isOk());
+
+        verify(projectService).assignUsersOnProject(givenProjectKey, usersIdsToBeAssigned);
+    }
+
+    @Test
+    @DisplayName("Should return NOT FOUND status when ProjectNotFoundException was thrown when calling the assignUsersToProject endpoint")
+    void assignUsersToProject_ProjectNotFoundExceptionThrown_NotFoundResponse() throws Exception {
+        String givenProjectKey = "PROJECT1";
+        String firstGivenUserId = "JC_12345";
+        String secondGivenUserId = "JD_12346";
+
+        Set<String> usersIdsToBeAssigned = Set.of(
+            firstGivenUserId,
+            secondGivenUserId
+        );
+
+        doThrow(new ProjectNotFoundException(givenProjectKey)).when(projectService).assignUsersOnProject(givenProjectKey, usersIdsToBeAssigned);
+
+        when(clock.getZone()).thenReturn(NOW.getZone());
+        when(clock.instant()).thenReturn(NOW.toInstant());
+
+        mockMvc.perform(post("/projects/{projectKey}/assignUsers", givenProjectKey)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(usersIdsToBeAssigned)))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.timestamp").value(NOW.format(ofPattern("yyyy-MM-dd HH:mm:ss"))))
+            .andExpect(jsonPath("$.code").value(NOT_FOUND.value()))
+            .andExpect(jsonPath("$.status").value(NOT_FOUND.name()))
+            .andExpect(jsonPath("$.message").value(formattedString(PROJECT_WITH_ID_NOT_FOUND, givenProjectKey)))
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(ProjectNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(PROJECT_WITH_ID_NOT_FOUND, givenProjectKey)));
+
+        verify(projectService).assignUsersOnProject(givenProjectKey, usersIdsToBeAssigned);
+    }
+
+    @Test
+    @DisplayName("Should return NOT FOUND status when UserIdNotFoundException was thrown when calling the assignUsersToProject endpoint")
+    void assignUsersToProject_UserIdNotFoundExceptionThrown_NotFoundResponse() throws Exception {
+        String givenProjectKey = "PROJECT1";
+        String firstGivenUserId = "JC_12345";
+        String secondGivenUserId = "JD_12346";
+
+        Set<String> usersIdsToBeAssigned = Set.of(
+            firstGivenUserId,
+            secondGivenUserId
+        );
+
+        doThrow(new UserIdNotFoundException(firstGivenUserId)).when(projectService).assignUsersOnProject(givenProjectKey, usersIdsToBeAssigned);
+
+        when(clock.getZone()).thenReturn(NOW.getZone());
+        when(clock.instant()).thenReturn(NOW.toInstant());
+
+        mockMvc.perform(post("/projects/{projectKey}/assignUsers", givenProjectKey)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(usersIdsToBeAssigned)))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.timestamp").value(NOW.format(ofPattern("yyyy-MM-dd HH:mm:ss"))))
+            .andExpect(jsonPath("$.code").value(NOT_FOUND.value()))
+            .andExpect(jsonPath("$.status").value(NOT_FOUND.name()))
+            .andExpect(jsonPath("$.message").value(formattedString(USER_WITH_ID_NOT_FOUND, firstGivenUserId)))
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(UserIdNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(USER_WITH_ID_NOT_FOUND, firstGivenUserId)));
+
+        verify(projectService).assignUsersOnProject(givenProjectKey, usersIdsToBeAssigned);
     }
 
     @Test
