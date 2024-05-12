@@ -7,7 +7,7 @@
         <div class="col">
             <app-projects-dropdown (selectedProjectChange)="onProjectChange($event)" [projects]="projects"></app-projects-dropdown>
         </div>
-        
+
         <div class="col">
             <div class="card my-2 mt-0">
                 <div class="card-body">
@@ -31,7 +31,7 @@
         <div class="col">
             <app-issues-status-piechart [issues]="issues"></app-issues-status-piechart>
         </div>
-        
+
         <div class="col">
             <app-issues-priority-piechart [issues]="issues"></app-issues-priority-piechart>
         </div>
@@ -40,12 +40,6 @@
     <div class="row mb-4">
         <div class="col">
             <app-issues-status-by-assignee [issues]="issues"></app-issues-status-by-assignee>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col">
-            <app-issues-status-by-team [issues]="issues"></app-issues-status-by-team>
         </div>
     </div>
 </div>

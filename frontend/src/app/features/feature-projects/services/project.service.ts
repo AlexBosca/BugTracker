@@ -5,7 +5,6 @@ import { environment } from 'src/environments/environment';
 import { ProjectModel } from '../models/ProjectModel';
 import { ProjectRequestModel } from '../models/ProjectRequestModel';
 import { IssueModel } from '../../feature-issues/models/IssueModel';
-import { TeamModel } from '../../feature-teams/models/TeamModel';
 import { FilterCriteria } from '../../feature-issues/models/FilterCriteria';
 
 @Injectable({
@@ -41,19 +40,8 @@ export class ProjectService {
       );
   }
 
-  addTeamToProjects(projectKey: string, teamId: string): Observable<void> {
-    return this.http.put<void>(
-      `${this.projectsUrl}/${projectKey}/addTeam/${teamId}`,
-      null
-    );
-  }
-
   getIssuesOnProject(projectKey: string): Observable<IssueModel[]> {
     return this.http.get<IssueModel[]>(`${this.projectsUrl}/${projectKey}/issues`);
-  }
-
-  getTeamsOnProject(projectKey: string): Observable<TeamModel[]> {
-    return this.http.get<TeamModel[]>(`${this.projectsUrl}/${projectKey}/teams`);
   }
 
   private handleError(error: HttpErrorResponse) {

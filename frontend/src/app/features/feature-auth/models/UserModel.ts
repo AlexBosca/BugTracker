@@ -6,7 +6,6 @@ export interface UserModel {
     role: string;
     accountLocked: boolean;
     enabled: boolean;
-    teams: Object[];
     issuesCreated: Object[];
     issuesAssigned: Object[];
     issuesClosed: Object[];
