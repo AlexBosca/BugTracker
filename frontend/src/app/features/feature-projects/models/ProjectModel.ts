@@ -7,5 +7,5 @@ export interface ProjectModel {
     description: string;
     issues: IssueModel[];
     projectManager: UserSlimModel;
-    assignedUsers: Set<UserSlimModel>;
+    assignedUsers: UserSlimModel[];
 }

@@ -40,6 +40,20 @@ export class ProjectService {
       );
   }
 
+  addUserOnProject(projectKey: string, userId: string): Observable<void> {
+    return this.http.post<void>(
+      `${this.projectsUrl}/${projectKey}/assignUser/${userId}`,
+      {}
+    );
+  }
+
+  addUsersOnProject(projectKey: string, userIds: string[]): Observable<void> {
+    return this.http.post<void>(
+      `${this.projectsUrl}/${projectKey}/assignUsers`,
+      userIds
+    );
+  }
+
   getIssuesOnProject(projectKey: string): Observable<IssueModel[]> {
     return this.http.get<IssueModel[]>(`${this.projectsUrl}/${projectKey}/issues`);
   }
