@@ -6,11 +6,11 @@
             <h3 class="row mx-2 title">{{project.name}}</h3>
         </div>
     </div>
-    
-    <app-project-navigation></app-project-navigation>
+
+    <app-project-navigation [project]="project"></app-project-navigation>
 
     <hr class="row mb-3">
 
-    
+
     <router-outlet></router-outlet>
 </div>

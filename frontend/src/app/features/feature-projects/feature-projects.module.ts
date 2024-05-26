@@ -17,7 +17,9 @@ import { ProjectNavigationComponent } from './components/project-navigation/proj
 import { ProjectSummaryComponent } from './components/project-summary/project-summary.component';
 import { ProjectsIssuesListComponent } from './components/projects-issues-list/projects-issues-list.component';
 import { ProjectCalendarComponent } from './components/project-calendar/project-calendar.component';
-import { ProjectTeamsComponent } from './components/project-teams/project-teams.component';
+import { ProjectPeopleComponent } from './components/project-people/project-people.component';
+import { ProjectModalComponent } from './components/project-modal/project-modal.component';
+import { ProjectPeopleModalComponent } from './components/project-people-modal/project-people-modal.component';
 
 
 @NgModule({
@@ -34,7 +36,9 @@ import { ProjectTeamsComponent } from './components/project-teams/project-teams.
     ProjectSummaryComponent,
     ProjectsIssuesListComponent,
     ProjectCalendarComponent,
-    ProjectTeamsComponent
+    ProjectPeopleComponent,
+    ProjectModalComponent,
+    ProjectPeopleModalComponent
   ],
   imports: [
     CommonModule,

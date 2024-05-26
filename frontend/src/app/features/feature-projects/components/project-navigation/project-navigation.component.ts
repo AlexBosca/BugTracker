@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { ProjectModel } from '../../models/ProjectModel';
 
 @Component({
   selector: 'app-project-navigation',
@@ -6,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./project-navigation.component.css']
 })
 export class ProjectNavigationComponent implements OnInit {
+
+  @Input() project!: ProjectModel;
 
   constructor() { }
 
