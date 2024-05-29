@@ -1,27 +1,29 @@
-package com.example.backend.dto.response;
+package com.example.backend.dto.request;
+
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Set;
+import lombok.Setter;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class ProjectFullResponse {
-
+@Setter
+public class ProjectUpdateRequest {
     private String projectKey;
     private String name;
     private String description;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startDate;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime targetEndDate;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime actualEndDate;
-    private Collection<IssueSlimResponse> issues;
-    private UserSlimResponse projectManager;
-    private Set<UserSlimResponse> assignedUsers;
+    private String projectManagerId;
 }

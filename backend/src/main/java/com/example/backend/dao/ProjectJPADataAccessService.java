@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 
 import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.filter.FilterUtility;
+import com.example.backend.dto.request.ProjectUpdateRequest;
 import com.example.backend.entity.ProjectEntity;
-import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.exception.DataAccessServiceException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -110,10 +110,36 @@ public class ProjectJPADataAccessService implements ProjectDao {
     }
 
     @Override
-    public void updateProject(ProjectEntity project) {
+    public void updateProject(String projectKey, ProjectUpdateRequest request) {
         try {
-            // issueRepository.update(issue);
-            projectRepository.save(project);
+            if(request.getProjectKey() != null) {
+                projectRepository.updateProjectKey(projectKey, request.getProjectKey());
+            }
+
+            if(request.getName() != null) {
+                projectRepository.updateProjectName(projectKey, request.getName());
+            }
+
+            if(request.getDescription() != null) {
+                projectRepository.updateProjectDescription(projectKey, request.getDescription());
+            }
+
+            if(request.getStartDate() != null) {
+                projectRepository.updateProjectStartDate(projectKey, request.getStartDate());
+            }
+
+            if(request.getTargetEndDate() != null) {
+                projectRepository.updateProjectTargetEndDate(projectKey, request.getTargetEndDate());
+            }
+
+            if(request.getActualEndDate() != null) {
+                projectRepository.updateProjectActualEndDate(projectKey, request.getActualEndDate());
+            }
+
+            if(request.getProjectManagerId() != null) {
+                projectRepository.updateProjectManagerId(projectKey, request.getProjectManagerId());
+            }
+
             log.info(ENTITY_UPDATED);
         } catch (DataAccessException e) {
             log.error(ENTITY_UPDATE_ERROR, e.getMessage());

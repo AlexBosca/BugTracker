@@ -5,6 +5,7 @@ import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_CR
 import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_FILTERED_RETRIEVED;
 import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_ISSUES_RETRIEVED;
 import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_RETRIEVED;
+import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_UPDATED;
 
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.example.backend.dao.ProjectDao;
 import com.example.backend.dao.UserDao;
 import com.example.backend.dto.filter.FilterCriteria;
+import com.example.backend.dto.request.ProjectUpdateRequest;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueEntity;
@@ -87,6 +89,11 @@ public class ProjectService {
         project.setProjectManager(projectManager);
         projectDao.insertProject(project);
         logInfo(PROJECT_CREATED, project);
+    }
+
+    public void updateProject(String projectKey, ProjectUpdateRequest request) {
+        projectDao.updateProject(projectKey, request);
+        logInfo(PROJECT_UPDATED, request);
     }
 
     public void assignUserOnProject(String projectKey,
