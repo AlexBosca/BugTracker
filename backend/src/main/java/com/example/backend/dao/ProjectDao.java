@@ -1,6 +1,7 @@
 package com.example.backend.dao;
 
 import com.example.backend.dto.filter.FilterCriteria;
+import com.example.backend.dto.request.ProjectUpdateRequest;
 import com.example.backend.entity.ProjectEntity;
 
 import java.util.List;
@@ -13,5 +14,5 @@ public interface ProjectDao {
     void insertProject(ProjectEntity project);
     boolean existsProjectWithProjectKey(String projectKey);
     void deleteProjectByProjectKey(String projectKey);
-    void updateProject(ProjectEntity project);
+    void updateProject(String projectKey, ProjectUpdateRequest request);
 }

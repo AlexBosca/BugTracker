@@ -5,6 +5,7 @@ import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_CR
 import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_FILTERED_RETRIEVED;
 import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_ISSUES_RETRIEVED;
 import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_RETRIEVED;
+import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_UPDATED;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.request.ProjectRequest;
+import com.example.backend.dto.request.ProjectUpdateRequest;
 import com.example.backend.dto.response.IssueFullResponse;
 import com.example.backend.dto.response.ProjectFullResponse;
 import com.example.backend.entity.ProjectEntity;
@@ -33,6 +35,8 @@ import com.example.backend.service.ProjectService;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @Slf4j
 @RestController
@@ -85,6 +89,14 @@ public class ProjectController {
         logInfo(PROJECT_CREATED, project);
 
         return new ResponseEntity<>(CREATED);
+    }
+
+    @PutMapping(path = "/{projectKey}")
+    public ResponseEntity<Void> updateProject(@PathVariable(name = "projectKey") String projectKey, @RequestBody ProjectUpdateRequest request) {
+        projectService.updateProject(projectKey, request);
+        logInfo(PROJECT_UPDATED, projectKey);
+
+        return new ResponseEntity<>(OK);
     }
 
     @PostMapping("/{projectKey}/assignUser/{userId}")
