@@ -92,6 +92,13 @@ public class ProjectService {
     }
 
     public void updateProject(String projectKey, ProjectUpdateRequest request) {
+        boolean isProjectPresent = projectDao
+            .existsProjectWithProjectKey(projectKey);
+
+        if(!isProjectPresent) {
+            throw new ProjectNotFoundException(projectKey);
+        }
+        
         projectDao.updateProject(projectKey, request);
         logInfo(PROJECT_UPDATED, request);
     }
