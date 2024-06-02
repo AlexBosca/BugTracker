@@ -5,6 +5,7 @@ import static com.example.backend.util.ExceptionUtilities.PROJECT_WITH_ID_NOT_FO
 import static com.example.backend.util.ExceptionUtilities.USER_ROLE_MISMATCH;
 import static com.example.backend.util.ExceptionUtilities.USER_WITH_ID_NOT_FOUND;
 import static com.example.backend.util.Utilities.formattedString;
+import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_UPDATED;
 import static java.time.ZonedDateTime.of;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,6 +20,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -51,6 +53,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.request.ProjectRequest;
+import com.example.backend.dto.request.ProjectUpdateRequest;
 import com.example.backend.dto.response.IssueFullResponse;
 import com.example.backend.dto.response.ProjectFullResponse;
 import com.example.backend.entity.ProjectEntity;
@@ -91,6 +94,9 @@ class ProjectControllerTest {
 
     @Captor
     private ArgumentCaptor<ProjectEntity> projectCaptor;
+
+    @Captor
+    private ArgumentCaptor<ProjectUpdateRequest> projectRequestCaptor;
 
     private static ZonedDateTime NOW = of(2022,
                                             12,
@@ -578,6 +584,69 @@ class ProjectControllerTest {
             .andExpect(jsonPath("$.message").exists())      // TODO: replace exists method call with value method call with actual message value
             .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(MethodArgumentNotValidException.class))
             .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isNotBlank());
+    }
+
+    @Test
+    @DisplayName("Should return OK status when no exception was thrown when calling the updateProject endpoint")
+    void updateProject_NoExceptionThrown_OkResponse() throws Exception {
+        String givenProjectKey = "FPC";
+        ProjectUpdateRequest updateRequest = ProjectUpdateRequest.builder()
+            .projectKey("FPCE")
+            .name("First Project Created Ever")
+            .description("First Project Created Ever Description")
+            .startDate(NOW.toLocalDateTime())
+            .targetEndDate(NOW.toLocalDateTime().plusYears(2))
+            .actualEndDate(NOW.toLocalDateTime().plusYears(2))
+            .projectManagerId("PM_00020")
+            .build();
+        
+        mockMvc.perform(put("/projects/{projectKey}", givenProjectKey)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)))
+            .andExpect(status().isOk());
+
+        verify(projectService).updateProject(eq(givenProjectKey), projectRequestCaptor.capture());
+
+        ProjectUpdateRequest actualUpdateRequest = projectRequestCaptor.getValue();
+
+        assertThat(actualUpdateRequest).isEqualTo(updateRequest);
+    }
+
+    @Test
+    @DisplayName("Should return NOT FOUND status when ProjectNotFoundException was thrown when calling the updateProject endpoint")
+    void updateProject_ProjectNotFoundExceptionThrown_OkResponse() throws Exception {
+        String givenProjectKey = "FPC";
+        ProjectUpdateRequest updateRequest = ProjectUpdateRequest.builder()
+            .projectKey("FPCE")
+            .name("First Project Created Ever")
+            .description("First Project Created Ever Description")
+            .startDate(NOW.toLocalDateTime())
+            .targetEndDate(NOW.toLocalDateTime().plusYears(2))
+            .actualEndDate(NOW.toLocalDateTime().plusYears(2))
+            .projectManagerId("PM_00020")
+            .build();
+
+        doThrow(new ProjectNotFoundException(givenProjectKey)).when(projectService).updateProject(givenProjectKey, updateRequest);
+        
+        when(clock.getZone()).thenReturn(NOW.getZone());
+        when(clock.instant()).thenReturn(NOW.toInstant());
+
+        mockMvc.perform(put("/projects/{projectKey}", givenProjectKey)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.timestamp").value(NOW.format(ofPattern("yyyy-MM-dd HH:mm:ss"))))
+            .andExpect(jsonPath("$.code").value(NOT_FOUND.value()))
+            .andExpect(jsonPath("$.status").value(NOT_FOUND.name()))
+            .andExpect(jsonPath("$.message").value(formattedString(PROJECT_WITH_ID_NOT_FOUND, givenProjectKey)))
+            .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(ProjectNotFoundException.class))
+            .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(PROJECT_WITH_ID_NOT_FOUND, givenProjectKey)));
+
+        verify(projectService).updateProject(eq(givenProjectKey), projectRequestCaptor.capture());
+
+        ProjectUpdateRequest actualUpdateRequest = projectRequestCaptor.getValue();
+
+        assertThat(actualUpdateRequest).isEqualTo(updateRequest);
     }
 
     @Test

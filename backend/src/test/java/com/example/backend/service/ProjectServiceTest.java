@@ -4,17 +4,19 @@ import static com.example.backend.util.ExceptionUtilities.PROJECT_ALREADY_CREATE
 import static com.example.backend.util.ExceptionUtilities.PROJECT_WITH_ID_NOT_FOUND;
 import static com.example.backend.util.ExceptionUtilities.USER_ROLE_MISMATCH;
 import static com.example.backend.util.ExceptionUtilities.USER_WITH_ID_NOT_FOUND;
+import static com.example.backend.util.project.ProjectLoggingMessages.PROJECT_UPDATED;
 import static java.time.ZonedDateTime.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +24,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,12 +32,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.internal.util.collections.Sets;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.example.backend.dao.ProjectDao;
 import com.example.backend.dao.UserDao;
 import com.example.backend.dto.filter.FilterCriteria;
+import com.example.backend.dto.request.ProjectUpdateRequest;
 import com.example.backend.entity.ProjectEntity;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueEntity;
@@ -45,6 +48,11 @@ import com.example.backend.exception.project.ProjectAlreadyCreatedException;
 import com.example.backend.exception.project.ProjectNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 import com.example.backend.exception.user.UserUnexpectedRoleException;
+import com.example.backend.util.Utilities;
+
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+import ch.qos.logback.classic.Logger;
 
 @Profile("test")
 @ActiveProfiles("test")
@@ -71,12 +79,21 @@ class ProjectServiceTest {
 
     private ProjectService projectService;
 
+    private ListAppender<ILoggingEvent> listAppender;
+
     @BeforeEach
     void setUp() {
         projectService = new ProjectService(
             projectDao,
             userDao
         );
+
+        Logger logger = (Logger) LoggerFactory.getLogger(ProjectService.class);
+        listAppender = new ListAppender<>();
+        listAppender.start();
+        logger.addAppender(listAppender);
+
+        
     }
 
     @Test
@@ -310,6 +327,60 @@ class ProjectServiceTest {
             projectService.saveProject(existingProject, "JC_12345");
         }).isInstanceOf(ProjectAlreadyCreatedException.class)
         .hasMessage(String.format(PROJECT_ALREADY_CREATED, "FPC"));
+    }
+
+    @Test
+    @DisplayName("Should update a project by projectKey that exists")
+    void updateProject_NoExceptionThrown() {
+        String givenProjectKey = "FPC";
+
+        ProjectUpdateRequest updateRequest = ProjectUpdateRequest.builder()
+            .projectKey("FPCE")
+            .name("First Project Created Ever")
+            .description("First Project Created Ever Description")
+            .startDate(NOW.toLocalDateTime())
+            .targetEndDate(NOW.toLocalDateTime().plusYears(2))
+            .actualEndDate(NOW.toLocalDateTime().plusYears(2))
+            .projectManagerId("PM_00020")
+            .build();
+
+        when(projectDao.existsProjectWithProjectKey(givenProjectKey)).thenReturn(true);
+
+        projectService.updateProject(givenProjectKey, updateRequest);
+
+        verify(projectDao, times(1)).updateProject(givenProjectKey, updateRequest);
+        
+        List<ILoggingEvent> logList = listAppender.list;
+        assertThat(logList).hasSize(1);
+        assertThat(logList.get(0).getFormattedMessage()).isEqualTo(Utilities.formattedString("Service - Project updated: %s", updateRequest.toString()));
+    }
+
+    @Test
+    @DisplayName("Should throw an exception when try to update a project by projectKey that doesn't exist")
+    void updateProject_ProjectNotFoundExceptionThrown() {
+        String givenProjectKey = "FPC";
+
+        ProjectUpdateRequest updateRequest = ProjectUpdateRequest.builder()
+            .projectKey("FPCE")
+            .name("First Project Created Ever")
+            .description("First Project Created Ever Description")
+            .startDate(NOW.toLocalDateTime())
+            .targetEndDate(NOW.toLocalDateTime().plusYears(2))
+            .actualEndDate(NOW.toLocalDateTime().plusYears(2))
+            .projectManagerId("PM_00020")
+            .build();
+
+        when(projectDao.existsProjectWithProjectKey(givenProjectKey)).thenReturn(false);
+
+        assertThatThrownBy(() -> {
+            projectService.updateProject(givenProjectKey, updateRequest);
+        }).isInstanceOf(ProjectNotFoundException.class)
+        .hasMessage(String.format(PROJECT_WITH_ID_NOT_FOUND, "FPC"));
+
+        verify(projectDao, never()).updateProject(anyString(), any());
+        
+        List<ILoggingEvent> logList = listAppender.list;
+        assertThat(logList).isEmpty();
     }
 
     @Test
