@@ -6,6 +6,7 @@ import { ProjectModel } from '../models/ProjectModel';
 import { ProjectRequestModel } from '../models/ProjectRequestModel';
 import { IssueModel } from '../../feature-issues/models/IssueModel';
 import { FilterCriteria } from '../../feature-issues/models/FilterCriteria';
+import { ProjectUpdateRequestModel } from '../models/ProjectUpdateRequestModel';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +39,13 @@ export class ProjectService {
       this.projectsUrl,
       projectRequest
       );
+  }
+
+  updateProject(projectKey: string, projectUpdateRequest: ProjectUpdateRequestModel): Observable<void> {
+    return this.http.put<void>(
+      `${this.projectsUrl}/${projectKey}`,
+      projectUpdateRequest
+    );
   }
 
   addUserOnProject(projectKey: string, userId: string): Observable<void> {

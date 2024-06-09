@@ -7,6 +7,7 @@ import { ProjectSummaryComponent } from './components/project-summary/project-su
 import { ProjectsIssuesListComponent } from './components/projects-issues-list/projects-issues-list.component';
 import { ProjectCalendarComponent } from './components/project-calendar/project-calendar.component';
 import { ProjectPeopleComponent } from './components/project-people/project-people.component';
+import { ProjectUpdateComponent } from './components/project-update/project-update.component';
 
 const routes: Routes = [
   {
@@ -37,6 +38,10 @@ const routes: Routes = [
       {
         path: 'calendar',
         component: ProjectCalendarComponent
+      },
+      {
+        path: 'settings',
+        component: ProjectUpdateComponent
       }
     ]
   },

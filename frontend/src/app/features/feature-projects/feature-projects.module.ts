@@ -20,6 +20,7 @@ import { ProjectCalendarComponent } from './components/project-calendar/project-
 import { ProjectPeopleComponent } from './components/project-people/project-people.component';
 import { ProjectModalComponent } from './components/project-modal/project-modal.component';
 import { ProjectPeopleModalComponent } from './components/project-people-modal/project-people-modal.component';
+import { ProjectUpdateComponent } from './components/project-update/project-update.component';
 
 
 @NgModule({
@@ -38,7 +39,8 @@ import { ProjectPeopleModalComponent } from './components/project-people-modal/p
     ProjectCalendarComponent,
     ProjectPeopleComponent,
     ProjectModalComponent,
-    ProjectPeopleModalComponent
+    ProjectPeopleModalComponent,
+    ProjectUpdateComponent
   ],
   imports: [
     CommonModule,
