@@ -5,6 +5,9 @@ export interface ProjectModel {
     projectKey: string;
     name: string;
     description: string;
+    startDate: string;
+    targetEndDate: string;
+    actualEndDate: string;
     issues: IssueModel[];
     projectManager: UserSlimModel;
     assignedUsers: UserSlimModel[];

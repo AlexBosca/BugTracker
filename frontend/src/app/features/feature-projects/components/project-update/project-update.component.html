@@ -1,0 +1,57 @@
+<div class="row mt-5">
+  <form [formGroup]="projectUpdateForm" (ngSubmit)="updateProject()" class="col-5">
+        <div *ngIf="error" class="alert alert-danger alert-dismissible mt-1 mb-3">
+            {{error.error.message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="mt-2">
+            <label for="projectKey" class="form-label">Project Key</label>
+            <input type="text" formControlName="projectKey" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['projectKey'].errors }" />
+            <div *ngIf="submitted && form['projectKey'].errors" class="invalid-feedback">
+                <div *ngIf="form['projectKey'].errors['required']">Project Key is required</div>
+            </div>
+        </div>
+
+        <div class="mt-2">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" formControlName="name" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['name'].errors }" />
+            <div *ngIf="submitted && form['name'].errors" class="invalid-feedback">
+                <div *ngIf="form['name'].errors['required']">Name is required</div>
+            </div>
+        </div>
+
+        <div class="mt-2">
+            <label for="description" class="form-label">Description</label>
+            <textarea type="text" formControlName="description" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['description'].errors }" rows="4"></textarea>
+            <div *ngIf="submitted && form['description'].errors" class="invalid-feedback">
+                <div *ngIf="form['description'].errors['required']">Description is required</div>
+            </div>
+        </div>
+
+        <div class="mt-2">
+            <label for="startDate" class="form-label">Start Date</label>
+            <input type="datetime-local" formControlName="startDate" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['startDate'].errors }" />
+            <div *ngIf="submitted && form['startDate'].errors" class="invalid-feedback">
+                <div *ngIf="form['startDate'].errors['required']">Start Date is required</div>
+            </div>
+        </div>
+
+        <div class="mt-2">
+            <label for="targetEndDate" class="form-label">Target End Date</label>
+            <input type="datetime-local" formControlName="targetEndDate" class="form-control" [ngClass]="{ 'is-invalid': submitted && form['targetEndDate'].errors }" />
+            <div *ngIf="submitted && form['targetEndDate'].errors" class="invalid-feedback">
+                <div *ngIf="form['targetEndDate'].errors['required']">Target End Date is required</div>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-between">
+          <button [disabled]="loading" class="btn btn-primary">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+              Update
+          </button>
+
+          <button type="button" id="updateProjectForm" class="btn btn-secondary">Close</button>
+        </div>
+  </form>
+</div>
