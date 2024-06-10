@@ -29,6 +29,7 @@ import com.example.backend.service.AuthenticationService;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final CustomAccessDeniedHandler accessDeniedHandler;
     private final AppBasicAuthEntryPoint authenticationEntryPoint;
     private final AuthenticationService authenticationService;
 
@@ -39,6 +40,7 @@ public class SecurityConfig {
                     .antMatchers("/users/**").hasRole(UserRole.ROLE_ADMIN.getName())
                     .antMatchers(HttpMethod.POST, "/projects/{projectKey}/assignUser/{userId}").hasAnyRole(UserRole.ROLE_ADMIN.getName(), UserRole.ROLE_PROJECT_MANAGER.getName())
                     .antMatchers(HttpMethod.POST, "/projects/{projectKey}/assignUsers").hasAnyRole(UserRole.ROLE_ADMIN.getName(), UserRole.ROLE_PROJECT_MANAGER.getName())
+                    .antMatchers(HttpMethod.PUT, "/projects/{projectKey}").hasAnyRole(UserRole.ROLE_ADMIN.getName(), UserRole.ROLE_PROJECT_MANAGER.getName())
                     .antMatchers(HttpMethod.POST, "/projects").hasAnyRole(UserRole.ROLE_ADMIN.getName(), UserRole.ROLE_PROJECT_MANAGER.getName())
                     .antMatchers("/authentication/**").permitAll()
                     .anyRequest().authenticated())
@@ -46,7 +48,9 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .addFilterBefore(accountLockingFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(appBasicAuthFilter(), BasicAuthenticationFilter.class)
-            .exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint))
+            .exceptionHandling(handler -> handler
+                .accessDeniedHandler(accessDeniedHandler)
+                .authenticationEntryPoint(authenticationEntryPoint))
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(STATELESS))
             .build();
     }

@@ -144,7 +144,7 @@ public class EntityExceptionHandler {
 
     @ExceptionHandler(UserUnexpectedRoleException.class)
     public ResponseEntity<ErrorResponse> handleUserUnexpectedRoleException(Exception exception) {
-        return buildErrorResponse(exception, BAD_REQUEST);
+        return buildErrorResponse(exception, FORBIDDEN);
     }
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(List<String> errors,
