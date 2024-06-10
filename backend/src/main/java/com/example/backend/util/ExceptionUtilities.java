@@ -13,6 +13,7 @@ public final class ExceptionUtilities {
     public static final String USER_PASSWORDS_NOT_MATCHING = "User's passwords aren't matching";
     public static final String USER_CREDENTIALS_EXPIRED = "User's credentials has expired";
     public static final String USER_ROLE_MISMATCH = "User with id: %s has role: %s instead of: %s";
+    public static final String USER_ACCESS_DENIED = "You do not have the necessary role to perform this action";
     public static final String ROLE_WITH_CODE_NOT_FOUND = "Role with code : %s not found";
     public static final String TOKEN_NOT_FOUND = "Token not found";
     public static final String TOKEN_EXPIRED = "Token expired";
