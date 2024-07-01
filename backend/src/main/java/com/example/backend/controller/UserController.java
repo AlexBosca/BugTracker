@@ -1,6 +1,7 @@
 package com.example.backend.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,7 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backend.dto.filter.FilterCriteria;
 import com.example.backend.dto.request.RegistrationRequest;
@@ -25,6 +28,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static com.example.backend.util.user.UserLoggingMessages.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,6 +90,20 @@ public class UserController {
         userDetailsService.updateUser(userId, request);
         logInfo(USER_UPDATED, userId);
 
+        return new ResponseEntity<>(OK);
+    }
+
+    @PostMapping(path = "/upload-avatar")
+    public ResponseEntity<Void> updateAvatar(@RequestPart("avatar") MultipartFile avatar) {
+        String userEmail = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserEntity user = (UserEntity) userDetailsService.loadUserByUsername(userEmail);
+
+        try {
+            userDetailsService.uploadAvatar(user.getUserId(), avatar);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
         return new ResponseEntity<>(OK);
     }
 

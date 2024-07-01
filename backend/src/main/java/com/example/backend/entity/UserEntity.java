@@ -52,6 +52,9 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "avatar_url") 
+    private String avatarUrl;
+
     @Column(name = "expired")
     @Default
     private Boolean isAccountExpired = true;

@@ -11,18 +11,18 @@ import com.example.backend.exception.user.UserCredentialsNotValidException;
 import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import static java.time.LocalDateTime.now;
 
+import java.io.IOException;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,15 +40,18 @@ public class AppUserDetailsService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
     private final Clock clock;    
+    private final AvatarService avatarService;
 
     public AppUserDetailsService(@Qualifier("userJpa") UserDao userDao,
                                  PasswordEncoder passwordEncoder,
                                  ConfirmationTokenService confirmationTokenService,
-                                 Clock clock) {
+                                 Clock clock,
+                                 AvatarService avatarService) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
         this.confirmationTokenService = confirmationTokenService;
         this.clock = clock;
+        this.avatarService = avatarService;
     }
 
     @Override
@@ -148,6 +151,16 @@ public class AppUserDetailsService implements UserDetailsService {
         request.setPassword(encodedPassword);
 
         userDao.updateUser(userId, request);
+    }
+
+    public void uploadAvatar(String userId, MultipartFile file) throws IOException {
+        UserEntity user = userDao.selectUserByUserId(userId)
+            .orElseThrow(() -> new UserIdNotFoundException(userId));
+
+        String filename = avatarService.saveAvatar(file, userId);
+
+        user.setAvatarUrl(filename);
+        userDao.insertUser(user);
     }
 
     public void resetPasswordOfUser(UserEntity user, String currentPassword, String newPassword) {
