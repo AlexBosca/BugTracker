@@ -117,14 +117,19 @@ public class UserJPADataAccessService implements UserDao {
     }
 
     @Override
-    public void updateUser(String userId, UserRequest request) {
+    public void updateUser(String email, UserRequest request) {
         try {
             userRepository.updateUser(
-                userId,
+                email,
                 request.getFirstName(),
                 request.getLastName(),
                 request.getEmail(),
-                request.getPassword()
+                request.getPassword(),
+                request.getAvatarUrl(),
+                request.getPhoneNumber(),
+                request.getJobTitle(),
+                request.getDepartment(),
+                request.getTimezone()
             );
             log.info(ENTITY_UPDATED);
         } catch (DataAccessException e) {

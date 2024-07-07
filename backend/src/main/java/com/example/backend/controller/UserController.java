@@ -1,7 +1,9 @@
 package com.example.backend.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -85,10 +87,14 @@ public class UserController {
         return new ResponseEntity<>(CREATED);
     }
 
-    @PutMapping(path = "/{userId}")
-    public ResponseEntity<Void> updateUser(@PathVariable(name = "userId") String userId, @RequestBody UserRequest request) {
-        userDetailsService.updateUser(userId, request);
-        logInfo(USER_UPDATED, userId);
+    @PutMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<Void> updateUser(
+            @RequestPart(name = "avatar", required = false) MultipartFile avatar,
+            @Validated @RequestPart(name = "request") UserRequest request) {
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        userDetailsService.updateUser(email, avatar, request);
+        logInfo(USER_UPDATED, email);
 
         return new ResponseEntity<>(OK);
     }

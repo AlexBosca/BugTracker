@@ -21,6 +21,10 @@ public class UserFullResponse {
     private boolean isAccountLocked;
     private boolean isEnabled;
     private String avatarUrl;
+    private String phoneNumber;
+    private String jobTitle;
+    private String department;
+    private String timezone;
     private Collection<IssueSlimResponse> issuesCreated;
     private Collection<IssueSlimResponse> issuesAssigned;
     private Collection<IssueSlimResponse> issuesClosed;

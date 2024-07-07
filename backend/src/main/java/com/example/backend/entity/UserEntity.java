@@ -52,8 +52,20 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "avatar_url") 
+    @Column(name = "avatar_url")
     private String avatarUrl;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "job_title")
+    private String jobTitle;
+
+    @Column(name = "department")
+    private String department;
+
+    @Column(name = "timezone")
+    private String timezone;
 
     @Column(name = "expired")
     @Default

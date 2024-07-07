@@ -14,6 +14,7 @@ import com.example.backend.exception.user.UserIdNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -140,17 +141,29 @@ public class AppUserDetailsService implements UserDetailsService {
         setupAccount(user.getUserId());
     }
 
-    public void updateUser(String userId, UserRequest request) {
-        boolean isUserPresent = userDao.existsUserByUserId(userId);
+    public void updateUser(String email, MultipartFile avatar, UserRequest request) {
+        boolean isUserPresent = userDao.existsUserByEmail(email);
 
         if(!isUserPresent) {
             throw new UserEmailNotFoundException(request.getEmail());
         }
 
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
-        request.setPassword(encodedPassword);
+        UserEntity user = userDao.selectUserByEmail(email).get();
 
-        userDao.updateUser(userId, request);
+        if(avatar != null && !avatar.isEmpty()) {
+            try {
+                uploadAvatar(user.getUserId(), avatar);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(request.getPassword() != null && !request.getPassword().isEmpty()) {
+            String encodedPassword = passwordEncoder.encode(request.getPassword());
+            request.setPassword(encodedPassword);
+        }
+
+        userDao.updateUser(email, request);
     }
 
     public void uploadAvatar(String userId, MultipartFile file) throws IOException {
