@@ -17,7 +17,7 @@ public interface UserDao {
     boolean existsUserByUserId(String userId);
     boolean existsUserByEmail(String email);
     void deleteUserByUserId(String userId);
-    void updateUser(String userId, UserRequest request);
+    void updateUser(String email, UserRequest request);
     int enableUserAccountByUserId(String userId);
     int disableUserAccountByUserId(String userId);
     int unlockUserAccountByUserId(String userId);
