@@ -104,11 +104,7 @@ public class UserController {
         String userEmail = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserEntity user = (UserEntity) userDetailsService.loadUserByUsername(userEmail);
 
-        try {
-            userDetailsService.uploadAvatar(user.getUserId(), avatar);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        userDetailsService.uploadAvatar(user.getUserId(), avatar);
         
         return new ResponseEntity<>(OK);
     }

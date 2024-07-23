@@ -16,6 +16,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -372,10 +373,10 @@ class ProjectControllerTest {
         mockMvc.perform(post("/projects")
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(projectRequest)))
-            .andExpect(status().isBadRequest())
+            .andExpect(status().isForbidden())
             .andExpect(jsonPath("$.timestamp").value(NOW.format(ofPattern("yyyy-MM-dd HH:mm:ss"))))
-            .andExpect(jsonPath("$.code").value(BAD_REQUEST.value()))
-            .andExpect(jsonPath("$.status").value(BAD_REQUEST.name()))
+            .andExpect(jsonPath("$.code").value(FORBIDDEN.value()))
+            .andExpect(jsonPath("$.status").value(FORBIDDEN.name()))
             .andExpect(jsonPath("$.message").value(formattedString(USER_ROLE_MISMATCH, exisitngProjectManagerId, UserRole.ROLE_DEVELOPER.getName(),  UserRole.ROLE_PROJECT_MANAGER.getName())))
             .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(UserUnexpectedRoleException.class))
             .andExpect(result -> assertThat(result.getResolvedException().getMessage()).isEqualTo(String.format(USER_ROLE_MISMATCH, exisitngProjectManagerId, UserRole.ROLE_DEVELOPER.getName(),  UserRole.ROLE_PROJECT_MANAGER.getName())));

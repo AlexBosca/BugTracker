@@ -34,7 +34,6 @@ class MapStructMapperTest {
             .lastName("Doe")
             .email("john.doe@gmail.com")
             .password("Jo#nDo3P4SS")
-            .role(ROLE_DEVELOPER)
             .build();
 
         UserRequest expectedRequest = UserRequest.builder()
@@ -42,7 +41,6 @@ class MapStructMapperTest {
             .lastName("Doe")
             .email("john.doe@gmail.com")
             .password("Jo#nDo3P4SS")
-            .role("ROLE_DEVELOPER")
             .build();
 
         UserRequest actualRequest = mapStructMapper.toRequest(givenUser);
@@ -51,7 +49,6 @@ class MapStructMapperTest {
         assertThat(actualRequest.getLastName()).isEqualTo(expectedRequest.getLastName());
         assertThat(actualRequest.getEmail()).isEqualTo(expectedRequest.getEmail());
         assertThat(actualRequest.getPassword()).isEqualTo(expectedRequest.getPassword());
-        assertThat(actualRequest.getRole()).isEqualTo(expectedRequest.getRole());
     }
 
     @Test
@@ -71,14 +68,12 @@ class MapStructMapperTest {
             .lastName("Doe")
             .email("john.doe@gmail.com")
             .password("Jo#nDo3P4SS")
-            .role(ROLE_DEVELOPER)
             .build();
 
         UserRequest expectedRequest = UserRequest.builder()
             .lastName("Doe")
             .email("john.doe@gmail.com")
             .password("Jo#nDo3P4SS")
-            .role("ROLE_DEVELOPER")
             .build();
 
         UserRequest actualRequest = mapStructMapper.toRequest(givenUser);
@@ -87,7 +82,6 @@ class MapStructMapperTest {
         assertThat(actualRequest.getLastName()).isEqualTo(expectedRequest.getLastName());
         assertThat(actualRequest.getEmail()).isEqualTo(expectedRequest.getEmail());
         assertThat(actualRequest.getPassword()).isEqualTo(expectedRequest.getPassword());
-        assertThat(actualRequest.getRole()).isEqualTo(expectedRequest.getRole());
     }
 
     @Test
@@ -97,14 +91,12 @@ class MapStructMapperTest {
             .firstName("John")
             .email("john.doe@gmail.com")
             .password("Jo#nDo3P4SS")
-            .role(ROLE_DEVELOPER)
             .build();
 
         UserRequest expectedRequest = UserRequest.builder()
             .firstName("John")
             .email("john.doe@gmail.com")
             .password("Jo#nDo3P4SS")
-            .role("ROLE_DEVELOPER")
             .build();
 
         UserRequest actualRequest = mapStructMapper.toRequest(givenUser);
@@ -113,7 +105,6 @@ class MapStructMapperTest {
         assertThat(actualRequest.getLastName()).isNull();
         assertThat(actualRequest.getEmail()).isEqualTo(expectedRequest.getEmail());
         assertThat(actualRequest.getPassword()).isEqualTo(expectedRequest.getPassword());
-        assertThat(actualRequest.getRole()).isEqualTo(expectedRequest.getRole());
     }
 
     @Test
@@ -123,14 +114,12 @@ class MapStructMapperTest {
             .firstName("John")
             .lastName("Doe")
             .password("Jo#nDo3P4SS")
-            .role(ROLE_DEVELOPER)
             .build();
 
         UserRequest expectedRequest = UserRequest.builder()
             .firstName("John")
             .lastName("Doe")
             .password("Jo#nDo3P4SS")
-            .role("ROLE_DEVELOPER")
             .build();
 
         UserRequest actualRequest = mapStructMapper.toRequest(givenUser);
@@ -139,7 +128,6 @@ class MapStructMapperTest {
         assertThat(actualRequest.getLastName()).isEqualTo(expectedRequest.getLastName());
         assertThat(actualRequest.getEmail()).isNull();
         assertThat(actualRequest.getPassword()).isEqualTo(expectedRequest.getPassword());
-        assertThat(actualRequest.getRole()).isEqualTo(expectedRequest.getRole());
     }
 
     @Test
@@ -149,14 +137,12 @@ class MapStructMapperTest {
             .firstName("John")
             .lastName("Doe")
             .email("john.doe@gmail.com")
-            .role(ROLE_DEVELOPER)
             .build();
 
         UserRequest expectedRequest = UserRequest.builder()
             .firstName("John")
             .lastName("Doe")
             .email("john.doe@gmail.com")
-            .role("ROLE_DEVELOPER")
             .build();
 
         UserRequest actualRequest = mapStructMapper.toRequest(givenUser);
@@ -165,7 +151,6 @@ class MapStructMapperTest {
         assertThat(actualRequest.getLastName()).isEqualTo(expectedRequest.getLastName());
         assertThat(actualRequest.getEmail()).isEqualTo(expectedRequest.getEmail());
         assertThat(actualRequest.getPassword()).isNull();
-        assertThat(actualRequest.getRole()).isEqualTo(expectedRequest.getRole());
     }
 
     @Test
@@ -191,7 +176,6 @@ class MapStructMapperTest {
         assertThat(actualRequest.getLastName()).isEqualTo(expectedRequest.getLastName());
         assertThat(actualRequest.getEmail()).isEqualTo(expectedRequest.getEmail());
         assertThat(actualRequest.getPassword()).isEqualTo(expectedRequest.getPassword());
-        assertThat(actualRequest.getRole()).isNull();
     }
 
     @Test
@@ -202,7 +186,6 @@ class MapStructMapperTest {
             .lastName("Doe")
             .email("john.doe@gmail.com")
             .password("Jo#nDo3P4SS")
-            .role("ROLE_DEVELOPER")
             .build();
 
         UserEntity expectedUser = UserEntity.builder()
@@ -210,7 +193,6 @@ class MapStructMapperTest {
             .lastName("Doe")
             .email("john.doe@gmail.com")
             .password("Jo#nDo3P4SS")
-            .role(ROLE_DEVELOPER)
             .build();
 
         UserEntity actualUser = mapStructMapper.toEntity(givenRequest);
@@ -219,7 +201,6 @@ class MapStructMapperTest {
         assertThat(actualUser.getLastName()).isEqualTo(expectedUser.getLastName());
         assertThat(actualUser.getEmail()).isEqualTo(expectedUser.getEmail());
         assertThat(actualUser.getPassword()).isEqualTo(expectedUser.getPassword());
-        assertThat(actualUser.getRole()).isEqualTo(expectedUser.getRole());
     }
 
     @Test
@@ -239,14 +220,12 @@ class MapStructMapperTest {
             .lastName("Doe")
             .email("john.doe@gmail.com")
             .password("Jo#nDo3P4SS")
-            .role("ROLE_DEVELOPER")
             .build();
 
         UserEntity expectedUser = UserEntity.builder()
             .lastName("Doe")
             .email("john.doe@gmail.com")
             .password("Jo#nDo3P4SS")
-            .role(ROLE_DEVELOPER)
             .build();
 
         UserEntity actualUser = mapStructMapper.toEntity(givenRequest);
@@ -255,7 +234,6 @@ class MapStructMapperTest {
         assertThat(actualUser.getLastName()).isEqualTo(expectedUser.getLastName());
         assertThat(actualUser.getEmail()).isEqualTo(expectedUser.getEmail());
         assertThat(actualUser.getPassword()).isEqualTo(expectedUser.getPassword());
-        assertThat(actualUser.getRole()).isEqualTo(expectedUser.getRole());
     }
 
     @Test
@@ -265,14 +243,12 @@ class MapStructMapperTest {
             .firstName("John")
             .email("john.doe@gmail.com")
             .password("Jo#nDo3P4SS")
-            .role("ROLE_DEVELOPER")
             .build();
 
         UserEntity expectedUser = UserEntity.builder()
             .firstName("John")
             .email("john.doe@gmail.com")
             .password("Jo#nDo3P4SS")
-            .role(ROLE_DEVELOPER)
             .build();
 
         UserEntity actualUser = mapStructMapper.toEntity(givenRequest);
@@ -281,7 +257,6 @@ class MapStructMapperTest {
         assertThat(actualUser.getLastName()).isNull();
         assertThat(actualUser.getEmail()).isEqualTo(expectedUser.getEmail());
         assertThat(actualUser.getPassword()).isEqualTo(expectedUser.getPassword());
-        assertThat(actualUser.getRole()).isEqualTo(expectedUser.getRole());
     }
 
     @Test
@@ -291,14 +266,12 @@ class MapStructMapperTest {
             .firstName("John")
             .lastName("Doe")
             .password("Jo#nDo3P4SS")
-            .role("ROLE_DEVELOPER")
             .build();
 
         UserEntity expectedUser = UserEntity.builder()
             .firstName("John")
             .lastName("Doe")
             .password("Jo#nDo3P4SS")
-            .role(ROLE_DEVELOPER)
             .build();
 
         UserEntity actualUser = mapStructMapper.toEntity(givenRequest);
@@ -307,7 +280,6 @@ class MapStructMapperTest {
         assertThat(actualUser.getLastName()).isEqualTo(expectedUser.getLastName());
         assertThat(actualUser.getEmail()).isNull();
         assertThat(actualUser.getPassword()).isEqualTo(expectedUser.getPassword());
-        assertThat(actualUser.getRole()).isEqualTo(expectedUser.getRole());
     }
 
     @Test
@@ -317,14 +289,12 @@ class MapStructMapperTest {
             .firstName("John")
             .lastName("Doe")
             .email("john.doe@gmail.com")
-            .role("ROLE_DEVELOPER")
             .build();
 
         UserEntity expectedUser = UserEntity.builder()
             .firstName("John")
             .lastName("Doe")
             .email("john.doe@gmail.com")
-            .role(ROLE_DEVELOPER)
             .build();
 
         UserEntity actualUser = mapStructMapper.toEntity(givenRequest);
@@ -333,7 +303,6 @@ class MapStructMapperTest {
         assertThat(actualUser.getLastName()).isEqualTo(expectedUser.getLastName());
         assertThat(actualUser.getEmail()).isEqualTo(expectedUser.getEmail());
         assertThat(actualUser.getPassword()).isNull();
-        assertThat(actualUser.getRole()).isEqualTo(expectedUser.getRole());
     }
 
     @Test
@@ -359,7 +328,6 @@ class MapStructMapperTest {
         assertThat(actualUser.getLastName()).isEqualTo(expectedUser.getLastName());
         assertThat(actualUser.getEmail()).isEqualTo(expectedUser.getEmail());
         assertThat(actualUser.getPassword()).isEqualTo(expectedUser.getPassword());
-        assertThat(actualUser.getRole()).isNull();
     }
 
     @Test

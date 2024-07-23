@@ -25,3 +25,7 @@ spring:
 
 email:
   confirmation-link: http://localhost:4200/confirm-account?token=%s
+
+avatar:
+  upload:
+    dir: ./avatars-test/

@@ -21,12 +21,16 @@ public class AvatarService {
     @Value("${avatar.upload.dir}")
     private String uploadDir;
 
-    public String saveAvatar(MultipartFile avatar, String userId) throws IOException {
+    public String saveAvatar(MultipartFile avatar, String userId) {
         Path uploadPath = Paths.get(uploadDir);
         log.info(uploadPath.toString());
 
         if(!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
+            try {
+                Files.createDirectories(uploadPath);
+            } catch (IOException exception) {
+                throw new UncheckedIOException("Failed to create directory where avatar should be saved", exception);
+            }
         }
 
         String filename = userId + "_avatar";

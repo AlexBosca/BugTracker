@@ -151,11 +151,7 @@ public class AppUserDetailsService implements UserDetailsService {
         UserEntity user = userDao.selectUserByEmail(email).get();
 
         if(avatar != null && !avatar.isEmpty()) {
-            try {
-                uploadAvatar(user.getUserId(), avatar);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            uploadAvatar(user.getUserId(), avatar);
         }
 
         if(request.getPassword() != null && !request.getPassword().isEmpty()) {
@@ -166,7 +162,7 @@ public class AppUserDetailsService implements UserDetailsService {
         userDao.updateUser(email, request);
     }
 
-    public void uploadAvatar(String userId, MultipartFile file) throws IOException {
+    public void uploadAvatar(String userId, MultipartFile file) {
         UserEntity user = userDao.selectUserByUserId(userId)
             .orElseThrow(() -> new UserIdNotFoundException(userId));
 

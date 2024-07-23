@@ -59,6 +59,9 @@ class AppUserDetailsServiceTest {
     @Mock
     private Clock clock;
 
+    @Mock
+    private AvatarService avatarService;
+
     private static ZonedDateTime NOW = of(2022,
                                             12,
                                             26, 
@@ -79,7 +82,8 @@ class AppUserDetailsServiceTest {
             userDao,
             passwordEncoder,
             confirmationTokenService,
-            clock
+            clock,
+            avatarService
         ));
     }
 
