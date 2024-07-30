@@ -142,13 +142,8 @@ public class AppUserDetailsService implements UserDetailsService {
     }
 
     public void updateUser(String email, MultipartFile avatar, UserRequest request) {
-        boolean isUserPresent = userDao.existsUserByEmail(email);
-
-        if(!isUserPresent) {
-            throw new UserEmailNotFoundException(request.getEmail());
-        }
-
-        UserEntity user = userDao.selectUserByEmail(email).get();
+        UserEntity user = userDao.selectUserByEmail(email)
+            .orElseThrow(() -> new UserEmailNotFoundException(request.getEmail()));
 
         if(avatar != null && !avatar.isEmpty()) {
             uploadAvatar(user.getUserId(), avatar);

@@ -100,7 +100,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/upload-avatar")
-    public ResponseEntity<Void> updateAvatar(@RequestPart("avatar") MultipartFile avatar) {
+    public ResponseEntity<Void> uploadAvatar(@RequestPart("avatar") MultipartFile avatar) {
         String userEmail = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserEntity user = (UserEntity) userDetailsService.loadUserByUsername(userEmail);
 
