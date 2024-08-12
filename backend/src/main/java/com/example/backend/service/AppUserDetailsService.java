@@ -142,20 +142,11 @@ public class AppUserDetailsService implements UserDetailsService {
     }
 
     public void updateUser(String email, MultipartFile avatar, UserRequest request) {
-        boolean isUserPresent = userDao.existsUserByEmail(email);
-
-        if(!isUserPresent) {
-            throw new UserEmailNotFoundException(request.getEmail());
-        }
-
-        UserEntity user = userDao.selectUserByEmail(email).get();
+        UserEntity user = userDao.selectUserByEmail(email)
+            .orElseThrow(() -> new UserEmailNotFoundException(request.getEmail()));
 
         if(avatar != null && !avatar.isEmpty()) {
-            try {
-                uploadAvatar(user.getUserId(), avatar);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            uploadAvatar(user.getUserId(), avatar);
         }
 
         if(request.getPassword() != null && !request.getPassword().isEmpty()) {
@@ -166,7 +157,7 @@ public class AppUserDetailsService implements UserDetailsService {
         userDao.updateUser(email, request);
     }
 
-    public void uploadAvatar(String userId, MultipartFile file) throws IOException {
+    public void uploadAvatar(String userId, MultipartFile file) {
         UserEntity user = userDao.selectUserByUserId(userId)
             .orElseThrow(() -> new UserIdNotFoundException(userId));
 

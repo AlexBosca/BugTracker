@@ -3,6 +3,7 @@ package com.example.backend.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,15 +29,18 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Profile;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.example.backend.dao.UserDao;
 import com.example.backend.dto.filter.FilterCriteria;
+import com.example.backend.dto.request.UserRequest;
 import com.example.backend.entity.UserEntity;
 import com.example.backend.entity.issue.IssueEntity;
 import com.example.backend.exception.user.UserCredentialsNotValidException;
+import com.example.backend.exception.user.UserEmailNotFoundException;
 import com.example.backend.exception.user.UserIdNotFoundException;
 
 import static com.example.backend.util.ExceptionUtilities.*;
@@ -59,6 +63,9 @@ class AppUserDetailsServiceTest {
     @Mock
     private Clock clock;
 
+    @Mock
+    private AvatarService avatarService;
+
     private static ZonedDateTime NOW = of(2022,
                                             12,
                                             26, 
@@ -79,7 +86,8 @@ class AppUserDetailsServiceTest {
             userDao,
             passwordEncoder,
             confirmationTokenService,
-            clock
+            clock,
+            avatarService
         ));
     }
 
@@ -240,7 +248,7 @@ class AppUserDetailsServiceTest {
     }
 
     @Test
-    @DisplayName("Should save user it doesn't exist")
+    @DisplayName("Should save user that doesn't exist")
     void saveUser_NoExceptionThrown() {
         UserEntity expectedUser = UserEntity.builder()
             .userId("JD00001")
@@ -279,4 +287,222 @@ class AppUserDetailsServiceTest {
     //     verify(appUserDetailsService, times(1)).setPasswordToUser(expectedUser);
     //     verify(appUserDetailsService, times(1)).setupAccount(expectedUser.getUserId());
     // }
+
+    @Test
+    @DisplayName("Should update user details and avatar when user exists")
+    void updateUser_ExistingUserAllFields() {
+        UserEntity expectedUser = UserEntity.builder()
+            .userId("JD00001")
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@gmail.com")
+            .password("newPassword")
+            .build();
+
+        UserRequest expectedRequest = UserRequest.builder()
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@gmail.com")
+            .password("newPassword")
+            .build();
+
+        MockMultipartFile avatar = new MockMultipartFile(
+            "file", "avatar.jpg", "image/jpeg", "avatar content".getBytes());
+
+        when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.of(expectedUser));
+        doNothing().when(appUserDetailsService).uploadAvatar("JD00001", avatar);
+        when(passwordEncoder.encode(expectedRequest.getPassword())).thenReturn("encodedPassword");
+
+        appUserDetailsService.updateUser("john.doe@gmail.com", avatar, expectedRequest);
+        
+        verify(appUserDetailsService, times(1)).uploadAvatar("JD00001", avatar);
+        verify(passwordEncoder, times(1)).encode("newPassword");
+        assertThat(expectedRequest.getPassword()).isEqualTo("encodedPassword");
+        verify(userDao, times(1)).updateUser("john.doe@gmail.com", expectedRequest);
+    }
+
+    @Test
+    @DisplayName("Should update user details when user exists and avatar is null")
+    void updateUser_NullAvatar() {
+        UserEntity expectedUser = UserEntity.builder()
+            .userId("JD00001")
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@gmail.com")
+            .password("newPassword")
+            .build();
+
+        UserRequest expectedRequest = UserRequest.builder()
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@gmail.com")
+            .password("newPassword")
+            .build();
+
+        when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.of(expectedUser));
+        when(passwordEncoder.encode(expectedRequest.getPassword())).thenReturn("encodedPassword");
+
+        appUserDetailsService.updateUser("john.doe@gmail.com", null, expectedRequest);
+        
+        verify(passwordEncoder, times(1)).encode("newPassword");
+        assertThat(expectedRequest.getPassword()).isEqualTo("encodedPassword");
+        verify(userDao, times(1)).updateUser("john.doe@gmail.com", expectedRequest);
+    }
+
+    @Test
+    @DisplayName("Should update user details when user exists and avatar is empty")
+    void updateUser_EmptyAvatar() {
+        UserEntity expectedUser = UserEntity.builder()
+            .userId("JD00001")
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@gmail.com")
+            .password("newPassword")
+            .build();
+
+        UserRequest expectedRequest = UserRequest.builder()
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@gmail.com")
+            .password("newPassword")
+            .build();
+
+        MockMultipartFile avatar = new MockMultipartFile(
+            "file", "avatar.jpg", "image/jpeg", new byte[0]);
+
+        when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.of(expectedUser));
+        when(passwordEncoder.encode(expectedRequest.getPassword())).thenReturn("encodedPassword");
+
+        appUserDetailsService.updateUser("john.doe@gmail.com", avatar, expectedRequest);
+        
+        verify(passwordEncoder, times(1)).encode("newPassword");
+        assertThat(expectedRequest.getPassword()).isEqualTo("encodedPassword");
+        verify(userDao, times(1)).updateUser("john.doe@gmail.com", expectedRequest);
+    }
+
+    @Test
+    @DisplayName("Should update user details and avatar when user exists and password is null")
+    void updateUser_NullPassword() {
+        UserEntity expectedUser = UserEntity.builder()
+            .userId("JD00001")
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@gmail.com")
+            .build();
+
+        UserRequest expectedRequest = UserRequest.builder()
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@gmail.com")
+            .build();
+
+        MockMultipartFile avatar = new MockMultipartFile(
+            "file", "avatar.jpg", "image/jpeg", "avatar content".getBytes());
+
+        when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.of(expectedUser));
+        doNothing().when(appUserDetailsService).uploadAvatar("JD00001", avatar);
+
+        appUserDetailsService.updateUser("john.doe@gmail.com", avatar, expectedRequest);
+        
+        verify(appUserDetailsService, times(1)).uploadAvatar("JD00001", avatar);
+        verify(userDao, times(1)).updateUser("john.doe@gmail.com", expectedRequest);
+    }
+
+    @Test
+    @DisplayName("Should update user details and avatar when user exists and password is empty")
+    void updateUser_EmptyPassword() {
+        UserEntity expectedUser = UserEntity.builder()
+            .userId("JD00001")
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@gmail.com")
+            .password("")
+            .build();
+
+        UserRequest expectedRequest = UserRequest.builder()
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@gmail.com")
+            .password("")
+            .build();
+
+        MockMultipartFile avatar = new MockMultipartFile(
+            "file", "avatar.jpg", "image/jpeg", "avatar content".getBytes());
+
+        when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.of(expectedUser));
+        doNothing().when(appUserDetailsService).uploadAvatar("JD00001", avatar);
+
+        appUserDetailsService.updateUser("john.doe@gmail.com", avatar, expectedRequest);
+        
+        verify(appUserDetailsService, times(1)).uploadAvatar("JD00001", avatar);
+        verify(userDao, times(1)).updateUser("john.doe@gmail.com", expectedRequest);
+    }
+
+    @Test
+    @DisplayName("Should throw an exception when trying to update details for a non existing user")
+    void updateUser_UserEmailNotFoundExceptionThrown() {
+        UserEntity expectedUser = UserEntity.builder()
+            .userId("JD00001")
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@gmail.com")
+            .password("newPassword")
+            .build();
+
+        UserRequest expectedRequest = UserRequest.builder()
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@gmail.com")
+            .password("newPassword")
+            .build();
+
+        MockMultipartFile avatar = new MockMultipartFile(
+            "file", "avatar.jpg", "image/jpeg", new byte[0]);
+
+        when(userDao.selectUserByEmail("john.doe@gmail.com")).thenReturn(Optional.empty());
+        
+        assertThatThrownBy(() -> {
+            appUserDetailsService.updateUser("john.doe@gmail.com", avatar, expectedRequest);
+        }).isInstanceOf(UserEmailNotFoundException.class)
+        .hasMessage(String.format(USER_WITH_EMAIL_NOT_FOUND, "john.doe@gmail.com"));
+    }
+
+    @Test
+    @DisplayName("Should upload avatar of an existing user")
+    void uploadAvatar_NoExceptionThrown() {
+        UserEntity expectedUser = UserEntity.builder()
+            .userId("JD00001")
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@gmail.com")
+            .build();
+
+        MockMultipartFile avatar = new MockMultipartFile(
+                "file", "avatar.jpg", "image/jpeg", "avatar content".getBytes());
+
+        when(userDao.selectUserByUserId("JD00001")).thenReturn(Optional.of(expectedUser));
+        when(avatarService.saveAvatar(avatar, "JD00001")).thenReturn("JD00001_avatar");
+        
+        appUserDetailsService.uploadAvatar("JD00001", avatar);
+
+        verify(userDao, times(1)).selectUserByUserId("JD00001");
+        verify(avatarService, times(1)).saveAvatar(avatar, "JD00001");
+        verify(userDao, times(1)).insertUser(expectedUser);
+
+        assertThat(expectedUser.getAvatarUrl()).isEqualTo("JD00001_avatar");
+    }
+
+    @Test
+    @DisplayName("Should throw an exception when trying to upload avatar for a non existing user")
+    void uploadAvatar_UserIdNotFoundExceptionThrown() {
+        MockMultipartFile avatar = new MockMultipartFile(
+                "file", "avatar.jpg", "image/jpeg", "avatar content".getBytes());
+
+        when(userDao.selectUserByUserId("JD00001")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> {
+            appUserDetailsService.uploadAvatar("JD00001", avatar);
+        }).isInstanceOf(UserIdNotFoundException.class)
+        .hasMessage(String.format(USER_WITH_ID_NOT_FOUND, "JD00001"));
+    }
 }

@@ -2,8 +2,9 @@ package com.example.backend.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,9 +31,10 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static com.example.backend.util.user.UserLoggingMessages.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -90,25 +92,23 @@ public class UserController {
     @PutMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<Void> updateUser(
             @RequestPart(name = "avatar", required = false) MultipartFile avatar,
-            @Validated @RequestPart(name = "request") UserRequest request) {
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            @Valid @RequestPart(name = "request") UserRequest request) {
+        Authentication userDetails = (Authentication) SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = userDetails.getName();
 
-        userDetailsService.updateUser(email, avatar, request);
-        logInfo(USER_UPDATED, email);
+        userDetailsService.updateUser(userEmail, avatar, request);
+        logInfo(USER_UPDATED, userEmail);
 
         return new ResponseEntity<>(OK);
     }
 
     @PostMapping(path = "/upload-avatar")
-    public ResponseEntity<Void> updateAvatar(@RequestPart("avatar") MultipartFile avatar) {
-        String userEmail = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseEntity<Void> uploadAvatar(@RequestPart("avatar") MultipartFile avatar) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userEmail = userDetails.getUsername();
         UserEntity user = (UserEntity) userDetailsService.loadUserByUsername(userEmail);
 
-        try {
-            userDetailsService.uploadAvatar(user.getUserId(), avatar);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        userDetailsService.uploadAvatar(user.getUserId(), avatar);
         
         return new ResponseEntity<>(OK);
     }
