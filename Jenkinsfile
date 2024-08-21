@@ -228,8 +228,10 @@ pipeline {
 
             // Publish the test results
             junit 'backend/target/surefire-reports/*.xml'
-            
-            recordCoverage(tools: [[parser: 'JACOCO', pattern: 'backend/target/site/jacoco/jacoco.xml']])
+
+            jacoco execPattern: '**/target/jacoco.exec', 
+                   classPattern: '**/target/classes', 
+                   sourcePattern: '**/src/main/java'
         }
     }
 }
