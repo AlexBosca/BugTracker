@@ -1,4 +1,4 @@
-// #!groovy
+#!groovy
 // pipeline {
 //     agent any
 
@@ -116,8 +116,6 @@
 //         }
 //     }
 // }
-
-#!groovy
 pipeline {
     agent any
 
