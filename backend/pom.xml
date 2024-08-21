@@ -49,9 +49,8 @@
 				<jacoco.version>0.8.7</jacoco.version>
 				<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 				<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-				<sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
-				<sonar.coverage.jacoco.xmlReportPaths>
-					${project.basedir}/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+				<sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+				<sonar.branch.name>feature/CU-86c002z7k-CICD-Configuration</sonar.branch.name>
 				<sonar.language>java</sonar.language>
 			</properties>
 			<build>
@@ -291,6 +290,12 @@
 							<goal>report</goal>
 						</goals>
 						<phase>verify</phase>
+						<configuration>
+							<!-- Point to the jacoco.exec file -->
+                            <dataFile>${project.basedir}/target/jacoco.exec</dataFile>
+                            <!-- Where the reports will be generated -->
+                            <outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
