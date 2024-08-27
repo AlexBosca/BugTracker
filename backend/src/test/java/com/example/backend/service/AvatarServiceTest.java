@@ -36,85 +36,85 @@ class AvatarServiceTest {
     @Value("${avatar.upload.dir}")
     private String uploadDir;
 
-    @Disabled
-    @Test
-    @DisplayName("Should save avatar at specified path when it exists")
-    void saveAvatar_ExistingPath() {
-        String userId = "testUser";
-        MockMultipartFile avatar = new MockMultipartFile(
-                "file", "avatar.jpg", "image/jpeg", "avatar content".getBytes());
+    // @Disabled
+    // @Test
+    // @DisplayName("Should save avatar at specified path when it exists")
+    // void saveAvatar_ExistingPath() {
+    //     String userId = "testUser";
+    //     MockMultipartFile avatar = new MockMultipartFile(
+    //             "file", "avatar.jpg", "image/jpeg", "avatar content".getBytes());
 
-        String filename = avatarService.saveAvatar(avatar, userId);
+    //     String filename = avatarService.saveAvatar(avatar, userId);
 
-        Path expectedPath = Paths.get(uploadDir).resolve(userId + "_avatar");
-        assertThat(filename).isEqualTo(userId + "_avatar");
-        assertThat(Files.exists(expectedPath)).isTrue();
-    }
+    //     Path expectedPath = Paths.get(uploadDir).resolve(userId + "_avatar");
+    //     assertThat(filename).isEqualTo(userId + "_avatar");
+    //     assertThat(Files.exists(expectedPath)).isTrue();
+    // }
 
-    @Disabled
-    @Test
-    @DisplayName("Should save avatar at specified path when it doesn't exist")
-    void saveAvatart_NonexistingPath() throws IOException {
-        String userId = "testUser";
-        MockMultipartFile avatar = new MockMultipartFile(
-                "file", "avatar.jpg", "image/jpeg", "avatar content".getBytes());
-        Path expectedPath = Paths.get(uploadDir).resolve(userId + "_avatar");
+    // @Disabled
+    // @Test
+    // @DisplayName("Should save avatar at specified path when it doesn't exist")
+    // void saveAvatart_NonexistingPath() throws IOException {
+    //     String userId = "testUser";
+    //     MockMultipartFile avatar = new MockMultipartFile(
+    //             "file", "avatar.jpg", "image/jpeg", "avatar content".getBytes());
+    //     Path expectedPath = Paths.get(uploadDir).resolve(userId + "_avatar");
 
 
-        Path uploadPath = Paths.get(uploadDir);
-        if (Files.exists(uploadPath)) {
-            Files.walk(uploadPath)
-                .sorted((path1, path2) -> path2.compareTo(path1)) // Reverse order to delete files before directories
-                .forEach(path -> {
-                    try {
-                        Files.delete(path);
-                    } catch (IOException e) {
-                        throw new RuntimeException("Failed to delete test directory", e);
-                    }
-                });
-        }
+    //     Path uploadPath = Paths.get(uploadDir);
+    //     if (Files.exists(uploadPath)) {
+    //         Files.walk(uploadPath)
+    //             .sorted((path1, path2) -> path2.compareTo(path1)) // Reverse order to delete files before directories
+    //             .forEach(path -> {
+    //                 try {
+    //                     Files.delete(path);
+    //                 } catch (IOException e) {
+    //                     throw new RuntimeException("Failed to delete test directory", e);
+    //                 }
+    //             });
+    //     }
         
-        assertThat(Files.exists(expectedPath)).isFalse();
+    //     assertThat(Files.exists(expectedPath)).isFalse();
 
-        String filename = avatarService.saveAvatar(avatar, userId);
+    //     String filename = avatarService.saveAvatar(avatar, userId);
 
-        assertThat(filename).isEqualTo(userId + "_avatar");
-        assertThat(Files.exists(expectedPath)).isTrue();
-    }
+    //     assertThat(filename).isEqualTo(userId + "_avatar");
+    //     assertThat(Files.exists(expectedPath)).isTrue();
+    // }
 
-    @Disabled
-    @Test
-    @DisplayName("Should throw an exception when try to create directories results in an IOException")
-    void saveAvatar_createDirectoriesThrowIOException_UncheckedIOExceptionThrown() {
-        String userId = "testUser";
-        MockMultipartFile avatar = new MockMultipartFile(
-                "file", "avatar.jpg", "image/jpeg", "avatar content".getBytes());
+    // @Disabled
+    // @Test
+    // @DisplayName("Should throw an exception when try to create directories results in an IOException")
+    // void saveAvatar_createDirectoriesThrowIOException_UncheckedIOExceptionThrown() {
+    //     String userId = "testUser";
+    //     MockMultipartFile avatar = new MockMultipartFile(
+    //             "file", "avatar.jpg", "image/jpeg", "avatar content".getBytes());
                 
-        Path uploadPath = Paths.get(uploadDir);
+    //     Path uploadPath = Paths.get(uploadDir);
 
-        try(MockedStatic<Files> mockedStatic = mockStatic(Files.class)) {
+    //     try(MockedStatic<Files> mockedStatic = mockStatic(Files.class)) {
 
-            mockedStatic.when(() -> Files.createDirectories(uploadPath)).thenThrow(new IOException("Simulated IOException"));
+    //         mockedStatic.when(() -> Files.createDirectories(uploadPath)).thenThrow(new IOException("Simulated IOException"));
 
-            assertThatThrownBy(() -> {
-                avatarService.saveAvatar(avatar, userId);
-            }).isInstanceOf(UncheckedIOException.class)
-            .hasMessage("Failed to create directory where avatar should be saved");
-        }
-    }
+    //         assertThatThrownBy(() -> {
+    //             avatarService.saveAvatar(avatar, userId);
+    //         }).isInstanceOf(UncheckedIOException.class)
+    //         .hasMessage("Failed to create directory where avatar should be saved");
+    //     }
+    // }
 
-    @Disabled
-    @Test
-    @DisplayName("Should throw an exception when try to get avatar InputStream results in an IOException")
-    void saveAvatar_getInputStreamThrowIOException_UncheckedIOExceptionThrown() throws IOException {
-        String userId = "testUser";
-        MultipartFile avatar = mock(MultipartFile.class);
+    // @Disabled
+    // @Test
+    // @DisplayName("Should throw an exception when try to get avatar InputStream results in an IOException")
+    // void saveAvatar_getInputStreamThrowIOException_UncheckedIOExceptionThrown() throws IOException {
+    //     String userId = "testUser";
+    //     MultipartFile avatar = mock(MultipartFile.class);
 
-        when(avatar.getInputStream()).thenThrow(new IOException("Simulated IOException"));
+    //     when(avatar.getInputStream()).thenThrow(new IOException("Simulated IOException"));
 
-        assertThatThrownBy(() -> {
-            avatarService.saveAvatar(avatar, userId);
-        }).isInstanceOf(UncheckedIOException.class)
-        .hasMessage("Failed to save avatar file");
-    }
+    //     assertThatThrownBy(() -> {
+    //         avatarService.saveAvatar(avatar, userId);
+    //     }).isInstanceOf(UncheckedIOException.class)
+    //     .hasMessage("Failed to save avatar file");
+    // }
 }
