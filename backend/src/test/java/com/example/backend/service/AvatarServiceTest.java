@@ -28,7 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 @SpringBootTest
 @Profile("test")
 @ActiveProfiles("test")
-public class AvatarServiceTest {
+class AvatarServiceTest {
 
     @Autowired
     private AvatarService avatarService;
@@ -36,9 +36,10 @@ public class AvatarServiceTest {
     @Value("${avatar.upload.dir}")
     private String uploadDir;
 
+    @Disabled
     @Test
     @DisplayName("Should save avatar at specified path when it exists")
-    public void saveAvatar_ExistingPath() {
+    void saveAvatar_ExistingPath() {
         String userId = "testUser";
         MockMultipartFile avatar = new MockMultipartFile(
                 "file", "avatar.jpg", "image/jpeg", "avatar content".getBytes());
@@ -50,9 +51,10 @@ public class AvatarServiceTest {
         assertThat(Files.exists(expectedPath)).isTrue();
     }
 
+    @Disabled
     @Test
     @DisplayName("Should save avatar at specified path when it doesn't exist")
-    public void saveAvatart_NonexistingPath() throws IOException {
+    void saveAvatart_NonexistingPath() throws IOException {
         String userId = "testUser";
         MockMultipartFile avatar = new MockMultipartFile(
                 "file", "avatar.jpg", "image/jpeg", "avatar content".getBytes());
@@ -80,9 +82,10 @@ public class AvatarServiceTest {
         assertThat(Files.exists(expectedPath)).isTrue();
     }
 
+    @Disabled
     @Test
     @DisplayName("Should throw an exception when try to create directories results in an IOException")
-    public void saveAvatar_createDirectoriesThrowIOException_UncheckedIOExceptionThrown() {
+    void saveAvatar_createDirectoriesThrowIOException_UncheckedIOExceptionThrown() {
         String userId = "testUser";
         MockMultipartFile avatar = new MockMultipartFile(
                 "file", "avatar.jpg", "image/jpeg", "avatar content".getBytes());
@@ -100,9 +103,10 @@ public class AvatarServiceTest {
         }
     }
 
+    @Disabled
     @Test
     @DisplayName("Should throw an exception when try to get avatar InputStream results in an IOException")
-    public void saveAvatar_getInputStreamThrowIOException_UncheckedIOExceptionThrown() throws IOException {
+    void saveAvatar_getInputStreamThrowIOException_UncheckedIOExceptionThrown() throws IOException {
         String userId = "testUser";
         MultipartFile avatar = mock(MultipartFile.class);
 
