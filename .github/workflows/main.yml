@@ -22,4 +22,4 @@ jobs:
         cache: maven
 
     - name: Test with Maven
-      run: mvn -f backend test -Dspring.profiles.active=dev
+      run: mvn -f backend test
