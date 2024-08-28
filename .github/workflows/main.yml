@@ -28,4 +28,4 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: mvn -f backend verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ro.alexportfolio:backend
+      run: mvn -f backend clean verify sonar:sonar -Dspring.profiles.active=coverage -Dsonar.projectKey=ro.alexportfolio:backend -Dsonar.analysis.mode=publish
