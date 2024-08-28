@@ -19,6 +19,8 @@
 		<testcontainers.version>1.17.3</testcontainers.version>
 		<maven.build.timestamp.format>yyyy-MM-dd-HH-mm</maven.build.timestamp.format>
 		<snippetsDirectory>${project.build.directory}/generated-snippets</snippetsDirectory>
+		<sonar.organization>alexbosca</sonar.organization>
+  		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<profiles>
 		<profile>
