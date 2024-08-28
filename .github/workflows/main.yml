@@ -23,3 +23,10 @@ jobs:
 
     - name: Test with Maven
       run: mvn -f backend test
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_CLOUD_TOKEN }}
+      with:
+        projectBaseDir: backend/
