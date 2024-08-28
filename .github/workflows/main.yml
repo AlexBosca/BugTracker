@@ -29,4 +29,8 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_CLOUD_TOKEN }}
       with:
+        args:
+            -Dsonar.projectKey=ro.alexportfolio:backend
+            -Dsonar.organization=BugTracker
+            
         projectBaseDir: backend/
