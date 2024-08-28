@@ -25,12 +25,7 @@ jobs:
       run: mvn -f backend test
 
     - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
       env:
+        GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        args:
-            -Dsonar.projectKey=ro.alexportfolio:backend
-            -Dsonar.organization=alexbosca
-            
-        projectBaseDir: backend/
+      run: mvn -f backend verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=AlexBosca_BugTracker
