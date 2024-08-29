@@ -28,4 +28,4 @@ jobs:
       # env:
       #   GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
       #   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: mvn -f backend verify sonar:sonar -Dsonar.projectKey=ro.alexportfolio.backend -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      run: mvn -f backend verify sonar:sonar -Dsonar.projectKey=ro.alexportfolio:backend -Dsonar.login=${{ secrets.SONAR_TOKEN }}
