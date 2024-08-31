@@ -1,0 +1,63 @@
+name: Backend CI/CD
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'backend/**'
+  pull_request:
+    paths:
+      - 'backend/**'
+
+jobs:
+  backend:
+    name: Build and Test Backend
+    runs-on: ubuntu-latest
+
+    # * To be enabled when ITs are implemented
+    # services:
+    #   postgres:
+    #     image: postgres:latest
+    #     env:
+    #       POSTGRES_USER: ${{ secret.POSTGRES_USER }}
+    #       POSTGRES_PASSWORD: ${{ secret.POSTGRES_PASSWORD }}
+    #       POSTGRES_DATABASE: ${{ secret.POSTGRES_DATABASE }}
+    #     ports:
+    #       - 5432:5432
+    #     options: >-
+    #       --health-cmd "pg_isready -U postgres" 
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build with Maven
+        run: mvn clean install -DskipTests
+
+      - name: Run Unit Tests
+        run: mvn test
+
+      # * To be enabled when ITs are implemented
+      # - name: Run Integration Tests
+      #   run: mvn failsafe:integration-test failsafe:verify
+
+      - name: SonarCloud Scan
+        run: mvn sonar:sonar \
+          -Dsonar.projectKey=ro.alexportfolio:backend \
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
