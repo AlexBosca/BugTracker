@@ -14,9 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Backend Workflow
-        uses: benc-uk/workflow-dispatch@v1
+        uses: actions/github-script@v6
         with:
-          workflow: .github/workflows/backend.yml
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'backend.yml',
+              ref: context.ref,
+            })
 
   monitor-backend:
     name: Monitor Backend Workflow
