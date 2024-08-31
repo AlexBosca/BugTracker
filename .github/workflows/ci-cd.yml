@@ -16,7 +16,7 @@ jobs:
       - name: Trigger Backend Workflow
         uses: benc-uk/workflow-dispatch@v1
         with:
-          workflow: ./.github/workflows/backend.yml
+          workflow: .github/workflows/backend.yml
 
   monitor-backend:
     name: Monitor Backend Workflow
