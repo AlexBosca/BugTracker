@@ -60,6 +60,4 @@ jobs:
       #   run: mvn -f backend failsafe:integration-test failsafe:verify
 
       - name: SonarCloud Scan
-        run: mvn -f backend sonar:sonar \
-          -Dsonar.projectKey=ro.alexportfolio:backend \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: mvn -f backend sonar:sonar -Dsonar.projectKey=ro.alexportfolio:backend -Dsonar.login=${{ secrets.SONAR_TOKEN }}
