@@ -1,7 +1,8 @@
 name: Backend CI/CD
 
 on:
-  workflow_dispatch:
+  repository_dispatch:
+    types: [trigger-backend]
   push:
     paths:
       - 'backend/**'

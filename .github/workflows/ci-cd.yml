@@ -14,15 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Backend Workflow
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'backend.yml',
-              ref: context.ref,
-            })
+        run: |
+          curl -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -d '{"event_type":"trigger-backend"}'
 
   monitor-backend:
     name: Monitor Backend Workflow
