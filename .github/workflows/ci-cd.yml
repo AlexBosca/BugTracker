@@ -30,7 +30,7 @@ jobs:
         uses: actions/github-script@v5
         with:
           script: |
-            const workflowRuns = await github.actions.listWorkflowRuns({
+            const { data: workflowRuns } = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'backend.yml',
@@ -38,12 +38,14 @@ jobs:
               status: 'completed',
               per_page: 1
             });
-            if (workflowRuns.data.total_count === 0) {
+
+            if (workflowRuns.total_count === 0) {
               core.setFailed('Backend workflow did not run.');
-            }
-            const latestRun = workflowRuns.data.workflow_runs[0];
-            if (latestRun.conclusion !== 'success') {
-              core.setFailed(`Backend workflow failed with conclusion: ${latestRun.conclusion}`);
+            } else {
+              const latestRun = workflowRuns.workflow_runs[0];
+              if (latestRun.conclusion !== 'success') {
+                core.setFailed(`Backend workflow failed with conclusion: ${latestRun.conclusion}`);
+              }
             }
 
   # build:
