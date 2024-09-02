@@ -1,0 +1,45 @@
+name: Frontend CI/CD
+
+on:
+  repository_dispatch:
+    types: [trigger-frontend]
+  push:
+    paths:
+      - 'frontend/**'
+  pull_request:
+    paths:
+      - 'frontend/**'
+
+jobs:
+  frontend:
+    name: Build and Test Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        uses: npm install
+
+      - name: Lint Code
+        uses: npm run Lint
+
+      - name: Run Unit Tests
+        uses: npm test
+
+      - name: SonarCloud Scan
+        run: npx run sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=bugtracker_frontend -Dsonar.token=${{ secrets.SONAR_TOKEN }}
