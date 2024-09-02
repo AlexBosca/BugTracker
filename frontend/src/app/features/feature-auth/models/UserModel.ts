@@ -4,6 +4,7 @@ export interface UserModel {
     lastName: string;
     email: string;
     role: string;
+    avatarUrl: string;
     accountLocked: boolean;
     enabled: boolean;
     issuesCreated: Object[];

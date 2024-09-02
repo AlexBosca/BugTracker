@@ -21,6 +21,18 @@ jobs:
           https://api.github.com/repos/${{ github.repository }}/dispatches \
           -d '{"event_type":"trigger-backend"}'
 
+  trigger-frontend:
+    name: Trigger Frontend Workflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Frontend Workflow
+        run: |
+          curl -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -d '{"event_type":"trigger-frontend"}'
+
   # monitor-backend:
   #   name: Monitor Backend Workflow
   #   runs-on: ubuntu-latest
