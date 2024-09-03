@@ -20,22 +20,26 @@ jobs:
       - name: Cache Node.js modules
         uses: actions/cache@v3
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/frontend/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm install
+        working-directory: frontend
 
       - name: Lint code
         run: npm run lint
+        working-directory: frontend
 
       - name: Run Unit Tests
         run: npm test
+        working-directory: frontend
 
       - name: SonarCloud Scan
         run: npx run sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=bugtracker_frontend -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+        working-directory: frontend
 
 # name: Frontend CI/CD
 
