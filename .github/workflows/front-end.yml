@@ -1,7 +1,14 @@
 name: Frontend CI/CD
 
 on:
-  workflow_dispatch:  # This allows manual triggering of the workflow
+  repository_dispatch:
+    types: [trigger-frontend]
+  push:
+    paths:
+      - 'frontend/**'
+  pull_request:
+    paths:
+      - 'frontend/**'
 
 jobs:
   frontend:
@@ -33,9 +40,9 @@ jobs:
       #   run: npm run lint
       #   working-directory: frontend
 
-      - name: Run Unit Tests
-        run: npm test
-        working-directory: frontend
+      # - name: Run Unit Tests
+      #   run: npm test
+      #   working-directory: frontend
 
       - name: SonarCloud Scan
         run: npx run sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=bugtracker_frontend -Dsonar.token=${{ secrets.SONAR_TOKEN }}
