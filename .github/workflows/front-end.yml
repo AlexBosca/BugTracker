@@ -1,8 +1,10 @@
 name: Frontend CI/CD
 
 on:
-  repository_dispatch:
-    types: [trigger-frontend]
+  # repository_dispatch:
+  #   types: [trigger-frontend]
+  workflow_dispatch:
+
   push:
     paths:
       - 'frontend/**'
