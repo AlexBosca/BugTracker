@@ -41,7 +41,7 @@ jobs:
       #   working-directory: frontend
 
       - name: Run Unit Tests
-        run: npm test --no-watch --code-coverage
+        run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
         working-directory: frontend
 
       - name: Set up JDK 17 for Sonar Scan
