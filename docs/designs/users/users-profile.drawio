@@ -1,0 +1,67 @@
+<mxfile host="65bd71144e">
+    <diagram id="FTg8HaYWv7W5L9TOFE8W" name="Page-1">
+        <mxGraphModel dx="1386" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Toolbar" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="100" width="240" height="610" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Navigation" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="280" y="100" width="840" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="" style="rounded=0;whiteSpace=wrap;html=1;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="280" y="160" width="840" height="550" as="geometry"/>
+                </mxCell>
+                <mxCell id="88" value="Profile&lt;br&gt;Picture" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+                    <mxGeometry x="410" y="200" width="160" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="89" value="Firstname Lastname" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;" vertex="1" parent="1">
+                    <mxGeometry x="585" y="257.5" width="225" height="45" as="geometry"/>
+                </mxCell>
+                <mxCell id="96" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;Edit profile&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;" vertex="1" parent="1">
+                    <mxGeometry x="990" y="265" width="90" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="97" value="Email:" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="510" y="414" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="98" value="Phone number:" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="440" y="450" width="130" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="99" value="Job title:" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="500" y="490" width="70" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="100" value="Department:" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="470" y="530" width="100" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="101" value="Timezone:" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="490" y="570" width="80" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="102" value="Manager:" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="490" y="610" width="80" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="103" value="firstname.lastname@company.com" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="585" y="414" width="265" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="104" value="0000 123 456" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="585" y="450" width="105" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="105" value="JOB TITLE" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="585" y="490" width="105" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="107" value="DEPARTMENT" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="585" y="530" width="105" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="108" value="Timezone" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="585" y="570" width="105" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="109" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="585" y="605" width="40" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="110" value="Firstname Lastname" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
+                    <mxGeometry x="635" y="610" width="155" height="30" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
