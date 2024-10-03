@@ -4,9 +4,13 @@ export interface UserModel {
     lastName: string;
     email: string;
     role: string;
-    avatarUrl: string;
     accountLocked: boolean;
     enabled: boolean;
+    avatarUrl: string;
+    phoneNumber: string;
+    jobTitle: string;
+    department: string;
+    timezone: string;
     issuesCreated: Object[];
     issuesAssigned: Object[];
     issuesClosed: Object[];
