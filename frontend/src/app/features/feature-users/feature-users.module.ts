@@ -9,6 +9,8 @@ import { UserModalComponent } from './components/user-modal/user-modal.component
 import { UsersFilterComponent } from './components/users-filter/users-filter.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserUpdateModalComponent } from './components/user-update-modal/user-update-modal.component';
+import { PageUserProfileComponent } from './pages/page-user-profile/page-user-profile.component';
+import { UserProfileModalComponent } from './components/user-profile-modal/user-profile-modal.component';
 
 
 @NgModule({
@@ -17,7 +19,9 @@ import { UserUpdateModalComponent } from './components/user-update-modal/user-up
     UsersTableComponent,
     UserModalComponent,
     UsersFilterComponent,
-    UserUpdateModalComponent
+    UserUpdateModalComponent,
+    PageUserProfileComponent,
+    UserProfileModalComponent
   ],
   imports: [
     CommonModule,

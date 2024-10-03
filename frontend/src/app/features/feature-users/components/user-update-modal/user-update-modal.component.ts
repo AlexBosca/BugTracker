@@ -69,7 +69,7 @@ export class UserUpdateModalComponent implements OnChanges {
       case 'ROLE_VISITOR':
         role = 'V';
         break;
-    
+
       default:
         break;
     }
@@ -88,21 +88,21 @@ export class UserUpdateModalComponent implements OnChanges {
       return;
     }
 
-    this.userService.updateUser(this.user.userId, {
-      firstName: this.form['firstName'].value,
-      lastName: this.form['lastName'].value,
-      email: this.form['email'].value,
-      password: this.form['password'].value,
-      role: this.form['role'].value
-    }).subscribe({
-      next: () => {
-        document.getElementById('updateUserForm')?.click();
-        window.location.reload();
-      },
-      error: error => {
-        this.error = error;
-        this.loading = false;
-      }
-    });
+    // this.userService.updateUser(this.user.userId, {
+    //   firstName: this.form['firstName'].value,
+    //   lastName: this.form['lastName'].value,
+    //   email: this.form['email'].value,
+    //   password: this.form['password'].value,
+    //   role: this.form['role'].value
+    // }).subscribe({
+    //   next: () => {
+    //     document.getElementById('updateUserForm')?.click();
+    //     window.location.reload();
+    //   },
+    //   error: error => {
+    //     this.error = error;
+    //     this.loading = false;
+    //   }
+    // });
   }
 }

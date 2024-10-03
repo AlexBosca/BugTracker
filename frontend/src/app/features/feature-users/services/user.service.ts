@@ -44,10 +44,17 @@ export class UserService {
     );
   }
 
-  updateUser(userId: string, userRequest: UserRegistrationModel): Observable<void> {
+  updateUser(formData: FormData): Observable<void> {
     return this.http.put<void>(
-      `${this.usersUrl}/${userId}`,
-      userRequest
+      `${this.usersUrl}`,
+      formData
+    );
+  }
+
+  uploadAvatar(formData: FormData): Observable<void> {
+    return this.http.post<void>(
+      `${this.usersUrl}/upload-avatar`,
+      formData
     );
   }
 

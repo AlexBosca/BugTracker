@@ -1,0 +1,59 @@
+.accordion-item {
+  border: none;
+}
+
+.accordion-button {
+  box-shadow: none;
+}
+
+.profile-avatar {
+  height: 100%;
+  width: 100%;
+}
+
+.mini-avatar {
+  height: 50px;
+  width: 50px;
+}
+
+.hoverable{
+  position: relative;
+  display: block;
+  cursor: pointer;
+  border: 3px solid #EEE;
+  height: 150px;
+  width: 150px;
+  border-radius: 50%;
+}
+
+.hoverable .hover-icon{
+  position: absolute;
+  display: none;
+  top: 50%;
+  left:  50%;
+  transform: translate(-50%,-50%);
+  z-index: 2;
+}
+
+.hoverable .background{
+  position: absolute;
+  display: none;
+  top: 0;
+  left:  0;
+  bottom: 0;
+  right: 0;
+  background-color:rgba(109, 109, 109, 0.5);
+  pointer-events: none;
+  border-radius: 50%;
+  z-index: 1;
+}
+.hoverable:hover .hover-icon{
+  display: block;
+}
+.hoverable:hover .background{
+  display: block;
+}
+
+#fileInput{
+  display: none;
+}
