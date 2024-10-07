@@ -42,6 +42,7 @@ public class SecurityConfig {
                     .antMatchers(HttpMethod.POST, "/projects/{projectKey}/assignUsers").hasAnyRole(UserRole.ROLE_ADMIN.getName(), UserRole.ROLE_PROJECT_MANAGER.getName())
                     .antMatchers(HttpMethod.PUT, "/projects/{projectKey}").hasAnyRole(UserRole.ROLE_ADMIN.getName(), UserRole.ROLE_PROJECT_MANAGER.getName())
                     .antMatchers(HttpMethod.POST, "/projects").hasAnyRole(UserRole.ROLE_ADMIN.getName(), UserRole.ROLE_PROJECT_MANAGER.getName())
+                    .antMatchers(HttpMethod.PUT, "/issues/{issueId}/assignToDeveloper/{assigneeId}").hasAnyRole(UserRole.ROLE_ADMIN.getName(), UserRole.ROLE_PROJECT_MANAGER.getName(), UserRole.ROLE_SCRUM_MASTER.getName(), UserRole.ROLE_DEVELOPER.getName())
                     .antMatchers("/authentication/**").permitAll()
                     .anyRequest().authenticated())
             .cors(Customizer.withDefaults())
