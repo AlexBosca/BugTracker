@@ -27,6 +27,8 @@ application:
 
 spring:
   datasource:
+    initialization-mode: always
+    schema: classpath:schema/schema.sql
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/bugtracker
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
