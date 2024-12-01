@@ -1,3 +1,6 @@
+-- Drop Users table if exists
+DROP TABLE IF EXISTS users CASCADE;
+
 -- Create Users Table
 CREATE TABLE users(
     id SERIAL PRIMARY KEY,
@@ -8,6 +11,9 @@ CREATE TABLE users(
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Drop Projects table if exists
+DROP TABLE IF EXISTS projects CASCADE;
+
 -- Create Projects Table
 CREATE TABLE projects(
     id SERIAL PRIMARY KEY,
@@ -16,6 +22,9 @@ CREATE TABLE projects(
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Drop Issues table if exists
+DROP TABLE IF EXISTS issues CASCADE;
 
 -- Create Issues Table
 CREATE TABLE issues(
@@ -31,14 +40,20 @@ CREATE TABLE issues(
     FOREIGN KEY (assigned_user_id) REFERENCES users(user_id)
 );
 
+-- Drop Project Roles table if exists
+DROP TABLE IF EXISTS project_roles CASCADE;
+
 -- Create Project Roles Table
 CREATE TABLE project_roles(
     id SERIAL PRIMARY KEY,
-    role_name VARCHAR(50) NOT NULL,
+    role_name VARCHAR(50) NOT NULL UNIQUE,
     project_key VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (project_key) REFERENCES projects(project_key)
 );
+
+-- Drop User Project Roles table if exists
+DROP TABLE IF EXISTS user_project_roles CASCADE;
 
 -- Create User Project Roles Table
 CREATE TABLE user_project_roles(

@@ -26,10 +26,23 @@ public class User {
     @Column(name = "global_role", nullable = false)
     private GlobalRole globalRole;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
     public User() {
+    }
+
+    public User(String userId, String email, String password, GlobalRole globalRole) {
+        this.userId = userId;
+        this.email = email;
+        this.password = password;
+        this.globalRole = globalRole;
+    }
+
+    public User(String email, String password, GlobalRole globalRole) {
+        this.email = email;
+        this.password = password;
+        this.globalRole = globalRole;
     }
 
     public Long getId() {
