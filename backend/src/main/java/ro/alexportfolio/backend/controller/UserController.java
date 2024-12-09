@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ro.alexportfolio.backend.dto.request.UserRequest;
+import ro.alexportfolio.backend.dto.request.UserRequestDTO;
+import ro.alexportfolio.backend.dto.response.UserResponseDTO;
+import ro.alexportfolio.backend.mapper.UserMapper;
 import ro.alexportfolio.backend.model.User;
 import ro.alexportfolio.backend.service.UserService;
 
@@ -17,16 +19,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserMapper mapper;
+
     @PostMapping
-    public ResponseEntity<Void> createUser(@RequestBody UserRequest request) {
-        userService.createUser(
-                request.getUserId(),
-                request.getEmail(),
-                request.getPassword(),
-                request.getGlobalRole()
-//                request.getFirstName(),
-//                request.getLastName()
-        );
+    public ResponseEntity<Void> createUser(@RequestBody UserRequestDTO request) {
+        userService.createUser(mapper.toEntity(request));
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -40,21 +38,17 @@ public class UserController {
     }
 
     @GetMapping(path = "/{userId}")
-    public ResponseEntity<User> getUser(@PathVariable(name = "userId") String userId) {
+    public ResponseEntity<UserResponseDTO> getUser(@PathVariable(name = "userId") String userId) {
         return new ResponseEntity<>(
-                userService.getUserByUserId(userId),
+                mapper.toResponse(userService.getUserByUserId(userId)),
                 HttpStatus.OK
         );
     }
 
-    @PutMapping(path = "/{userID}")
-    public ResponseEntity<Void> update(@PathVariable(name = "userId") String usedId, @RequestBody UserRequest request) {
-        userService.updateUser(
-                usedId,
-                request.getEmail(),
-                request.getPassword(),
-                request.getGlobalRole()
-        );
+    @PutMapping(path = "/{userId}")
+    public ResponseEntity<Void> update(@PathVariable(name = "userId") String usedId,
+                                       @RequestBody UserRequestDTO request) {
+        userService.updateUser(usedId, mapper.toEntity(request));
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

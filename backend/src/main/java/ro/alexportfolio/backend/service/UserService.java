@@ -16,8 +16,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public void createUser(String userId, String email, String password, GlobalRole globalRole) {
-        User user = new User(userId, email, password, globalRole);
+    public void createUser(User user) {
+        user.setCreatedAt(LocalDateTime.now());
 
         userRepository.save(user);
     }
@@ -27,17 +27,19 @@ public class UserService {
     }
 
     public User getUserByUserId(String userId) {
-        return userRepository.findByUserId(userId).get();
+        return userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
     }
 
-    public void updateUser(String userId, String email, String password, GlobalRole globalRole) {
-        User user = userRepository.findByUserId(userId).get();
+    public void updateUser(String userId, User user) {
+        User existingUser = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
 
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setGlobalRole(globalRole);
+        existingUser.setEmail(user.getEmail());
+        existingUser.setPassword(user.getPassword());
+        existingUser.setGlobalRole(user.getGlobalRole());
 
-        userRepository.save(user);
+        userRepository.save(existingUser);
     }
 
     public void deleteUser(String userId) {

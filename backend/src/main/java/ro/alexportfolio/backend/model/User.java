@@ -16,6 +16,12 @@ public class User {
     @Column(name = "user_id", unique = true, nullable = false, length = 50)
     private String userId;
 
+    @Column(name = "first_name", nullable = false, length = 50)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false, length = 50)
+    private String lastName;
+
     @Column(unique = true, nullable = false, length = 100)
     private String email;
 
@@ -32,14 +38,10 @@ public class User {
     public User() {
     }
 
-    public User(String userId, String email, String password, GlobalRole globalRole) {
+    public User(String userId, String firstName, String lastName, String email, String password, GlobalRole globalRole) {
         this.userId = userId;
-        this.email = email;
-        this.password = password;
-        this.globalRole = globalRole;
-    }
-
-    public User(String email, String password, GlobalRole globalRole) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.globalRole = globalRole;
@@ -59,6 +61,22 @@ public class User {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {

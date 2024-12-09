@@ -27,14 +27,14 @@ public class Issue {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "project_id", nullable = false, length = 50)
-    private String projectId;
+    @Column(name = "project_key", nullable = false, length = 50)
+    private String projectKey;
 
     @Column(name = "assigned_user_id", length = 50)
     private String assignedUserId;
 
     @ManyToOne
-    @JoinColumn(name = "project_id", referencedColumnName = "project_id", insertable = false, updatable = false)
+    @JoinColumn(name = "project_key", referencedColumnName = "project_key", insertable = false, updatable = false)
     private Project project;
 
     @ManyToOne
@@ -89,12 +89,12 @@ public class Issue {
         this.createdAt = createdAt;
     }
 
-    public String getProjectId() {
-        return projectId;
+    public String getProjectKey() {
+        return projectKey;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setProjectKey(String projectKey) {
+        this.projectKey = projectKey;
     }
 
     public String getAssignedUserId() {

@@ -5,6 +5,8 @@ DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users(
     id SERIAL PRIMARY KEY,
     user_id VARCHAR(50) UNIQUE NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
     email VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     global_role VARCHAR(50) NOT NULL,
@@ -20,7 +22,7 @@ CREATE TABLE projects(
     project_key VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(100) NOT NULL,
     description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- Drop Issues table if exists
@@ -32,9 +34,10 @@ CREATE TABLE issues(
     issue_id VARCHAR(50) UNIQUE NOT NULL,
     title VARCHAR(100) NOT NULL,
     description TEXT,
-    status VARCHAR(50) NOT NULL,
+--    status VARCHAR(50) NOT NULL,
+    status VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    project_key VARCHAR(50) NOT NULL,
+    project_key VARCHAR(50),
     assigned_user_id VARCHAR(50),
     FOREIGN KEY (project_key) REFERENCES projects(project_key),
     FOREIGN KEY (assigned_user_id) REFERENCES users(user_id)

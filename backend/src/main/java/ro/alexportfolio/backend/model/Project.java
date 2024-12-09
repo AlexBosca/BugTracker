@@ -12,8 +12,8 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "project_id", unique = true, nullable = false, length = 50)
-    private String projectId;
+    @Column(name = "project_key", unique = true, nullable = false, length = 50)
+    private String projectKey;
 
     @Column(nullable = false, length = 100)
     private String name;
@@ -24,6 +24,14 @@ public class Project {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    public Project(String projectKey, String name, String description) {
+        this.projectKey = projectKey;
+        this.name = name;
+        this.description = description;
+    }
+
+    public Project() {}
+
     public Long getId() {
         return id;
     }
@@ -32,12 +40,12 @@ public class Project {
         this.id = id;
     }
 
-    public String getProjectId() {
-        return projectId;
+    public String getProjectKey() {
+        return projectKey;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setProjectKey(String projectKey) {
+        this.projectKey = projectKey;
     }
 
     public String getName() {

@@ -15,8 +15,8 @@ public class UserProjectRole {
     @Column(name = "user_id", nullable = false, length = 50)
     private String userId;
 
-    @Column(name = "project_id", nullable = false, length = 50)
-    private String projectId;
+    @Column(name = "project_key", nullable = false, length = 50)
+    private String projectKey;
 
     @Column(name = "role_name", nullable = false, length = 50)
     private String roleName;
@@ -29,7 +29,7 @@ public class UserProjectRole {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "project_id", referencedColumnName = "project_id", insertable = false, updatable = false)
+    @JoinColumn(name = "project_key", referencedColumnName = "project_key", insertable = false, updatable = false)
     private Project project;
 
     @ManyToOne
@@ -52,12 +52,12 @@ public class UserProjectRole {
         this.userId = userId;
     }
 
-    public String getProjectId() {
-        return projectId;
+    public String getProjectKey() {
+        return projectKey;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setProjectKey(String projectKey) {
+        this.projectKey = projectKey;
     }
 
     public String getRoleName() {
