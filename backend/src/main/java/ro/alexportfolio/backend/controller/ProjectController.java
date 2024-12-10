@@ -30,9 +30,9 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Project>> getAllProjects() {
+    public ResponseEntity<List<ProjectResponseDTO>> getAllProjects() {
         return new ResponseEntity<>(
-                projectService.getAllProjects(),
+                mapper.toResponseList(projectService.getAllProjects()),
                 HttpStatus.OK
         );
     }

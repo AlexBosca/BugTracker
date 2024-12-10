@@ -31,9 +31,9 @@ public class IssueController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Issue>> getAllIssues(@PathVariable(name = "projectKey") String projectKey) {
+    public ResponseEntity<List<IssueResponseDTO>> getAllIssues(@PathVariable(name = "projectKey") String projectKey) {
         return new ResponseEntity<>(
-                issueService.getAllIssues(),
+                mapper.toResponseList(issueService.getAllIssues()),
                 HttpStatus.OK
         );
     }
