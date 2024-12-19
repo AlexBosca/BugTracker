@@ -11,6 +11,22 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        # env:
+        #   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        #   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        #   POSTGRES_DATABASE: ${{ secrets.POSTGRES_DATABASE }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres" 
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
