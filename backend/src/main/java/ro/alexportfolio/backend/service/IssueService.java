@@ -12,8 +12,11 @@ import java.util.List;
 @Service
 public class IssueService {
 
-    @Autowired
-    private IssueRepository issueRepository;
+    private final IssueRepository issueRepository;
+
+    public IssueService(IssueRepository issueRepository) {
+        this.issueRepository = issueRepository;
+    }
 
     public void createIssue(Issue issue) {
         issue.setCreatedAt(LocalDateTime.now());

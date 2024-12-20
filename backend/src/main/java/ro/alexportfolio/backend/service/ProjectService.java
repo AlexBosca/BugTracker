@@ -12,8 +12,11 @@ import java.util.List;
 @Service
 public class ProjectService {
 
-    @Autowired
-    private ProjectRepository projectRepository;
+    private final ProjectRepository projectRepository;
+
+    public ProjectService(ProjectRepository projectRepository) {
+        this.projectRepository = projectRepository;
+    }
 
     public void createProject(Project project) {
         project.setCreatedAt(LocalDateTime.now());

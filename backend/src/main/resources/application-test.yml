@@ -1,0 +1,25 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
+
+  datasource:
+    url: none
+    driver-class-name: org.springframework.boot.jdbc.NoDriverClass
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+  data:
+    jpa:
+      repositories:
+        enabled: true
+
+  sql:
+    init:
+      mode: never
