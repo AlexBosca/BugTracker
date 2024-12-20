@@ -74,26 +74,29 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          echo "Checking SonarCloud Quality Gate status..."
-          PR_KEY="ro.alexportfolio:backend:$(echo $GITHUB_REF | cut -d/ -f3)" # Generate the SonarCloud PR key
-          echo "PR Key: $PR_KEY"
-
+          echo "Waiting for Quality Gate result..."
           STATUS="PENDING"
-          while [ "$STATUS" == "PENDING" ]; do
-            RESPONSE=$(curl -s -u $SONAR_TOKEN: \
-              "https://sonarcloud.io/api/qualitygates/project_status?projectKey=$PR_KEY")
+          MAX_WAIT=300 # maximum wait time in seconds
+          WAIT_INTERVAL=10 # interval between checks in seconds
+          WAIT_TIME=0
+          while [ "$STATUS" == "PENDING" ] && [ $WAIT_TIME -lt $MAX_WAIT ]; do
+            RESPONSE=$(curl -s -u $SONAR_TOKEN: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=your_project_key&pullRequest=${{ github.event.pull_request.number }}")
             STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
             if [ "$STATUS" == "OK" ]; then
-              echo "SonarCloud Quality Gate passed!"
+              echo "Quality Gate passed!"
               exit 0
             elif [ "$STATUS" == "ERROR" ]; then
-              echo "SonarCloud Quality Gate failed!"
+              echo "Quality Gate failed!"
+              echo $RESPONSE | jq
               exit 1
             else
               echo "Waiting for analysis to complete..."
-              sleep 10
+              sleep $WAIT_INTERVAL
+              WAIT_TIME=$((WAIT_TIME + WAIT_INTERVAL))
             fi
           done
+          echo "Quality Gate status is still pending after $MAX_WAIT seconds. Failing the job."
+          exit 1
 
       - name: Notify Failure
         if: failure()
