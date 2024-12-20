@@ -66,6 +66,10 @@ jobs:
         working-directory: ./backend
         run: mvn sonar:sonar -Dsonar.projectKey=ro.alexportfolio:backend -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
   
+      - name: Install jq
+        run: sudo apt-get install -y jq
+      
+
       - name: Wait for Quality Gate
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
