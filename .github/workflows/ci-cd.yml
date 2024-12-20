@@ -10,6 +10,7 @@ on:
 
 jobs:
   backend:
+    name: Backend Job
     runs-on: ubuntu-latest
 
     # services:
