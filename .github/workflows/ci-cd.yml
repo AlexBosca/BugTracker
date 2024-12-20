@@ -80,7 +80,7 @@ jobs:
           WAIT_INTERVAL=10 # interval between checks in seconds
           WAIT_TIME=0
           while [ "$STATUS" == "PENDING" ] && [ $WAIT_TIME -lt $MAX_WAIT ]; do
-            RESPONSE=$(curl -s -u $SONAR_TOKEN: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=your_project_key&pullRequest=${{ github.event.pull_request.number }}")
+            RESPONSE=$(curl -s -u $SONAR_TOKEN: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=ro.alexportfolio:backend&pullRequest=${{ github.event.pull_request.number }}")
             STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
             if [ "$STATUS" == "OK" ]; then
               echo "Quality Gate passed!"
