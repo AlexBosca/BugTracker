@@ -83,7 +83,7 @@ jobs:
           download-artifact-merge-multiple: true
           report-name: JUnit Test
           report-only-summary: true
-          report-path: '**/backend/target/surefire-reports/TEST*.xml' 
+          report-path: './backend/target/surefire-reports/TEST*.xml' 
 
       - name: SonarCloud Scan
         working-directory: ./backend
