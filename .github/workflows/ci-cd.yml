@@ -8,11 +8,22 @@ on:
     branches: 
       - master
 
-      
 jobs:
+  recreate-comment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Publish Report
+        uses: turing85/publish-report@v2
+        with:
+          checkout: true
+          recreate-comment: true
+  
   backend:
     name: Backend Job
     runs-on: ubuntu-latest
+    needs:
+      - recreate-comment
 
     # services:
     #   postgres:
@@ -64,13 +75,22 @@ jobs:
         working-directory: ./backend
         run: mvn clean test package
 
+      - name: Test Report
+        uses: turing85/publish-report@v2
+        with:
+          checkout: true
+          download-artifact-pattern: test-report-*
+          download-artifact-merge-multiple: true
+          report-name: JUnit Test
+          report-only-summary: true
+          report-path: '**/target/surefire-reports/TEST*.xml' 
+
       - name: SonarCloud Scan
         working-directory: ./backend
         run: mvn sonar:sonar -Dsonar.projectKey=ro.alexportfolio:backend -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
   
       - name: Install jq
         run: sudo apt-get install -y jq
-      
 
       - name: Wait for Quality Gate
         env:
