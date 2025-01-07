@@ -92,7 +92,27 @@ jobs:
           download-artifact-merge-multiple: true
           report-name: JUnit Test
           report-only-summary: true
-          report-path: '**/target/surefire-reports/TEST*.xml' 
+          report-path: '**/target/surefire-reports/TEST*.xml'
+
+      - name: Run Checkstyle
+        working-directory: ./backend
+        run: mvn checkstyle:checkstyle
+
+      - name: Upload Checkstyle Report
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: checkstyle-report
+          path: '**/target/checkstyle-result.xml'
+          retention-days: 2
+
+      - name: Checkstyle Report
+        uses: turing85/publish-report@v2
+        with:
+          checkout: true
+          report-name: Checkstyle
+          report-only-summary: true
+          report-path: '**/target/checkstyle-result.xml'
 
       - name: SonarCloud Scan
         working-directory: ./backend
