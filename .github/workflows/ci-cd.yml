@@ -75,6 +75,9 @@ jobs:
         working-directory: ./backend
         run: mvn clean test package
 
+      - name: Test Step
+        run: echo "$(pwd)/backend/target"
+
       - name: Test Report
         uses: turing85/publish-report@v2
         with:
