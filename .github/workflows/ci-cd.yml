@@ -75,8 +75,14 @@ jobs:
         working-directory: ./backend
         run: mvn clean test package
 
-      # - name: Test Step
-      #   run: echo "$(pwd)/backend/target"
+      - name: Upload Test Report
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          if-no-files-found: error
+          name: test-report-BugTracker
+          path: '**/target/surefire-reports/TEST*.xml'
+          retention-days: 2
 
       - name: Test Report
         uses: turing85/publish-report@v2
