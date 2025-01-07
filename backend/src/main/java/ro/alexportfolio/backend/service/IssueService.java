@@ -34,7 +34,7 @@ public class IssueService {
 
     public void updateIssue(String issueId, Issue issue) {
         Issue existingIssue = issueRepository.findIssueByIssueId(issueId)
-                .orElseThrow(() -> new IllegalStateException("Issue not found"));
+                .orElseThrow(() -> new IllegalStateException("Issue not found -- test"));
 
         existingIssue.setTitle(issue.getTitle());
         existingIssue.setDescription(issue.getDescription());
