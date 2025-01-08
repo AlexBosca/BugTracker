@@ -111,7 +111,7 @@ jobs:
       - name: Parse Checkstyle Report
         id: checkstyle-summary
         run: |
-          ERRORS=$(grep -oP '(?<=<error ).*?' backend/target/checkstyle-result.xml | wc -l)
+          ERRORS=$(grep -c "<error " backend/target/checkstyle-result.xml)
           echo "errors=$ERRORS" >> $GITHUB_OUTPUT
 
       - name: Post Summary Comment
