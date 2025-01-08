@@ -78,7 +78,7 @@ jobs:
       - name: Parse Unit Test Report
         id: junit-summary
         run: |
-          TESTS=$(grep -oP '(?<=testsuite tests=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
+          TESTS=$(grep -oP '(?<=tests=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
           FAILURES=$(grep -oP '(?<=failures=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
           SKIPPED=$(grep -oP '(?<=skipped=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
           echo "tests=$TESTS" >> $GITHUB_OUTPUT
