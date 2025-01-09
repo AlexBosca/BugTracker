@@ -73,7 +73,7 @@ jobs:
 
       - name: Build and Test
         working-directory: ./backend
-        run: mvn clean test package
+        run: mvn clean test package verify
 
       - name: Parse Unit Test Report
         id: junit-summary
