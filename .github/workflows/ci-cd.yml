@@ -114,21 +114,21 @@ jobs:
           ERRORS=$(grep -c "<error " backend/target/checkstyle-result.xml)
           echo "errors=$ERRORS" >> $GITHUB_OUTPUT
 
-      - name: Post Summary Comment
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            ## CI Pipeline Summary
-            ### Unit Test Report
-            - **Total Tests**: ${{ steps.junit-summary.outputs.tests }}
-            - **Failures**: ${{ steps.junit-summary.outputs.failures }}
-            - **Skipped**: ${{ steps.junit-summary.outputs.skipped }}
+      # - name: Post Summary Comment
+      #   uses: peter-evans/create-or-update-comment@v3
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     repository: ${{ github.repository }}
+      #     issue-number: ${{ github.event.pull_request.number }}
+      #     body: |
+      #       ## CI Pipeline Summary
+      #       ### Unit Test Report
+      #       - **Total Tests**: ${{ steps.junit-summary.outputs.tests }}
+      #       - **Failures**: ${{ steps.junit-summary.outputs.failures }}
+      #       - **Skipped**: ${{ steps.junit-summary.outputs.skipped }}
             
-            ### Checkstyle Report
-            - **Total Issues**: ${{ steps.checkstyle-summary.outputs.errors }}
+      #       ### Checkstyle Report
+      #       - **Total Issues**: ${{ steps.checkstyle-summary.outputs.errors }}
 
       # - name: Upload Checkstyle Report
       #   uses: actions/upload-artifact@v4
