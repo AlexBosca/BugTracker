@@ -148,7 +148,7 @@ jobs:
 
       - name: SonarCloud Scan
         working-directory: ./backend
-        run: mvn package sonar:sonar -Dsonar.projectKey=ro.alexportfolio:backend -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+        run: mvn package sonar:sonar -Dsonar.projectKey=ro.alexportfolio:backend -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
   
       - name: Install jq
         run: sudo apt-get install -y jq
