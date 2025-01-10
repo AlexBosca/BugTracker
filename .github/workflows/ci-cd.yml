@@ -147,43 +147,55 @@ jobs:
       #     report-path: '**/target/checkstyle-result.xml'
 
       - name: SonarCloud Scan
-        working-directory: ./backend
-        run: mvn package sonar:sonar -Dsonar.projectKey=ro.alexportfolio:backend -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
-  
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
-      - name: Wait for Quality Gate
+        uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          echo "Waiting for Quality Gate result..."
-          STATUS="PENDING"
-          MAX_WAIT=300 # maximum wait time in seconds
-          WAIT_INTERVAL=10 # interval between checks in seconds
-          WAIT_TIME=0
-          while [ "$STATUS" == "PENDING" ] && [ $WAIT_TIME -lt $MAX_WAIT ]; do
-            RESPONSE=$(curl -s -u $SONAR_TOKEN: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=ro.alexportfolio:backend&pullRequest=${{ github.event.pull_request.number }}")
-            STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
-            if [ "$STATUS" == "OK" ]; then
-              echo "Quality Gate passed!"
-              exit 0
-            elif [ "$STATUS" == "ERROR" ]; then
-              echo "Quality Gate failed!"
-              echo $RESPONSE | jq
-              exit 1
-            else
-              echo "Waiting for analysis to complete..."
-              sleep $WAIT_INTERVAL
-              WAIT_TIME=$((WAIT_TIME + WAIT_INTERVAL))
-            fi
-          done
-          echo "Quality Gate status is still pending after $MAX_WAIT seconds. Failing the job."
-          exit 1
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectBaseDir: backend
+          args: >
+            -Dsonar.projectKey=ro.alexportfolio:backend
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
 
-      - name: Notify Failure
-        if: failure()
-        run: echo "SonarCloud Quality Gate failed. Please fix the issues."
+      # - name: SonarCloud Scan
+      #   working-directory: ./backend
+      #   run: mvn package sonar:sonar -Dsonar.projectKey=ro.alexportfolio:backend -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+  
+      # - name: Install jq
+      #   run: sudo apt-get install -y jq
+
+      # - name: Wait for Quality Gate
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #   run: |
+      #     echo "Waiting for Quality Gate result..."
+      #     STATUS="PENDING"
+      #     MAX_WAIT=300 # maximum wait time in seconds
+      #     WAIT_INTERVAL=10 # interval between checks in seconds
+      #     WAIT_TIME=0
+      #     while [ "$STATUS" == "PENDING" ] && [ $WAIT_TIME -lt $MAX_WAIT ]; do
+      #       RESPONSE=$(curl -s -u $SONAR_TOKEN: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=ro.alexportfolio:backend&pullRequest=${{ github.event.pull_request.number }}")
+      #       STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
+      #       if [ "$STATUS" == "OK" ]; then
+      #         echo "Quality Gate passed!"
+      #         exit 0
+      #       elif [ "$STATUS" == "ERROR" ]; then
+      #         echo "Quality Gate failed!"
+      #         echo $RESPONSE | jq
+      #         exit 1
+      #       else
+      #         echo "Waiting for analysis to complete..."
+      #         sleep $WAIT_INTERVAL
+      #         WAIT_TIME=$((WAIT_TIME + WAIT_INTERVAL))
+      #       fi
+      #     done
+      #     echo "Quality Gate status is still pending after $MAX_WAIT seconds. Failing the job."
+      #     exit 1
+
+      # - name: Notify Failure
+      #   if: failure()
+      #   run: echo "SonarCloud Quality Gate failed. Please fix the issues."
 
   # build-frontend:
   #   runs-on: ubuntu-latest
