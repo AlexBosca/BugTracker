@@ -120,7 +120,7 @@ jobs:
 
       - name: Post Summary Comment
         uses: marocchino/sticky-pull-request-comment@v2
-        if: ${{ github.event == 'pull_request' }}
+        if: ${{ github.event.pull_request.number != '' }}
         with:
           message: |
             ### 🧪 Unit Test Report
