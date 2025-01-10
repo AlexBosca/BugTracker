@@ -81,9 +81,13 @@ jobs:
           TESTS=$(grep -oP '(?<=tests=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
           FAILURES=$(grep -oP '(?<=failures=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
           SKIPPED=$(grep -oP '(?<=skipped=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
+          ERRORS=$(grep -oP '(?<=errors=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
+          SUCCESS=$((TESTS - FAILURES - SKIPPED - ERRORS))
           echo "tests=$TESTS" >> $GITHUB_OUTPUT
           echo "failures=$FAILURES" >> $GITHUB_OUTPUT
           echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
+          echo "errors=$ERRORS" >> $GITHUB_OUTPUT
+          echo "success=$SUCCESS" >> $GITHUB_OUTPUT
 
       # - name: Upload Test Report
       #   uses: actions/upload-artifact@v4
@@ -114,18 +118,16 @@ jobs:
           ERRORS=$(grep -c "<error " backend/target/checkstyle-result.xml)
           echo "errors=$ERRORS" >> $GITHUB_OUTPUT
 
-      # - name: Post Summary Comment
-      #   uses: peter-evans/create-or-update-comment@v3
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     repository: ${{ github.repository }}
-      #     issue-number: ${{ github.event.pull_request.number }}
-      #     body: |
-      #       ## CI Pipeline Summary
-      #       ### Unit Test Report
-      #       - **Total Tests**: ${{ steps.junit-summary.outputs.tests }}
-      #       - **Failures**: ${{ steps.junit-summary.outputs.failures }}
-      #       - **Skipped**: ${{ steps.junit-summary.outputs.skipped }}
+      - name: Post Summary Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ github.event == 'pull_request' }}
+        with:
+          message: |
+            ### 🧪 Unit Test Report
+            - **📊 Total Tests**: ${{ steps.junit-summary.outputs.tests }}
+            - **✅ Successful Tests**: ${{ steps.junit-summary.outputs.success }}
+            - **❌ Fail Tests**: ${{ steps.junit-summary.outputs.failures }}
+            - **⚠️ Skipped Tests**: ${{ steps.junit-summary.outputs.skipped }}
             
       #       ### Checkstyle Report
       #       - **Total Issues**: ${{ steps.checkstyle-summary.outputs.errors }}
