@@ -154,7 +154,7 @@ jobs:
         with:
           projectBaseDir: backend
           args: >
-            -Dsonar.organization=BugTracker
+            -Dsonar.organization=bugtracker
             -Dsonar.projectKey=ro.alexportfolio:backend
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
