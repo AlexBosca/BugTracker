@@ -42,18 +42,6 @@ jobs:
     #       --health-retries 5
 
     steps:
-      # - name: Debug Environment Variables
-      #   run: |
-      #     echo "POSTGRES_HOST: $POSTGRES_HOST"
-      #     echo "POSTGRES_PORT: $POSTGRES_PORT"
-      #     echo "POSTGRES_USER: $POSTGRES_USER"
-      #     echo "POSTGRES_PASSWORD: $POSTGRES_PASSWORD"
-
-      # - name: Test PostgreSQL Connection
-      #   run: |
-      #     pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER
-      #     psql -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB -c "\l"
-
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -89,25 +77,6 @@ jobs:
           echo "errors=$ERRORS" >> $GITHUB_OUTPUT
           echo "success=$SUCCESS" >> $GITHUB_OUTPUT
 
-      # - name: Upload Test Report
-      #   uses: actions/upload-artifact@v4
-      #   if: ${{ always() }}
-      #   with:
-      #     if-no-files-found: error
-      #     name: test-report-BugTracker
-      #     path: '**/target/surefire-reports/TEST*.xml'
-      #     retention-days: 2
-
-      # - name: Test Report
-      #   uses: turing85/publish-report@v2
-      #   with:
-      #     checkout: true
-      #     download-artifact-pattern: test-report-*
-      #     download-artifact-merge-multiple: true
-      #     report-name: JUnit Test
-      #     report-only-summary: true
-      #     report-path: '**/target/surefire-reports/TEST*.xml'
-
       - name: Run Checkstyle
         working-directory: ./backend
         run: mvn checkstyle:checkstyle
@@ -118,35 +87,25 @@ jobs:
           ERRORS=$(grep -c "<error " backend/target/checkstyle-result.xml)
           echo "errors=$ERRORS" >> $GITHUB_OUTPUT
 
-      - name: Post Summary Comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        if: ${{ github.event.pull_request.number != '' }}
+      # - name: Post Summary Comment
+      #   uses: marocchino/sticky-pull-request-comment@v2
+      #   if: ${{ github.event.pull_request.number != '' }}
+      #   with:
+      #     message: |
+      #       ### 🧪 Unit Test Report
+      #       - **📊 Total Tests**: ${{ steps.junit-summary.outputs.tests }}
+      #       - **✅ Successful Tests**: ${{ steps.junit-summary.outputs.success }}
+      #       - **❌ Fail Tests**: ${{ steps.junit-summary.outputs.failures }}
+      #       - **⚠️ Skipped Tests**: ${{ steps.junit-summary.outputs.skipped }}
+
+      - name: Publish Unit Test Report
+        uses: turing85/publish-report@v2
         with:
-          message: |
-            ### 🧪 Unit Test Report
-            - **📊 Total Tests**: ${{ steps.junit-summary.outputs.tests }}
-            - **✅ Successful Tests**: ${{ steps.junit-summary.outputs.success }}
-            - **❌ Fail Tests**: ${{ steps.junit-summary.outputs.failures }}
-            - **⚠️ Skipped Tests**: ${{ steps.junit-summary.outputs.skipped }}
-            
-      #       ### Checkstyle Report
-      #       - **Total Issues**: ${{ steps.checkstyle-summary.outputs.errors }}
-
-      # - name: Upload Checkstyle Report
-      #   uses: actions/upload-artifact@v4
-      #   if: ${{ always() }}
-      #   with:
-      #     name: checkstyle-report
-      #     path: '**/target/checkstyle-result.xml'
-      #     retention-days: 2
-
-      # - name: Checkstyle Report
-      #   uses: turing85/publish-report@v2
-      #   with:
-      #     checkout: true
-      #     report-name: Checkstyle
-      #     report-only-summary: true
-      #     report-path: '**/target/checkstyle-result.xml'
+          comment-header: 🧪 Unit Test Report
+          report-fail-on-error: true
+          report-name: Tests
+          report-path: 'backend/target/surefire-reports/TEST*.xml'
+          report-reporter: java-junit
 
       - name: SonarCloud Scan
         working-directory: ./backend
