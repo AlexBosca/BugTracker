@@ -9,16 +9,6 @@ on:
       - master
 
 jobs:
-  # recreate-comment:
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - name: Publish Report
-  #       uses: turing85/publish-report@v2
-  #       with:
-  #         checkout: true
-  #         recreate-comment: true
-  
   backend:
     name: Backend Job
     runs-on: ubuntu-latest
@@ -106,7 +96,7 @@ jobs:
             <details>
               <summary><h3>🎉 {0} passed</h3></summary>
 
-              <h4> Unit Tests Results </h4>
+              <h4>🧪 Unit Tests Results </h4>
 
               | Passed | Failed | Skipped |
               |--------|--------|---------|
@@ -118,7 +108,7 @@ jobs:
             <details>
               <summary><h3>⛈️ {0} failed</h3></summary>
 
-              <h4> Unit Tests Results </h4>
+              <h4>🧪 Unit Tests Results </h4>
 
               | Passed | Failed | Skipped |
               |--------|--------|---------|
