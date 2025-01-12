@@ -101,23 +101,31 @@ jobs:
       - name: Publish Unit Test Report
         uses: turing85/publish-report@v2
         with:
-          comment-header: Unit Test Report
+          comment-header: 🧪 Unit Test Report
           comment-message-success: |
-            ### 🎉 {0} passed
+            <details>
+              <summary><h3>🎉 {0} passed</h3></summary>
 
-            | Passed | Failed | Skipped |
-            |--------|--------|---------|
-            | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+              <h4> Unit Tests Results </h4>
 
-            You can see the report [here]({4}).
+              | Passed | Failed | Skipped |
+              |--------|--------|---------|
+              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+
+              You can see the report [here]({4}).
+            </details>
           comment-message-failure: |
-            ### ⛈️ {0} failed
+            <details>
+              <summary><h3>⛈️ {0} failed</h3></summary>
 
-            | Passed | Failed | Skipped |
-            |--------|--------|---------|
-            | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+              <h4> Unit Tests Results </h4>
 
-            You can see the report [here]({4}).
+              | Passed | Failed | Skipped |
+              |--------|--------|---------|
+              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+
+              You can see the report [here]({4}).
+            </details>
           report-fail-on-error: true
           report-name: Unit Tests
           report-path: 'backend/target/surefire-reports/TEST*.xml'
