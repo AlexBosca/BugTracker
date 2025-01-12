@@ -9,16 +9,6 @@ on:
       - master
 
 jobs:
-  # recreate-comment:
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - name: Publish Report
-  #       uses: turing85/publish-report@v2
-  #       with:
-  #         checkout: true
-  #         recreate-comment: true
-  
   backend:
     name: Backend Job
     runs-on: ubuntu-latest
@@ -42,18 +32,6 @@ jobs:
     #       --health-retries 5
 
     steps:
-      # - name: Debug Environment Variables
-      #   run: |
-      #     echo "POSTGRES_HOST: $POSTGRES_HOST"
-      #     echo "POSTGRES_PORT: $POSTGRES_PORT"
-      #     echo "POSTGRES_USER: $POSTGRES_USER"
-      #     echo "POSTGRES_PASSWORD: $POSTGRES_PASSWORD"
-
-      # - name: Test PostgreSQL Connection
-      #   run: |
-      #     pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER
-      #     psql -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB -c "\l"
-
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -81,28 +59,13 @@ jobs:
           TESTS=$(grep -oP '(?<=tests=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
           FAILURES=$(grep -oP '(?<=failures=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
           SKIPPED=$(grep -oP '(?<=skipped=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
+          ERRORS=$(grep -oP '(?<=errors=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
+          SUCCESS=$((TESTS - FAILURES - SKIPPED - ERRORS))
           echo "tests=$TESTS" >> $GITHUB_OUTPUT
           echo "failures=$FAILURES" >> $GITHUB_OUTPUT
           echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
-
-      # - name: Upload Test Report
-      #   uses: actions/upload-artifact@v4
-      #   if: ${{ always() }}
-      #   with:
-      #     if-no-files-found: error
-      #     name: test-report-BugTracker
-      #     path: '**/target/surefire-reports/TEST*.xml'
-      #     retention-days: 2
-
-      # - name: Test Report
-      #   uses: turing85/publish-report@v2
-      #   with:
-      #     checkout: true
-      #     download-artifact-pattern: test-report-*
-      #     download-artifact-merge-multiple: true
-      #     report-name: JUnit Test
-      #     report-only-summary: true
-      #     report-path: '**/target/surefire-reports/TEST*.xml'
+          echo "errors=$ERRORS" >> $GITHUB_OUTPUT
+          echo "success=$SUCCESS" >> $GITHUB_OUTPUT
 
       - name: Run Checkstyle
         working-directory: ./backend
@@ -115,75 +78,94 @@ jobs:
           echo "errors=$ERRORS" >> $GITHUB_OUTPUT
 
       # - name: Post Summary Comment
-      #   uses: peter-evans/create-or-update-comment@v3
+      #   uses: marocchino/sticky-pull-request-comment@v2
+      #   if: ${{ github.event.pull_request.number != '' }}
       #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     repository: ${{ github.repository }}
-      #     issue-number: ${{ github.event.pull_request.number }}
-      #     body: |
-      #       ## CI Pipeline Summary
-      #       ### Unit Test Report
-      #       - **Total Tests**: ${{ steps.junit-summary.outputs.tests }}
-      #       - **Failures**: ${{ steps.junit-summary.outputs.failures }}
-      #       - **Skipped**: ${{ steps.junit-summary.outputs.skipped }}
-            
-      #       ### Checkstyle Report
-      #       - **Total Issues**: ${{ steps.checkstyle-summary.outputs.errors }}
+      #     message: |
+      #       ### 🧪 Unit Test Report
+      #       - **📊 Total Tests**: ${{ steps.junit-summary.outputs.tests }}
+      #       - **✅ Successful Tests**: ${{ steps.junit-summary.outputs.success }}
+      #       - **❌ Fail Tests**: ${{ steps.junit-summary.outputs.failures }}
+      #       - **⚠️ Skipped Tests**: ${{ steps.junit-summary.outputs.skipped }}
 
-      # - name: Upload Checkstyle Report
-      #   uses: actions/upload-artifact@v4
-      #   if: ${{ always() }}
-      #   with:
-      #     name: checkstyle-report
-      #     path: '**/target/checkstyle-result.xml'
-      #     retention-days: 2
+      - name: Publish Unit Test Report
+        uses: turing85/publish-report@v2
+        with:
+          comment-header: 🧪 Unit Test Report
+          comment-message-success: |
+            <details>
+              <summary><h3>🎉 {0} passed</h3></summary>
 
-      # - name: Checkstyle Report
-      #   uses: turing85/publish-report@v2
-      #   with:
-      #     checkout: true
-      #     report-name: Checkstyle
-      #     report-only-summary: true
-      #     report-path: '**/target/checkstyle-result.xml'
+              <h4>🧪 Unit Tests Results </h4>
+
+              | Passed | Failed | Skipped |
+              |--------|--------|---------|
+              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+
+              You can see the report [here]({4}).
+            </details>
+          comment-message-failure: |
+            <details>
+              <summary><h3>⛈️ {0} failed</h3></summary>
+
+              <h4>🧪 Unit Tests Results </h4>
+
+              | Passed | Failed | Skipped |
+              |--------|--------|---------|
+              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+
+              You can see the report [here]({4}).
+            </details>
+          report-fail-on-error: true
+          report-name: Unit Tests
+          report-path: 'backend/target/surefire-reports/TEST*.xml'
+          report-reporter: java-junit
 
       - name: SonarCloud Scan
         working-directory: ./backend
-        run: mvn package sonar:sonar -Dsonar.projectKey=ro.alexportfolio:backend -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
-  
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
-      - name: Wait for Quality Gate
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          echo "Waiting for Quality Gate result..."
-          STATUS="PENDING"
-          MAX_WAIT=300 # maximum wait time in seconds
-          WAIT_INTERVAL=10 # interval between checks in seconds
-          WAIT_TIME=0
-          while [ "$STATUS" == "PENDING" ] && [ $WAIT_TIME -lt $MAX_WAIT ]; do
-            RESPONSE=$(curl -s -u $SONAR_TOKEN: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=ro.alexportfolio:backend&pullRequest=${{ github.event.pull_request.number }}")
-            STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
-            if [ "$STATUS" == "OK" ]; then
-              echo "Quality Gate passed!"
-              exit 0
-            elif [ "$STATUS" == "ERROR" ]; then
-              echo "Quality Gate failed!"
-              echo $RESPONSE | jq
-              exit 1
-            else
-              echo "Waiting for analysis to complete..."
-              sleep $WAIT_INTERVAL
-              WAIT_TIME=$((WAIT_TIME + WAIT_INTERVAL))
-            fi
-          done
-          echo "Quality Gate status is still pending after $MAX_WAIT seconds. Failing the job."
-          exit 1
+          mvn \
+            package \
+            sonar:sonar \
+            -Dsonar.projectKey=ro.alexportfolio:backend \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+  
+      # - name: Install jq
+      #   run: sudo apt-get install -y jq
 
-      - name: Notify Failure
-        if: failure()
-        run: echo "SonarCloud Quality Gate failed. Please fix the issues."
+      # - name: Wait for Quality Gate
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #   run: |
+      #     echo "Waiting for Quality Gate result..."
+      #     STATUS="PENDING"
+      #     MAX_WAIT=300 # maximum wait time in seconds
+      #     WAIT_INTERVAL=10 # interval between checks in seconds
+      #     WAIT_TIME=0
+      #     while [ "$STATUS" == "PENDING" ] && [ $WAIT_TIME -lt $MAX_WAIT ]; do
+      #       RESPONSE=$(curl -s -u $SONAR_TOKEN: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=ro.alexportfolio:backend&pullRequest=${{ github.event.pull_request.number }}")
+      #       STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
+      #       if [ "$STATUS" == "OK" ]; then
+      #         echo "Quality Gate passed!"
+      #         exit 0
+      #       elif [ "$STATUS" == "ERROR" ]; then
+      #         echo "Quality Gate failed!"
+      #         echo $RESPONSE | jq
+      #         exit 1
+      #       else
+      #         echo "Waiting for analysis to complete..."
+      #         sleep $WAIT_INTERVAL
+      #         WAIT_TIME=$((WAIT_TIME + WAIT_INTERVAL))
+      #       fi
+      #     done
+      #     echo "Quality Gate status is still pending after $MAX_WAIT seconds. Failing the job."
+      #     exit 1
+
+      # - name: Notify Failure
+      #   if: failure()
+      #   run: echo "SonarCloud Quality Gate failed. Please fix the issues."
 
   # build-frontend:
   #   runs-on: ubuntu-latest
