@@ -103,7 +103,7 @@ jobs:
         with:
           comment-header: 🧪 Unit Test Report
           report-fail-on-error: true
-          report-name: Tests
+          report-name: Unit Tests
           report-path: 'backend/target/surefire-reports/TEST*.xml'
           report-reporter: java-junit
 
