@@ -116,7 +116,6 @@
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
-						<phase>test-compile</phase>
 					</execution>
 					<execution>
 						<id>report</id>
@@ -125,25 +124,46 @@
 						</goals>
 						<phase>verify</phase>
 						<configuration>
-							<!-- Point to the jacoco.exec file -->
 							<dataFile>${project.basedir}/target/jacoco.exec</dataFile>
-							<!-- Where the reports will be generated -->
 							<outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+		</plugins>
+	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>3.5.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<!-- select non-aggregate reports -->
+							<report>report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<version>3.2.0</version>
-				<configuration>
-					<outputFileFormat>xml</outputFileFormat>
-					<outputFile>${project.build.directory}/checkstyle-result.xml</outputFile>
-					<failOnViolation>false</failOnViolation>
-				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>checkstyle</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 			</plugin>
 		</plugins>
-	</build>
-
+	</reporting>
 </project>
