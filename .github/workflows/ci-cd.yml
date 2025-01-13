@@ -53,29 +53,29 @@ jobs:
         working-directory: ./backend
         run: mvn clean test package verify
 
-      - name: Parse Unit Test Report
-        id: junit-summary
-        run: |
-          TESTS=$(grep -oP '(?<=tests=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
-          FAILURES=$(grep -oP '(?<=failures=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
-          SKIPPED=$(grep -oP '(?<=skipped=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
-          ERRORS=$(grep -oP '(?<=errors=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
-          SUCCESS=$((TESTS - FAILURES - SKIPPED - ERRORS))
-          echo "tests=$TESTS" >> $GITHUB_OUTPUT
-          echo "failures=$FAILURES" >> $GITHUB_OUTPUT
-          echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
-          echo "errors=$ERRORS" >> $GITHUB_OUTPUT
-          echo "success=$SUCCESS" >> $GITHUB_OUTPUT
+      # - name: Parse Unit Test Report
+      #   id: junit-summary
+      #   run: |
+      #     TESTS=$(grep -oP '(?<=tests=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
+      #     FAILURES=$(grep -oP '(?<=failures=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
+      #     SKIPPED=$(grep -oP '(?<=skipped=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
+      #     ERRORS=$(grep -oP '(?<=errors=").*?(?=")' backend/target/surefire-reports/TEST*.xml | awk '{s+=$1} END {print s}')
+      #     SUCCESS=$((TESTS - FAILURES - SKIPPED - ERRORS))
+      #     echo "tests=$TESTS" >> $GITHUB_OUTPUT
+      #     echo "failures=$FAILURES" >> $GITHUB_OUTPUT
+      #     echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
+      #     echo "errors=$ERRORS" >> $GITHUB_OUTPUT
+      #     echo "success=$SUCCESS" >> $GITHUB_OUTPUT
 
       - name: Run Checkstyle
         working-directory: ./backend
         run: mvn checkstyle:checkstyle
 
-      - name: Parse Checkstyle Report
-        id: checkstyle-summary
-        run: |
-          ERRORS=$(grep -c "<error " backend/target/checkstyle-result.xml)
-          echo "errors=$ERRORS" >> $GITHUB_OUTPUT
+      # - name: Parse Checkstyle Report
+      #   id: checkstyle-summary
+      #   run: |
+      #     ERRORS=$(grep -c "<error " backend/target/checkstyle-result.xml)
+      #     echo "errors=$ERRORS" >> $GITHUB_OUTPUT
 
       # - name: Post Summary Comment
       #   uses: marocchino/sticky-pull-request-comment@v2
