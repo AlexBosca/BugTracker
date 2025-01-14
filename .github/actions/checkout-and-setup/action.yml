@@ -43,3 +43,9 @@ runs:
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
+
+    - name: Install dependencies
+      if: ${{ inputs.tool-name == 'node' }}
+      shell: bash
+      run: npm install
+      working-directory: ${{ inputs.working-directory }}
