@@ -8,7 +8,7 @@ import { User } from '../models/user.model';
 })
 export class UserService {
 
-  constructor(readonly http: HttpClient) { }
+  constructor(private http: HttpClient) { }
 
   public createUser(userRequest: any): Observable<void> {
     return this.http.post<void>(`http://localhost:8081/api/v1/bug-tracker/users`, userRequest);
