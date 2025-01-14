@@ -1,0 +1,41 @@
+name: Checkout and Setup needed tools
+description: Checkout the code and setup the tools needed for the CI/CD pipeline
+inputs:
+  tool-name:
+    description: The name of the tool to setup
+    required: true
+  tool-version:
+    description: The version of the tool to setup
+    required: true
+  working-directory:
+    description: The working directory to run the tool setup
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up ${{ inputs.tool-name }}
+      uses: actions/setup-${{ inputs.tool-name }}@v4
+      with:
+        ${{ inputs.tool-name }}-version: ${{ inputs.tool-version }}
+
+    - name: Cache Node.js modules
+      uses: actions/cache@v3
+      if: ${{ inputs.tool-name == 'node' }}
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: Cache Java modules
+      uses: actions/cache@v3
+      if: ${{ inputs.tool-name == 'java' }}
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-

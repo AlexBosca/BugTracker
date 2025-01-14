@@ -12,8 +12,6 @@ jobs:
   backend:
     name: Backend Job
     runs-on: ubuntu-latest
-    # needs:
-    #   - recreate-comment
 
     # services:
     #   postgres:
@@ -166,6 +164,27 @@ jobs:
       # - name: Notify Failure
       #   if: failure()
       #   run: echo "SonarCloud Quality Gate failed. Please fix the issues."
+
+  frontend:
+    name: Frontend Job
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        command: ['npm install', 'npm run lint', 'npm run test -- --watch=false', 'npm run test -- --code-coverage', 'npx sonar-scanner  -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=bugtracker_frontend -Dsonar.organization=bugtracker -Dsonar.javascript.lcov.reportPaths=coverage/frontend/lcov.info -Dsonar.token=$SONAR_TOKEN']
+
+    steps:
+      - name: Checkout and Setup
+        uses: ./.github/actions/checkout-and-setup
+        with:
+          tool-name: 'node'
+          tool-version: '16'
+          working-directory: './frontend'
+
+      - name: Run Commands
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ${{ matrix.command }}
+        working-directory: './frontend'
 
   # build-frontend:
   #   runs-on: ubuntu-latest
