@@ -1,4 +1,4 @@
-name: Checkout and Setup needed tools
+name: Setup needed tools
 description: Checkout the code and setup the tools needed for the CI/CD pipeline
 inputs:
   tool-name:
@@ -14,9 +14,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
     - name: Set up ${{ inputs.tool-name }}
       uses: actions/setup-${{ inputs.tool-name }}@v4
       with:
