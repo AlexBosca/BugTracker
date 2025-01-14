@@ -14,10 +14,17 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Set up ${{ inputs.tool-name }}
-      uses: actions/setup-${{ inputs.tool-name }}@v4
+    - name: Setup Node.js
+      if: ${{ inputs.tool-name == 'node' }}
+      uses: actions/setup-node@v4
       with:
-        ${{ inputs.tool-name }}-version: ${{ inputs.tool-version }}
+        node-version: ${{ inputs.tool-version }}
+    
+    - name: Setup Java
+      if: ${{ inputs.tool-name == 'java' }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ inputs.tool-version }}
 
     - name: Cache Node.js modules
       uses: actions/cache@v3
