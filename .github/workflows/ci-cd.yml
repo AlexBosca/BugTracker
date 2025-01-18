@@ -171,7 +171,8 @@ jobs:
     strategy:
       matrix:
         # command: ['npm run lint', 'npm run test -- --watch=false', 'npm run test -- --code-coverage', 'npx sonar-scanner  -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=bugtracker_frontend -Dsonar.organization=bugtracker -Dsonar.javascript.lcov.reportPaths=coverage/frontend/lcov.info -Dsonar.token=$SONAR_TOKEN']
-        command: ['npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage', 'npx sonar-scanner  -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=bugtracker_frontend -Dsonar.organization=bugtracker -Dsonar.javascript.lcov.reportPaths=coverage/frontend/lcov.info -Dsonar.token=$SONAR_TOKEN']
+        # command: ['npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage', 'npx sonar-scanner  -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=bugtracker_frontend -Dsonar.organization=bugtracker -Dsonar.javascript.lcov.reportPaths=coverage/frontend/lcov.info -Dsonar.token=$SONAR_TOKEN']
+        command: ['npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage']
 
     steps:
       - name: Checkout code
@@ -189,6 +190,21 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ${{ matrix.command }}
         working-directory: './frontend'
+      
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: './frontend'
+          args: >
+            -Dsonar.projectKey=bugtracker_frontend 
+            -Dsonar.organization=bugtracker 
+            -Dsonar.host.url=https://sonarcloud.io 
+            -Dsonar.javascript.lcov.reportPaths=coverage/frontend/lcov.info 
+            -Dsonar.token=$SONAR_TOKEN
+
+
 
   # build-frontend:
   #   runs-on: ubuntu-latest
