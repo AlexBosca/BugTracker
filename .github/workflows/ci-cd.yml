@@ -12,8 +12,6 @@ jobs:
   backend:
     name: Backend Job
     runs-on: ubuntu-latest
-    # needs:
-    #   - recreate-comment
 
     # services:
     #   postgres:
@@ -121,16 +119,31 @@ jobs:
           report-path: 'backend/target/surefire-reports/TEST*.xml'
           report-reporter: java-junit
 
-      - name: SonarCloud Scan
-        working-directory: ./backend
-        run: |
-          mvn \
-            package \
-            sonar:sonar \
-            -Dsonar.projectKey=ro.alexportfolio:backend \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: './backend'
+          args: >
+            -Dsonar.projectKey=ro.alexportfolio:backend 
+            -Dsonar.organization=bugtracker 
+            -Dsonar.host.url=https://sonarcloud.io 
+            -Dsonar.token=$SONAR_TOKEN
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml 
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+            -Dsonar.java.binaries=target/classes
+
+      # - name: SonarCloud Scan
+      #   working-directory: ./backend
+      #   run: |
+      #     mvn \
+      #       package \
+      #       sonar:sonar \
+      #       -Dsonar.projectKey=ro.alexportfolio:backend \
+      #       -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+      #       -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+      #       -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
   
       # - name: Install jq
       #   run: sudo apt-get install -y jq
@@ -166,6 +179,47 @@ jobs:
       # - name: Notify Failure
       #   if: failure()
       #   run: echo "SonarCloud Quality Gate failed. Please fix the issues."
+
+  frontend:
+    name: Frontend Job
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # command: ['npm run lint', 'npm run test -- --watch=false', 'npm run test -- --code-coverage', 'npx sonar-scanner  -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=bugtracker_frontend -Dsonar.organization=bugtracker -Dsonar.javascript.lcov.reportPaths=coverage/frontend/lcov.info -Dsonar.token=$SONAR_TOKEN']
+        # command: ['npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage', 'npx sonar-scanner  -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=bugtracker_frontend -Dsonar.organization=bugtracker -Dsonar.javascript.lcov.reportPaths=coverage/frontend/lcov.info -Dsonar.token=$SONAR_TOKEN']
+        command: ['npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  
+      - name: Setup Node
+        uses: ./.github/actions/checkout-and-setup
+        with:
+          tool-name: 'node'
+          tool-version: '22.12.0'
+          working-directory: './frontend'
+
+      - name: Run Commands
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ${{ matrix.command }}
+        working-directory: './frontend'
+      
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: './frontend'
+          args: >
+            -Dsonar.projectKey=bugtracker_frontend 
+            -Dsonar.organization=bugtracker 
+            -Dsonar.host.url=https://sonarcloud.io 
+            -Dsonar.javascript.lcov.reportPaths=coverage/frontend/lcov.info 
+            -Dsonar.token=$SONAR_TOKEN
+
+
 
   # build-frontend:
   #   runs-on: ubuntu-latest

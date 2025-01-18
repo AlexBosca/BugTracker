@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ButtonComponent } from './button.component';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('ButtonComponent', () => {
   let component: ButtonComponent;
@@ -8,7 +9,8 @@ describe('ButtonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ButtonComponent]
+      imports: [ButtonComponent],
+      providers: [provideHttpClient()]
     })
     .compileComponents();
 
