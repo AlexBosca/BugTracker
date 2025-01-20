@@ -237,7 +237,6 @@ jobs:
           report-fail-on-error: true
           report-name: Unit Tests
           report-path: 'frontend/coverage/lcov.info'
-          report-reporter: lcov
       
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
