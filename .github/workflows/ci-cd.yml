@@ -236,7 +236,7 @@ jobs:
             </details>
           report-fail-on-error: true
           report-name: Unit Tests
-          report-path: 'coverage/cobertura-coverage.xml'
+          report-path: 'frontend/coverage/cobertura-coverage.xml'
       
       # - name: SonarQube Scan
       #   uses: SonarSource/sonarqube-scan-action@v4
