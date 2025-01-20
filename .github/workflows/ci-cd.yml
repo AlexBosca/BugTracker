@@ -248,7 +248,7 @@ jobs:
             -Dsonar.projectKey=bugtracker_frontend 
             -Dsonar.organization=bugtracker 
             -Dsonar.host.url=https://sonarcloud.io 
-            -Dsonar.flex.cobertura.reportPaths=coverage/cobertura-coverage.xml 
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info 
             -Dsonar.token=$SONAR_TOKEN
 
 
