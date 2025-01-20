@@ -86,39 +86,39 @@ jobs:
       #       - **❌ Fail Tests**: ${{ steps.junit-summary.outputs.failures }}
       #       - **⚠️ Skipped Tests**: ${{ steps.junit-summary.outputs.skipped }}
 
-      - name: Publish Backend Unit Test Report
-        uses: turing85/publish-report@v2
-        with:
-          comment-header: 🧪 Unit Test Report
-          comment-message-success: |
-            <details>
-              <summary><h3>🎉 {0} passed</h3></summary>
+      # - name: Publish Backend Unit Test Report
+      #   uses: turing85/publish-report@v2
+      #   with:
+      #     comment-header: 🧪 Unit Test Report
+      #     comment-message-success: |
+      #       <details>
+      #         <summary><h3>🎉 {0} passed</h3></summary>
 
-              <h4>🧪 Unit Tests Results </h4>
+      #         <h4>🧪 Unit Tests Results </h4>
 
-              | Passed | Failed | Skipped |
-              |--------|--------|---------|
-              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+      #         | Passed | Failed | Skipped |
+      #         |--------|--------|---------|
+      #         | ✅ {1} | ❌ {2} | ⚠️ {3}   |
 
-              You can see the report [here]({4}).
-            </details>
-          comment-message-failure: |
-            <details>
-              <summary><h3>⛈️ {0} failed</h3></summary>
+      #         You can see the report [here]({4}).
+      #       </details>
+      #     comment-message-failure: |
+      #       <details>
+      #         <summary><h3>⛈️ {0} failed</h3></summary>
 
-              <h4>🧪 Unit Tests Results </h4>
+      #         <h4>🧪 Unit Tests Results </h4>
 
-              | Passed | Failed | Skipped |
-              |--------|--------|---------|
-              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+      #         | Passed | Failed | Skipped |
+      #         |--------|--------|---------|
+      #         | ✅ {1} | ❌ {2} | ⚠️ {3}   |
 
-              You can see the report [here]({4}).
-            </details>
-          report-fail-on-error: true
-          report-name: Unit Tests
-          report-path: 'backend/target/surefire-reports/TEST*.xml'
-          report-reporter: java-junit
-          recreate-comment: true
+      #         You can see the report [here]({4}).
+      #       </details>
+      #     report-fail-on-error: true
+      #     report-name: Unit Tests
+      #     report-path: 'backend/target/surefire-reports/TEST*.xml'
+      #     report-reporter: java-junit
+      #     recreate-comment: true
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
