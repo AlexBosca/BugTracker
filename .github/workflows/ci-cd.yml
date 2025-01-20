@@ -206,39 +206,38 @@ jobs:
         run: ${{ matrix.command }}
         working-directory: './frontend'
 
-      # - name: Publish Frontend Unit Tests Report
-      #   uses: turing85/publish-report@v2
-      #   with:
-      #     comment-header: 🧪 Unit Test Report
-      #     comment-message-success: |
-      #       <details>
-      #         <summary><h3>🎉 {0} passed</h3></summary>
+      - name: Publish Frontend Unit Tests Report
+        uses: turing85/publish-report@v2
+        with:
+          comment-header: 🧪 Unit Test Report
+          comment-message-success: |
+            <details>
+              <summary><h3>🎉 {0} passed</h3></summary>
 
-      #         <h4>🧪 Unit Tests Results </h4>
+              <h4>🧪 Unit Tests Results </h4>
 
-      #         | Passed | Failed | Skipped |
-      #         |--------|--------|---------|
-      #         | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+              | Passed | Failed | Skipped |
+              |--------|--------|---------|
+              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
 
-      #         You can see the report [here]({4}).
-      #       </details>
-      #     comment-message-failure: |
-      #       <details>
-      #         <summary><h3>⛈️ {0} failed</h3></summary>
+              You can see the report [here]({4}).
+            </details>
+          comment-message-failure: |
+            <details>
+              <summary><h3>⛈️ {0} failed</h3></summary>
 
-      #         <h4>🧪 Unit Tests Results </h4>
+              <h4>🧪 Unit Tests Results </h4>
 
-      #         | Passed | Failed | Skipped |
-      #         |--------|--------|---------|
-      #         | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+              | Passed | Failed | Skipped |
+              |--------|--------|---------|
+              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
 
-      #         You can see the report [here]({4}).
-      #       </details>
-      #     report-fail-on-error: true
-      #     report-name: Unit Tests
-      #     report-path: 'frontend/coverage/lcov.info'
-      #     report-reporter: lcov
-      #     recreate-comment: true
+              You can see the report [here]({4}).
+            </details>
+          report-fail-on-error: true
+          report-name: Unit Tests
+          report-path: 'frontend/coverage/lcov.info'
+          report-reporter: lcov
       
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
