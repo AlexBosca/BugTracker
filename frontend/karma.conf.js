@@ -3,13 +3,13 @@
 
 module.exports = function (config) {
   config.set({
-    basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
+      require('karma-junit-reporter'), // Add this line
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     client: {
@@ -27,7 +27,12 @@ module.exports = function (config) {
         { type: 'cobertura' }
       ]
     },
-    reporters: ['progress', 'kjhtml'],
+    junitReporter: {
+      outputDir: require('path').join(__dirname, './test-results'), // results will be saved as $outputDir/$browserName.xml
+      outputFile: 'unit-test-results.xml', // if included, results will be saved as $outputDir/$browserName/$outputFile
+      useBrowserName: false // add browser name to report and classes names
+    },
+    reporters: ['progress', 'kjhtml', 'coverage', 'junit'], // Add 'junit' to the reporters array
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
