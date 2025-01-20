@@ -89,6 +89,7 @@ jobs:
       - name: Publish Backend Unit Test Report
         uses: turing85/publish-report@v2
         with:
+          checkout: true
           comment-header: 🧪 Unit Test Report
           comment-message-success: |
             <details>
