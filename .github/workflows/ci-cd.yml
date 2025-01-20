@@ -86,7 +86,7 @@ jobs:
       #       - **❌ Fail Tests**: ${{ steps.junit-summary.outputs.failures }}
       #       - **⚠️ Skipped Tests**: ${{ steps.junit-summary.outputs.skipped }}
 
-      - name: Publish Unit Test Report
+      - name: Publish Backend Unit Test Report
         uses: turing85/publish-report@v2
         with:
           comment-header: 🧪 Unit Test Report
@@ -207,7 +207,7 @@ jobs:
         run: ${{ matrix.command }}
         working-directory: './frontend'
 
-      - name: Publish Unit Tests Report
+      - name: Publish Frontend Unit Tests Report
         uses: turing85/publish-report@v2
         with:
           comment-header: 🧪 Unit Test Report
