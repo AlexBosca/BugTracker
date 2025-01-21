@@ -201,7 +201,6 @@ jobs:
           working-directory: './frontend'
 
       - name: Run Commands
-        if: always()
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ${{ matrix.command }}
