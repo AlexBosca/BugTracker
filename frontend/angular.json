@@ -102,7 +102,9 @@
             "lintFilePatterns": [
               "src/**/*.ts",
               "src/**/*.html"
-            ]
+            ],
+            "format": "checkstyle",
+            "outputFile": "eslint-report.json"
           }
         }
       }
@@ -111,7 +113,7 @@
   "cli": {
     "analytics": false,
     "schematicCollections": [
-      "angular-eslint"
+      "@angular-eslint/schematics"
     ]
   }
 }

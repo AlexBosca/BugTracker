@@ -3,15 +3,17 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "lint": "ng lint",
+    "lint": "ng lint --format=json",
     "start": "ng serve",
     "build": "ng build --prod",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "format": "prettier --write .",
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs"
   },
   "private": true,
   "dependencies": {
+    "@angular-eslint/schematics": "^19.0.2",
     "@angular/animations": "^19.0.3",
     "@angular/common": "^19.0.3",
     "@angular/compiler": "^19.0.3",
@@ -37,6 +39,9 @@
     "@types/node": "^18.18.0",
     "angular-eslint": "19.0.2",
     "eslint": "^9.16.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-formatter-checkstyle": "^8.40.0",
+    "eslint-plugin-prettier": "^5.2.3",
     "jasmine-core": "~5.2.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -44,6 +49,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "karma-junit-reporter": "^2.0.1",
+    "prettier": "^3.4.2",
     "typescript": "~5.5.2",
     "typescript-eslint": "8.18.0"
   }
