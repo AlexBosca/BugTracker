@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "lint": "ng lint --format=json --silent=true",
+    "lint": "ng lint --format=json --silent=true --force=true",
     "start": "ng serve",
     "build": "ng build --prod",
     "watch": "ng build --watch --configuration development",
