@@ -139,6 +139,9 @@ jobs:
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-project-key: ro.alexportfolio:backend
+          if: ${{ github.event.pull_request.number != '' }}
+          pull_request: ${{ github.event.pull_request.number }}
+
 
       # - name: SonarCloud Scan
       #   working-directory: ./backend

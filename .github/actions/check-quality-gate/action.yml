@@ -7,6 +7,9 @@ inputs:
   sonar-project-key:
     description: The SonarCloud project key to use for the scan
     required: true
+  pull_request:
+    description: The pull request number
+    required: false
 
 runs:
   using: "composite"
@@ -17,6 +20,11 @@ runs:
 
     - name: Execute SonarCloud Qality Gate Check
       shell: bash
+      run: |
+        echo "Waiting for Quality Gate result..."
+        RESPONSE=$(curl -s -u ${{ inputs.sonar-token }}: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.sonar-project-key }}&pullRequest=${{ inputs.pull_request }}")
+        echo $RESPONSE | jq
+
       # run: |
       #   echo "Waiting for Quality Gate result..."
       #     STATUS="PENDING"
@@ -49,7 +57,3 @@ runs:
       #       echo "Quality Gate check timed out."
       #       exit 1
       #     fi
-      run: |
-        echo "Waiting for Quality Gate result..."
-        RESPONSE=$(curl -s -u ${{ inputs.sonar-token }}: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.project_key }}&pullRequest=${{ inputs.pull_request }}")
-        echo $RESPONSE | jq
