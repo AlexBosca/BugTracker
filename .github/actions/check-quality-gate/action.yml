@@ -23,7 +23,16 @@ runs:
       run: |
         echo "Waiting for Quality Gate result..."
         RESPONSE=$(curl -s -u ${{ inputs.sonar-token }}: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.sonar-project-key }}&pullRequest=${{ inputs.pull_request }}")
-        echo $RESPONSE | jq
+        STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
+          if [ "$STATUS" == "OK" ]; then
+            echo "Quality Gate passed!"
+            exit 0
+          elif [ "$STATUS" == "ERROR" ]; then
+            echo "Quality Gate failed!"
+            echo $RESPONSE | jq
+            exit 1
+          fi
+        done
 
       # run: |
       #   echo "Waiting for Quality Gate result..."
