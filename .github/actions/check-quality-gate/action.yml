@@ -12,8 +12,6 @@ runs:
   using: "composite"
   steps:
     - name: Execute SonarCloud Qality Gate Check
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: bash
       run: |
         echo "Waiting for Quality Gate result..."
@@ -24,9 +22,9 @@ runs:
 
           while [ "$STATUS" == "PENDING" ] && [ $WAIT_TIME -lt $MAX_WAIT ]; do
             if [ "${{ inputs.pull_request }}" ]; then
-              RESPONSE=$(curl -s -u $SONAR_TOKEN: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.project_key }}&pullRequest=${{ inputs.pull_request }}")
+              RESPONSE=$(curl -s -u ${{ input.sonar-token }}: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.project_key }}&pullRequest=${{ inputs.pull_request }}")
             else
-              RESPONSE=$(curl -s -u $SONAR_TOKEN: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.project_key }}")
+              RESPONSE=$(curl -s -u ${{ input.sonar-token }}: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.project_key }}")
             fi
             STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
             if [ "$STATUS" == "OK" ]; then
