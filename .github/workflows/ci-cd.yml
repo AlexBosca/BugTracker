@@ -134,6 +134,12 @@ jobs:
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.java.binaries=target/classes
 
+      - name: SonarCloud Quality Gate
+        uses: ./.github/actions/check-quality-gate
+        with:
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-project-key: ro.alexportfolio:backend
+
       # - name: SonarCloud Scan
       #   working-directory: ./backend
       #   run: |
@@ -253,7 +259,12 @@ jobs:
             -Dsonar.flex.cobertura.reportPaths=coverage/cobertura-coverage.xml 
             -Dsonar.token=$SONAR_TOKEN
             -Dsonar.eslint.reportPaths=eslint-report.json
-
+        
+      - name: SonarCloud Quality Gate
+        uses: ./.github/actions/check-quality-gate
+        with:
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-project-key: bugtracker_frontend
 
 
   # build-frontend:
