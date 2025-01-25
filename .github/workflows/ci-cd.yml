@@ -89,6 +89,7 @@ jobs:
       - name: Publish Backend Unit Test Report
         uses: turing85/publish-report@v2
         with:
+          recreate-comment: true
           comment-header: 🧪 Backend Unit Test Report
           comment-message-success: |
             <details>
@@ -117,8 +118,6 @@ jobs:
           report-fail-on-error: true
           report-name: Backend Unit Tests
           report-path: 'backend/target/surefire-reports/TEST*.xml'
-          report-reporter: java-junit
-          recreate-comment: true
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
@@ -221,6 +220,7 @@ jobs:
       - name: Publish Frontend Unit Tests Report
         uses: turing85/publish-report@v2
         with:
+          recreate-comment: true
           comment-header: 🧪 Frontend Unit Test Report
           comment-message-success: |
             <details>
@@ -249,7 +249,6 @@ jobs:
           report-fail-on-error: true
           report-name: Frontend Unit Tests
           report-path: 'frontend/test-results/unit-test-results.xml'
-          recreate-comment: true
       
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
