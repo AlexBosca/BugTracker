@@ -90,6 +90,7 @@ jobs:
         uses: turing85/publish-report@v2
         with:
           recreate-comment: true
+          override-comment: true
           comment-header: 🧪 Backend Unit Test Report
           comment-message-success: |
             <details>
@@ -221,6 +222,7 @@ jobs:
         uses: turing85/publish-report@v2
         with:
           recreate-comment: true
+          override-comment: true
           comment-header: 🧪 Frontend Unit Test Report
           comment-message-success: |
             <details>
