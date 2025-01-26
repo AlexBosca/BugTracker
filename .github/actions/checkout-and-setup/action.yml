@@ -7,6 +7,9 @@ inputs:
   tool-version:
     description: The version of the tool to setup
     required: true
+  distribution:
+    description: The distribution of the tool to setup
+    required: false
   working-directory:
     description: The working directory to run the tool setup
     required: false
@@ -21,10 +24,11 @@ runs:
         node-version: ${{ inputs.tool-version }}
     
     - name: Setup Java
-      if: ${{ inputs.tool-name == 'java' }}
+      if: ${{ inputs.tool-name == 'java' && inputs.distribution != '' }}
       uses: actions/setup-java@v4
       with:
         java-version: ${{ inputs.tool-version }}
+        distribution: ${{ inputs.distribution }}
 
     - name: Cache Node.js modules
       uses: actions/cache@v3
