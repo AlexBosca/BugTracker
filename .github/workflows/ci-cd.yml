@@ -33,19 +33,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
+      - name: Setup Node
+        uses: ./.github/actions/checkout-and-setup
         with:
-          java-version: '17'
+          tool-name: 'java'
+          tool-version: '17'
           distribution: 'oracle'
-
-      - name: Cache Maven Dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          working-directory: './backend'
 
       - name: Build and Test
         working-directory: ./backend
@@ -86,10 +80,10 @@ jobs:
       #       - **❌ Fail Tests**: ${{ steps.junit-summary.outputs.failures }}
       #       - **⚠️ Skipped Tests**: ${{ steps.junit-summary.outputs.skipped }}
 
-      - name: Publish Unit Test Report
+      - name: Publish Backend Unit Test Report
         uses: turing85/publish-report@v2
         with:
-          comment-header: 🧪 Unit Test Report
+          comment-header: 🧪 Backend Unit Test Report
           comment-message-success: |
             <details>
               <summary><h3>🎉 {0} passed</h3></summary>
@@ -115,9 +109,8 @@ jobs:
               You can see the report [here]({4}).
             </details>
           report-fail-on-error: true
-          report-name: Unit Tests
+          report-name: Backend Unit Tests
           report-path: 'backend/target/surefire-reports/TEST*.xml'
-          report-reporter: java-junit
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
@@ -134,60 +127,17 @@ jobs:
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.java.binaries=target/classes
 
-      # - name: SonarCloud Scan
-      #   working-directory: ./backend
-      #   run: |
-      #     mvn \
-      #       package \
-      #       sonar:sonar \
-      #       -Dsonar.projectKey=ro.alexportfolio:backend \
-      #       -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-      #       -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-      #       -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
-  
-      # - name: Install jq
-      #   run: sudo apt-get install -y jq
-
-      # - name: Wait for Quality Gate
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      #   run: |
-      #     echo "Waiting for Quality Gate result..."
-      #     STATUS="PENDING"
-      #     MAX_WAIT=300 # maximum wait time in seconds
-      #     WAIT_INTERVAL=10 # interval between checks in seconds
-      #     WAIT_TIME=0
-      #     while [ "$STATUS" == "PENDING" ] && [ $WAIT_TIME -lt $MAX_WAIT ]; do
-      #       RESPONSE=$(curl -s -u $SONAR_TOKEN: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=ro.alexportfolio:backend&pullRequest=${{ github.event.pull_request.number }}")
-      #       STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
-      #       if [ "$STATUS" == "OK" ]; then
-      #         echo "Quality Gate passed!"
-      #         exit 0
-      #       elif [ "$STATUS" == "ERROR" ]; then
-      #         echo "Quality Gate failed!"
-      #         echo $RESPONSE | jq
-      #         exit 1
-      #       else
-      #         echo "Waiting for analysis to complete..."
-      #         sleep $WAIT_INTERVAL
-      #         WAIT_TIME=$((WAIT_TIME + WAIT_INTERVAL))
-      #       fi
-      #     done
-      #     echo "Quality Gate status is still pending after $MAX_WAIT seconds. Failing the job."
-      #     exit 1
-
-      # - name: Notify Failure
-      #   if: failure()
-      #   run: echo "SonarCloud Quality Gate failed. Please fix the issues."
+      - name: SonarCloud Quality Gate
+        uses: ./.github/actions/check-quality-gate
+        with:
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-project-key: ro.alexportfolio:backend
+          if: ${{ github.event.pull_request.number != '' }}
+          pull_request: ${{ github.event.pull_request.number }}
 
   frontend:
     name: Frontend Job
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        # command: ['npm run lint', 'npm run test -- --watch=false', 'npm run test -- --code-coverage', 'npx sonar-scanner  -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=bugtracker_frontend -Dsonar.organization=bugtracker -Dsonar.javascript.lcov.reportPaths=coverage/frontend/lcov.info -Dsonar.token=$SONAR_TOKEN']
-        # command: ['npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage', 'npx sonar-scanner  -Dsonar.host.url=https://sonarcloud.io -Dsonar.projectKey=bugtracker_frontend -Dsonar.organization=bugtracker -Dsonar.javascript.lcov.reportPaths=coverage/frontend/lcov.info -Dsonar.token=$SONAR_TOKEN']
-        command: ['npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage']
 
     steps:
       - name: Checkout code
@@ -200,11 +150,45 @@ jobs:
           tool-version: '22.12.0'
           working-directory: './frontend'
 
-      - name: Run Commands
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ${{ matrix.command }}
-        working-directory: './frontend'
+      - name: Lint Code
+        run: npm run lint
+        working-directory: ./frontend
+
+      - name: Run Unit Tests
+        run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
+        working-directory: frontend
+
+      - name: Publish Frontend Unit Tests Report
+        uses: turing85/publish-report@v2
+        with:
+          comment-header: 🧪 Frontend Unit Test Report
+          comment-message-success: |
+            <details>
+              <summary><h3>🎉 {0} passed</h3></summary>
+
+              <h4>🧪 Unit Tests Results </h4>
+
+              | Passed | Failed | Skipped |
+              |--------|--------|---------|
+              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+
+              You can see the report [here]({4}).
+            </details>
+          comment-message-failure: |
+            <details>
+              <summary><h3>⛈️ {0} failed</h3></summary>
+
+              <h4>🧪 Unit Tests Results </h4>
+
+              | Passed | Failed | Skipped |
+              |--------|--------|---------|
+              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+
+              You can see the report [here]({4}).
+            </details>
+          report-fail-on-error: true
+          report-name: Frontend Unit Tests
+          report-path: 'frontend/test-results/unit-test-results.xml'
       
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
@@ -216,73 +200,14 @@ jobs:
             -Dsonar.projectKey=bugtracker_frontend 
             -Dsonar.organization=bugtracker 
             -Dsonar.host.url=https://sonarcloud.io 
-            -Dsonar.javascript.lcov.reportPaths=coverage/frontend/lcov.info 
+            -Dsonar.flex.cobertura.reportPaths=coverage/cobertura-coverage.xml 
             -Dsonar.token=$SONAR_TOKEN
-
-
-
-  # build-frontend:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v3
-
-  #     - name: Set up Node.js
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '16'
-
-  #     - name: Cache Node Modules
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: ~/.npm
-  #         key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-  #         restore-keys: |
-  #           npm-${{ runner.os }}-
-
-  #     - name: Install Dependencies
-  #       working-directory: ./frontend
-  #       run: npm install
-
-  #     - name: Lint Frontend
-  #       working-directory: ./frontend
-  #       run: npm run lint
-
-  #     - name: Test Frontend
-  #       working-directory: ./frontend
-  #       run: npm run test -- --watch=false
-
-  #     - name: Generate Coverage Report
-  #       working-directory: ./frontend
-  #       run: npm run test -- --code-coverage
-
-  #     - name: Run SonarCloud Analysis for Frontend
-  #       working-directory: ./frontend
-  #       env:
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  #       run: npx sonar-scanner
-
-# jobs:
-#   trigger-backend:
-#     name: Trigger Backend Workflow
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Trigger Backend Workflow
-#         run: |
-#           curl -X POST \
-#           -H "Accept: application/vnd.github.v3+json" \
-#           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-#           https://api.github.com/repos/${{ github.repository }}/dispatches \
-#           -d '{"event_type":"trigger-backend"}'
-
-#   trigger-frontend:
-#     name: Trigger Frontend Workflow
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Trigger Frontend Workflow
-#         run: |
-#           curl -X POST \
-#           -H "Accept: application/vnd.github.v3+json" \
-#           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-#           https://api.github.com/repos/${{ github.repository }}/dispatches \
-#           -d '{"event_type":"trigger-frontend"}'
+            -Dsonar.eslint.reportPaths=eslint-report.json
+        
+      - name: SonarCloud Quality Gate
+        uses: ./.github/actions/check-quality-gate
+        with:
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-project-key: bugtracker_frontend
+          if: ${{ github.event.pull_request.number != '' }}
+          pull_request: ${{ github.event.pull_request.number }}

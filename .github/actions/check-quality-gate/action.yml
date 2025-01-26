@@ -1,0 +1,35 @@
+name: Check Quality Gate
+description: Check the quality gate of the code using SonarCloud
+inputs:
+  sonar-token:
+    description: The SonarCloud token to use for the scan
+    required: true
+  sonar-project-key:
+    description: The SonarCloud project key to use for the scan
+    required: true
+  pull_request:
+    description: The pull request number
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install jq
+      shell: bash
+      run: sudo apt-get install -y jq
+
+    - name: Execute SonarCloud Qality Gate Check
+      shell: bash
+      run: |
+        echo "Waiting for Quality Gate result..."
+        RESPONSE=$(curl -s -u ${{ inputs.sonar-token }}: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.sonar-project-key }}&pullRequest=${{ inputs.pull_request }}")
+        STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
+          if [ "$STATUS" == "OK" ]; then
+            echo "Quality Gate passed!"
+            exit 0
+          elif [ "$STATUS" == "ERROR" ]; then
+            echo "Quality Gate failed!"
+            echo $RESPONSE | jq
+            exit 1
+          fi
+        done
