@@ -33,36 +33,3 @@ runs:
             exit 1
           fi
         done
-
-      # run: |
-      #   echo "Waiting for Quality Gate result..."
-      #     STATUS="PENDING"
-      #     MAX_WAIT=300 # Max wait time in seconds
-      #     WAIT_INTERVAL=10 # Interval between checks in seconds
-      #     WAIT_TIME=0
-
-      #     while [ "$STATUS" == "PENDING" ] && [ $WAIT_TIME -lt $MAX_WAIT ]; do
-      #       if [ "${{ inputs.pull_request }}" ]; then
-      #         RESPONSE=$(curl -s -u ${{ inputs.sonar-token }}: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.project_key }}&pullRequest=${{ inputs.pull_request }}")
-      #       else
-      #         RESPONSE=$(curl -s -u ${{ inputs.sonar-token }}: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.project_key }}")
-      #       fi
-      #       STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
-      #       if [ "$STATUS" == "OK" ]; then
-      #         echo "Quality Gate passed!"
-      #         exit 0
-      #       elif [ "$STATUS" == "ERROR" ]; then
-      #         echo "Quality Gate failed!"
-      #         echo $RESPONSE | jq
-      #         exit 1
-      #       else
-      #         echo "Analysis not completed yet, waiting..."
-      #         sleep $WAIT_INTERVAL
-      #         WAIT_TIME=$((WAIT_TIME + WAIT_INTERVAL))
-      #       fi
-      #     done
-
-      #     if [ "$STATUS" == "PENDING" ]; then
-      #       echo "Quality Gate check timed out."
-      #       exit 1
-      #     fi
