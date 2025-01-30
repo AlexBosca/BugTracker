@@ -126,6 +126,9 @@
 						<configuration>
 							<dataFile>${project.basedir}/target/jacoco.exec</dataFile>
 							<outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
+							<excludes>
+								<exclude>**/mapper/**/*Impl.class</exclude>
+							</excludes>
 						</configuration>
 					</execution>
 				</executions>

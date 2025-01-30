@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ro.alexportfolio.backend.dto.request.IssueRequestDTO;
 import ro.alexportfolio.backend.dto.response.IssueResponseDTO;
 import ro.alexportfolio.backend.mapper.IssueMapper;
+import ro.alexportfolio.backend.mapper.RecordMapper;
 import ro.alexportfolio.backend.model.Issue;
 import ro.alexportfolio.backend.service.IssueService;
 
@@ -52,6 +53,15 @@ public class IssueController {
                                               @PathVariable(name = "issueId") String issueId,
                                               @RequestBody IssueRequestDTO request) {
         issueService.updateIssue(issueId, mapper.toEntity(request));
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping(path = "/{issueId}")
+    public ResponseEntity<String> partialUpdateIssue(@PathVariable(name = "projectKey") String projectKey,
+                                                     @PathVariable(name = "issueId") String issueId,
+                                                     @RequestBody IssueRequestDTO request) {
+        issueService.partialUpdateIssue(issueId, RecordMapper.toMap(request));
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
