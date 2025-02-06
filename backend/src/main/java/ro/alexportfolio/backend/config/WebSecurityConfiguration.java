@@ -21,6 +21,7 @@ public class WebSecurityConfiguration {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(authorize -> authorize
                     .requestMatchers("/users/**").permitAll()
+                    .requestMatchers("/issues/**").permitAll()
                     .requestMatchers("/projects/**").permitAll())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)

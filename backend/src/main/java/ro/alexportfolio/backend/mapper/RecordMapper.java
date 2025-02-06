@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RecordMapper {
+    
     private RecordMapper() {
         throw new IllegalStateException("Utility class");
     }
