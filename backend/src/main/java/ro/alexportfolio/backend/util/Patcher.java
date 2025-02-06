@@ -1,6 +1,7 @@
 package ro.alexportfolio.backend.util;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.springframework.util.ReflectionUtils;
@@ -15,7 +16,7 @@ public class Patcher {
         updates.forEach((key, value) -> {
             Field field = ReflectionUtils.findField(source.getClass(), key);
 
-            if(field != null) {
+            if((field != null) && (!field.getType().equals(LocalDateTime.class))) {
                 field.setAccessible(true);
                 ReflectionUtils.setField(field, source, value);
                 field.setAccessible(false);

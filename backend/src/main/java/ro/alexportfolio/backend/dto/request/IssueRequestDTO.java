@@ -1,8 +1,17 @@
 package ro.alexportfolio.backend.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record IssueRequestDTO(
+        @NotBlank
         String issueId,
+        
+        @NotBlank
         String title,
-        String description
+        
+        @NotBlank
+        String description,
+        
+        String status
 ) {
 }
