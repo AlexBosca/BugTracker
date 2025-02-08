@@ -26,7 +26,7 @@ public class IssueController {
     @PostMapping
     public ResponseEntity<Void> createIssue(@PathVariable(name = "projectKey") String projectKey,
                                             @RequestBody IssueRequestDTO request) {
-        issueService.createIssue(mapper.toEntity(request));
+        issueService.createIssue(projectKey, mapper.toEntity(request));
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

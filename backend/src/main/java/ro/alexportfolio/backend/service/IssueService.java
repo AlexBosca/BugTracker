@@ -27,7 +27,8 @@ public class IssueService {
         this.clock = clock;
     }
 
-    public void createIssue(Issue issue) {
+    public void createIssue(String projectKey, Issue issue) {
+        issue.setProjectKey(projectKey);
         issue.setCreatedAt(LocalDateTime.now(clock));
         issueRepository.save(issue);
     }

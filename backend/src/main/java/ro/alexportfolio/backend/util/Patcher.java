@@ -16,7 +16,11 @@ public class Patcher {
         updates.forEach((key, value) -> {
             Field field = ReflectionUtils.findField(source.getClass(), key);
 
-            if((field != null) && (!field.getType().equals(LocalDateTime.class))) {
+            if (field == null) {
+                throw new IllegalArgumentException("Invalid field: " + key);
+            }
+
+            if (!field.getType().equals(LocalDateTime.class)) {
                 field.setAccessible(true);
                 ReflectionUtils.setField(field, source, value);
                 field.setAccessible(false);
