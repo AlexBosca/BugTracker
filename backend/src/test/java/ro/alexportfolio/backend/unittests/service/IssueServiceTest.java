@@ -10,6 +10,7 @@ import java.time.Clock;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import ro.alexportfolio.backend.dao.IssueRepository;
+import ro.alexportfolio.backend.dao.ProjectRepository;
+import ro.alexportfolio.backend.exception.ExceptionMessages;
+import ro.alexportfolio.backend.exception.IssueNotFoundException;
+import ro.alexportfolio.backend.exception.IssueOrProjectNotFoundException;
+import ro.alexportfolio.backend.exception.ProjectNotFoundException;
 import ro.alexportfolio.backend.model.Issue;
 import ro.alexportfolio.backend.service.IssueService;
 
@@ -32,6 +38,9 @@ class IssueServiceTest {
 
     @Mock
     private IssueRepository issueRepository;
+
+    @Mock
+    private ProjectRepository projectRepository;
 
     @Mock
     private Clock clock;
@@ -52,7 +61,7 @@ class IssueServiceTest {
 
     @BeforeEach
     void setUp() {
-        issueService = new IssueService(issueRepository, clock);
+        issueService = new IssueService(issueRepository, projectRepository, clock);
     }
 
     @Test
@@ -69,6 +78,7 @@ class IssueServiceTest {
         // when
         when(clock.instant()).thenReturn(NOW.toInstant());
         when(clock.getZone()).thenReturn(NOW.getZone());
+        when(projectRepository.existsByProjectKey(projectKey)).thenReturn(true);
 
         issueService.createIssue(projectKey, issue);
 
@@ -162,6 +172,7 @@ class IssueServiceTest {
         List<Issue> issues = List.of(firstIssue, secondIssue);
 
         // when
+        when(projectRepository.existsByProjectKey(projectKey)).thenReturn(true);
         when(issueRepository.findIssuesByProjectKey(projectKey)).thenReturn(issues);
 
         // then
@@ -174,10 +185,12 @@ class IssueServiceTest {
         String projectKey = "TEST";
 
         // when
-        when(issueRepository.findIssuesByProjectKey(projectKey)).thenReturn(List.of());
+        when(projectRepository.existsByProjectKey(projectKey)).thenReturn(false);
 
         // then
-        assertThat(issueService.getIssuesByProjectKey(projectKey)).isEmpty();
+        assertThatThrownBy(() -> issueService.getIssuesByProjectKey(projectKey))
+                .isInstanceOf(ProjectNotFoundException.class)
+                .hasMessage(ExceptionMessages.PROJECT_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -208,7 +221,7 @@ class IssueServiceTest {
 
         // then
         assertThatThrownBy(() -> issueService.getIssueByIssueId(issueId))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(IssueNotFoundException.class)
                 .hasMessage("Issue not found");
     }
 
@@ -244,8 +257,8 @@ class IssueServiceTest {
 
         // then
         assertThatThrownBy(() -> issueService.getIssueByIssueIdAndProjectKey(issueId, projectKey))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Issue not found");
+                .isInstanceOf(IssueOrProjectNotFoundException.class)
+                .hasMessage(ExceptionMessages.ISSUE_OR_PROJECT_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -297,8 +310,8 @@ class IssueServiceTest {
 
         // then
         assertThatThrownBy(() -> issueService.updateIssue(issueId, issue))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Issue not found");
+                .isInstanceOf(IssueNotFoundException.class)
+                .hasMessage(ExceptionMessages.ISSUE_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -332,20 +345,22 @@ class IssueServiceTest {
     void partialUpdateIssue_NonExistingIssue() {
         // given
         String issueId = "TEST-1";
+        Map<String, Object> updates = Map.of("title", "Test title");
 
         // when
         when(issueRepository.findIssueByIssueId(issueId)).thenReturn(java.util.Optional.empty());
 
         // then
-        assertThatThrownBy(() -> issueService.partialUpdateIssue(issueId, java.util.Map.of("title", "Test title")))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Issue not found");
+        assertThatThrownBy(() -> issueService.partialUpdateIssue(issueId, updates))
+                .isInstanceOf(IssueNotFoundException.class)
+                .hasMessage(ExceptionMessages.ISSUE_NOT_FOUND.getMessage());
     }
 
     @Test
     void partialUpdateIssue_ExistingIssue_InvalidField() {
         // given
         String issueId = "TEST-1";
+        Map<String, Object> updates = Map.of("invalid", "Test title");
 
         Issue existingIssue = new Issue();
         existingIssue.setIssueId(issueId);
@@ -357,7 +372,7 @@ class IssueServiceTest {
         when(issueRepository.findIssueByIssueId(issueId)).thenReturn(java.util.Optional.of(existingIssue));
 
         // then
-        assertThatThrownBy(() -> issueService.partialUpdateIssue(issueId, java.util.Map.of("invalid", "Test title")))
+        assertThatThrownBy(() -> issueService.partialUpdateIssue(issueId, updates))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid field: invalid");
     }
