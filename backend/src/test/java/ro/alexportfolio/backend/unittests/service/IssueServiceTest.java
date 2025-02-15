@@ -65,7 +65,7 @@ class IssueServiceTest {
     }
 
     @Test
-    void createIssue() {
+    void createIssue_ExistingProject() {
         // given
         String projectKey = "TEST";
 
@@ -93,6 +93,26 @@ class IssueServiceTest {
         assertThat(capturedIssue.getStatus()).isEqualTo("OPEN");
         assertThat(capturedIssue.getProjectKey()).isEqualTo(projectKey);
         assertThat(capturedIssue.getCreatedAt()).isEqualTo(NOW.toLocalDateTime());
+    }
+
+    @Test
+    void createIssue_NonExistingProject() {
+        // given
+        String projectKey = "TEST";
+
+        Issue issue = new Issue();
+        issue.setIssueId("TEST-1");
+        issue.setTitle("Test title");
+        issue.setDescription("Test description");
+        issue.setStatus("OPEN");
+
+        // when
+        when(projectRepository.existsByProjectKey(projectKey)).thenReturn(false);
+
+        // then
+        assertThatThrownBy(() -> issueService.createIssue(projectKey, issue))
+                .isInstanceOf(ProjectNotFoundException.class)
+                .hasMessage(ExceptionMessages.PROJECT_NOT_FOUND.getMessage());
     }
 
     @Test
