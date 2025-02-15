@@ -6,6 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import ro.alexportfolio.backend.dao.IssueRepository;
+import ro.alexportfolio.backend.dao.ProjectRepository;
+import ro.alexportfolio.backend.exception.IssueNotFoundException;
+import ro.alexportfolio.backend.exception.IssueOrProjectNotFoundException;
+import ro.alexportfolio.backend.exception.ProjectNotFoundException;
 import ro.alexportfolio.backend.model.Issue;
 import ro.alexportfolio.backend.util.Patcher;
 
@@ -17,17 +21,21 @@ import java.util.Map;
 @Service
 public class IssueService {
 
-    private static final String ISSUE_NOT_FOUND = "Issue not found";
-
     private final IssueRepository issueRepository;
+    private final ProjectRepository projectRepository;
     private final Clock clock;
 
-    public IssueService(IssueRepository issueRepository, Clock clock) {
+    public IssueService(IssueRepository issueRepository, ProjectRepository projectRepository, Clock clock) {
         this.issueRepository = issueRepository;
+        this.projectRepository = projectRepository;
         this.clock = clock;
     }
 
     public void createIssue(String projectKey, Issue issue) {
+        if(!projectRepository.existsByProjectKey(projectKey)) {
+            throw new ProjectNotFoundException();
+        }
+        
         issue.setProjectKey(projectKey);
         issue.setCreatedAt(LocalDateTime.now(clock));
         issueRepository.save(issue);
@@ -43,22 +51,26 @@ public class IssueService {
     }
 
     public List<Issue> getIssuesByProjectKey(String projectKey) {
+        if(!projectRepository.existsByProjectKey(projectKey)) {
+            throw new ProjectNotFoundException();
+        }
+
         return issueRepository.findIssuesByProjectKey(projectKey);
     }
 
     public Issue getIssueByIssueId(String issueId) {
         return issueRepository.findIssueByIssueId(issueId)
-                .orElseThrow(() -> new IllegalStateException(ISSUE_NOT_FOUND));
+                .orElseThrow(IssueNotFoundException::new);
     }
 
     public Issue getIssueByIssueIdAndProjectKey(String issueId, String projectKey) {
         return issueRepository.findIssueByIssueIdAndProjectKey(issueId, projectKey)
-                .orElseThrow(() -> new IllegalStateException(ISSUE_NOT_FOUND));
+                .orElseThrow(IssueOrProjectNotFoundException::new);
     }
 
     public void updateIssue(String issueId, Issue issue) {
         Issue existingIssue = issueRepository.findIssueByIssueId(issueId)
-                .orElseThrow(() -> new IllegalStateException(ISSUE_NOT_FOUND));
+                .orElseThrow(IssueNotFoundException::new);
 
         existingIssue.setTitle(issue.getTitle());
         existingIssue.setDescription(issue.getDescription());
@@ -68,7 +80,7 @@ public class IssueService {
 
     public void partialUpdateIssue(String issueId, Map<String, Object> updates) {
         Issue existingIssue = issueRepository.findIssueByIssueId(issueId)
-                .orElseThrow(() -> new IllegalStateException(ISSUE_NOT_FOUND));
+                .orElseThrow(IssueNotFoundException::new);
 
         Patcher.patch(existingIssue, updates);
 
