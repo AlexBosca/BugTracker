@@ -106,7 +106,7 @@ public class IssueService {
                 .title(EmailConstants.EMAIL_ISSUE_UPDATES_TITLE.getValue())
                 .applicationName(applicationName)
                 .confirmationLink(Optional.empty())
-                .notificationContent(Optional.of(EmailConstants.EMAIL_ISSUE_UPDATES_CONTENT.getValue(existingIssue)))
+                .notificationContent(Optional.of(EmailConstants.EMAIL_ISSUE_UPDATES_CONTENT.getValue(existingIssue.getIssueId(), existingIssue.getTitle())))
                 .build();
 
         emailSenderService.sendEmail(emailData);
