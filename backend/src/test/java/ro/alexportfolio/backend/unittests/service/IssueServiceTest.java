@@ -31,6 +31,7 @@ import ro.alexportfolio.backend.exception.IssueNotFoundException;
 import ro.alexportfolio.backend.exception.IssueOrProjectNotFoundException;
 import ro.alexportfolio.backend.exception.ProjectNotFoundException;
 import ro.alexportfolio.backend.model.Issue;
+import ro.alexportfolio.backend.service.EmailSenderService;
 import ro.alexportfolio.backend.service.IssueService;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,6 +45,9 @@ class IssueServiceTest {
 
     @Mock
     private Clock clock;
+
+    @Mock
+    private EmailSenderService emailSenderService;
 
     @Captor
     private ArgumentCaptor<Issue> issueCaptor;
@@ -61,7 +65,10 @@ class IssueServiceTest {
 
     @BeforeEach
     void setUp() {
-        issueService = new IssueService(issueRepository, projectRepository, clock);
+        issueService = new IssueService(issueRepository,
+                                        projectRepository,
+                                        clock,
+                                        emailSenderService);
     }
 
     @Test

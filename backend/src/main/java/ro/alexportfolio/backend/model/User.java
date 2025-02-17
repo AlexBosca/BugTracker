@@ -110,4 +110,8 @@ public class User {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 }
