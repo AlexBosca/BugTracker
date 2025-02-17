@@ -1,5 +1,6 @@
 package ro.alexportfolio.backend.unittests.service;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,6 +12,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import ro.alexportfolio.backend.dao.IssueRepository;
 import ro.alexportfolio.backend.dao.ProjectRepository;
@@ -30,7 +33,9 @@ import ro.alexportfolio.backend.exception.ExceptionMessages;
 import ro.alexportfolio.backend.exception.IssueNotFoundException;
 import ro.alexportfolio.backend.exception.IssueOrProjectNotFoundException;
 import ro.alexportfolio.backend.exception.ProjectNotFoundException;
+import ro.alexportfolio.backend.model.EmailData;
 import ro.alexportfolio.backend.model.Issue;
+import ro.alexportfolio.backend.model.User;
 import ro.alexportfolio.backend.service.EmailSenderService;
 import ro.alexportfolio.backend.service.IssueService;
 
@@ -51,6 +56,9 @@ class IssueServiceTest {
 
     @Captor
     private ArgumentCaptor<Issue> issueCaptor;
+
+    @Captor
+    private ArgumentCaptor<EmailData> emailDataCaptor;
 
     private IssueService issueService;
 
@@ -346,11 +354,20 @@ class IssueServiceTest {
         // given
         String issueId = "TEST-1";
 
+        User assignedUser = new User();
+        assignedUser.setUserId("test-user");
+        assignedUser.setFirstName("John");
+        assignedUser.setLastName("Doe");
+        assignedUser.setEmail("john.doe@company.org");
+
         Issue existingIssue = new Issue();
         existingIssue.setIssueId(issueId);
         existingIssue.setTitle("Existing title");
         existingIssue.setDescription("Existing description");
         existingIssue.setStatus("OPEN");
+        existingIssue.setAssignedUser(assignedUser);
+
+        ReflectionTestUtils.setField(issueService, "applicationName", "Issue Tracker");
 
         // when
         when(issueRepository.findIssueByIssueId(issueId)).thenReturn(java.util.Optional.of(existingIssue));
@@ -359,6 +376,7 @@ class IssueServiceTest {
 
         // then
         verify(issueRepository, times(1)).save(issueCaptor.capture());
+        verify(emailSenderService, times(1)).sendEmail(emailDataCaptor.capture());
 
         Issue capturedIssue = issueCaptor.getValue();
 
@@ -366,6 +384,17 @@ class IssueServiceTest {
         assertThat(capturedIssue.getTitle()).isEqualTo("Test title");
         assertThat(capturedIssue.getDescription()).isEqualTo("Existing description");
         assertThat(capturedIssue.getStatus()).isEqualTo("OPEN");
+
+        EmailData capturedEmailData = emailDataCaptor.getValue();
+
+        assertThat(capturedEmailData.recipientName()).isEqualTo("John Doe");
+        assertThat(capturedEmailData.recipientEmail()).isEqualTo("john.doe@company.org");
+        assertThat(capturedEmailData.subject()).isEqualTo("Issue update");
+        assertThat(capturedEmailData.title()).isEqualTo("Issue update notification");
+        assertThat(capturedEmailData.applicationName()).isEqualTo("Issue Tracker");
+        assertThat(capturedEmailData.confirmationLink()).isNotPresent();
+        assertThat(capturedEmailData.notificationContent()).isEqualTo(Optional.of("The issue [TEST-1] Test title has been updated."));
+
     }
 
     @Test
