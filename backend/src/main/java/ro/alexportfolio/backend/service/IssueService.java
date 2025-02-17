@@ -1,5 +1,7 @@
 package ro.alexportfolio.backend.service;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,13 +12,16 @@ import ro.alexportfolio.backend.dao.ProjectRepository;
 import ro.alexportfolio.backend.exception.IssueNotFoundException;
 import ro.alexportfolio.backend.exception.IssueOrProjectNotFoundException;
 import ro.alexportfolio.backend.exception.ProjectNotFoundException;
+import ro.alexportfolio.backend.model.EmailData;
 import ro.alexportfolio.backend.model.Issue;
+import ro.alexportfolio.backend.util.EmailConstants;
 import ro.alexportfolio.backend.util.Patcher;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class IssueService {
@@ -24,11 +29,19 @@ public class IssueService {
     private final IssueRepository issueRepository;
     private final ProjectRepository projectRepository;
     private final Clock clock;
+    private final EmailSenderService emailSenderService;
 
-    public IssueService(IssueRepository issueRepository, ProjectRepository projectRepository, Clock clock) {
+    @Value("${application.name}")
+    private String applicationName;
+
+    public IssueService(IssueRepository issueRepository,
+                        ProjectRepository projectRepository,
+                        Clock clock,
+                        @Qualifier("notification") EmailSenderService emailSenderService) {
         this.issueRepository = issueRepository;
         this.projectRepository = projectRepository;
         this.clock = clock;
+        this.emailSenderService = emailSenderService;
     }
 
     public void createIssue(String projectKey, Issue issue) {
@@ -85,6 +98,18 @@ public class IssueService {
         Patcher.patch(existingIssue, updates);
 
         issueRepository.save(existingIssue);
+
+        EmailData emailData = EmailData.builder()
+                .recipientName(existingIssue.getAssignedUser().getFullName())
+                .recipientEmail(existingIssue.getAssignedUser().getEmail())
+                .subject(EmailConstants.EMAIL_ISSUE_UPDATES_SUBJECT.getValue())
+                .title(EmailConstants.EMAIL_ISSUE_UPDATES_TITLE.getValue())
+                .applicationName(applicationName)
+                .confirmationLink(Optional.empty())
+                .notificationContent(Optional.of(EmailConstants.EMAIL_ISSUE_UPDATES_CONTENT.getValue(existingIssue)))
+                .build();
+
+        emailSenderService.sendEmail(emailData);
     }
 
     public void deleteIssue(String issueId) {

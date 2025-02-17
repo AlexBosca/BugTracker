@@ -39,3 +39,14 @@ spring:
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
     initialization-mode: always
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_CREDS_USR}
+    password: ${MAIL_CREDS_PSW}
+    properties:
+      mail:
+        smtp:
+          auth: auth
+          starttls:
+            enable: true
