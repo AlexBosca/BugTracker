@@ -1,0 +1,16 @@
+@use '@angular/material' as mat;
+
+:root {
+  app-top-nav {
+    @include mat.toolbar-overrides((
+      container-background-color: transparent
+    ));
+  }
+
+  app-sidebar {
+    @include mat.sidenav-overrides((
+      container-background-color: transparent,
+      content-background-color: transparent
+    ));
+  }
+}
