@@ -4,11 +4,12 @@ import { RouterModule } from '@angular/router';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { TopNavComponent } from './top-nav/top-nav.component';
 import { MaterialModule } from '../shared/material.import';
+import { FooterComponent } from "./footer/footer.component";
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, MaterialModule, TopNavComponent, SidebarComponent],
+  imports: [CommonModule, RouterModule, MaterialModule, TopNavComponent, SidebarComponent, FooterComponent],
 
   template: `
     <div class="layout">
@@ -16,7 +17,8 @@ import { MaterialModule } from '../shared/material.import';
       <div class="content">
         <app-sidebar></app-sidebar>
         <main>
-          <div class="margins">
+          <router-outlet></router-outlet>
+          <!-- <div class="margins">
             <mat-card appearance="outlined">
               <mat-card-header>
                 <mat-card-title>Bug Tracker Overview</mat-card-title>
@@ -76,7 +78,7 @@ import { MaterialModule } from '../shared/material.import';
                 <p>{{longText}}</p>
               </mat-card-content>
             </mat-card>
-          </div>
+          </div> -->
 
           <!-- <div class="margins">
             <mat-card appearance="outlined">
@@ -257,6 +259,7 @@ import { MaterialModule } from '../shared/material.import';
               </mat-card-footer>
             </mat-card>
           </div> -->
+          <app-footer></app-footer>
         </main>
       </div>
     </div>
@@ -268,6 +271,13 @@ import { MaterialModule } from '../shared/material.import';
     }
     app-top-nav {
       border-bottom: 1px solid var(--mat-sys-surface-variant);
+    }
+    app-footer {
+      text-align: center;
+      // position: fixed;
+      padding: 1rem;
+      color: #333;
+      bottom: 0;
     }
     mat-card-title, mat-card-content {
       color: var(--mat-sys-on-surface-variant);

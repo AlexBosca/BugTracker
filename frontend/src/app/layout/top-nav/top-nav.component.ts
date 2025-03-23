@@ -126,7 +126,6 @@ import { MaterialModule } from '../../shared/material.import';
       padding: 0 1rem;
     }
 
-
     mat-toolbar {
       display: flex;
       align-items: center; /* ✅ Ensures vertical alignment */
