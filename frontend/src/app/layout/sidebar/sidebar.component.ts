@@ -39,8 +39,6 @@ import { MaterialModule } from '../../shared/material.import';
   styles: [`
     * {
       padding: 0;
-      // border-radius: 12px;
-      // box-sizing: border-box;
     }
 
     .container {
@@ -49,7 +47,6 @@ import { MaterialModule } from '../../shared/material.import';
     }
 
     .sidenav {
-      // width: 250px;
       flex-direction: column;
     }
 
@@ -69,7 +66,6 @@ import { MaterialModule } from '../../shared/material.import';
 
     .menu-icon {
       vertical-align: middle;
-      // padding: 0.5rem;
     }
 
     .menu-text {

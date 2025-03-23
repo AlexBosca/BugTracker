@@ -274,7 +274,6 @@ import { FooterComponent } from "./footer/footer.component";
     }
     app-footer {
       text-align: center;
-      // position: fixed;
       padding: 1rem;
       color: #333;
       bottom: 0;
@@ -298,8 +297,6 @@ import { FooterComponent } from "./footer/footer.component";
       flex: 1;
     }
     .example-card {
-      // max-width: 400px;
-      // margin: 20px;
     }
     .example-card-footer {
       padding: 16px;

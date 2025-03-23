@@ -113,14 +113,12 @@ import { MaterialModule } from '../../shared/material.import';
     }
 
     ::ng-deep .settings-menu.mat-mdc-menu-panel {
-      // min-width: 350px !important; /* Adjust to your desired width */
       max-width: none !important;   /* Remove default max-width */
       width: 250px;
       padding: 0 1rem;
     }
 
     ::ng-deep .account-menu.mat-mdc-menu-panel {
-      // min-width: 350px !important; /* Adjust to your desired width */
       max-width: none !important;   /* Remove default max-width */
       width: 250px;
       padding: 0 1rem;
@@ -141,7 +139,6 @@ import { MaterialModule } from '../../shared/material.import';
     .notification {
       padding: 1rem;
       margin: 0.5rem 0;
-      // border: 1px solid #ccc;
       border-radius: 4px;
       display: flex;
       align-items: center;
@@ -152,8 +149,6 @@ import { MaterialModule } from '../../shared/material.import';
       display: flex;
       align-items: center;
       justify-content: space-between;
-      // margin-bottom: 1rem;
-      // margin-top: 0.5rem;
     }
 
     .notification-message {
@@ -176,7 +171,6 @@ import { MaterialModule } from '../../shared/material.import';
 
     .logo {
       width: calc(var(--sidenav-width));
-      // margin-left: 12px;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -184,7 +178,6 @@ import { MaterialModule } from '../../shared/material.import';
 
     .search-bar {
       flex: 1;
-      // margin: 0 1.5rem;
       display: flex; /* ✅ Ensures the search bar aligns properly */
     }
 
