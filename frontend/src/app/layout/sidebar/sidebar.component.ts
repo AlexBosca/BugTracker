@@ -57,11 +57,8 @@ import { MaterialModule } from '../../shared/material.import';
     }
 
     .nav-item {
-      display: flex;
-      align-items: center; /* Vertical alignment */
       gap: 0.75rem; /* Spacing between icon and text */
       padding: 1rem;
-      text-decoration: none; /* Remove default link styling */
     }
 
     .menu-icon {

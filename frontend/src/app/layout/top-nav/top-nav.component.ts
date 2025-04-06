@@ -195,7 +195,7 @@ import { MaterialModule } from '../../shared/material.import';
     }
 
     input {
-      padding: 0.5rem 1rem; /* ✅ Adjusts spacing inside input */
+      padding: 0.5rem; /* ✅ Adjusts spacing inside input */
     }
   `]
 })

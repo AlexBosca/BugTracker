@@ -1,9 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MaterialModule } from './material.import';
+import { FilterDialogComponent } from './filter-dialog/filter-dialog.component';
 
 @NgModule({
-  imports: [CommonModule, MaterialModule],
-  exports: [MaterialModule]
+  imports: [
+    CommonModule,
+    FilterDialogComponent
+  ],
+  exports: [
+    FilterDialogComponent
+  ]
 })
 export class SharedModule {}
