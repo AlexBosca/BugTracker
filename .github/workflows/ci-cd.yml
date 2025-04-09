@@ -43,6 +43,9 @@ jobs:
 
       - name: Build and Test
         working-directory: ./backend
+        env:
+          MAIL_CREDS_USR: ${{ secrets.MAIL_CREDS_USR }}
+          MAIL_CREDS_PWD: ${{ secrets.MAIL_CREDS_PWD }}
         run: mvn clean test package verify
 
       # - name: Parse Unit Test Report
