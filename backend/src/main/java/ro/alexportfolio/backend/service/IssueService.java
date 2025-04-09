@@ -88,7 +88,7 @@ public class IssueService {
 
         existingIssue.setTitle(issue.getTitle());
         existingIssue.setDescription(issue.getDescription());
-        issue.setUpdatedAt(LocalDateTime.now(clock));
+        existingIssue.setUpdatedAt(LocalDateTime.now(clock));
 
         issueRepository.save(existingIssue);
     }

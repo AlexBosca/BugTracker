@@ -24,6 +24,9 @@ public class Issue {
     @Column(nullable = false, length = 50)
     private String status;
 
+    @Column(nullable = false, length = 50)
+    private String priority;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -82,6 +85,14 @@ public class Issue {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
     }
 
     public LocalDateTime getCreatedAt() {

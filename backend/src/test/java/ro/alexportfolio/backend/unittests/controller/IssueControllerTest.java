@@ -37,12 +37,14 @@ class IssueControllerTest {
 
     @Test
     void testCreateIssue() {
-        IssueRequestDTO request = new IssueRequestDTO("TEST-1", "Test title", "Test description", "OPEN");
+        IssueRequestDTO request = new IssueRequestDTO("TEST-1", "Test title", "Test description", "TEST", "OPEN", "LOW");
         Issue issue = new Issue();
         issue.setIssueId("TEST-1");
         issue.setTitle("Test title");
         issue.setDescription("Test description");
         issue.setStatus("OPEN");
+        issue.setProjectKey("TEST");
+        issue.setPriority("LOW");
         
         when(mapper.toEntity(request)).thenReturn(issue);
         doNothing().when(issueService).createIssue("TEST", issue);
@@ -60,17 +62,21 @@ class IssueControllerTest {
         firstIssue.setTitle("Test title");
         firstIssue.setDescription("Test description");
         firstIssue.setStatus("OPEN");
+        firstIssue.setProjectKey("TEST");
+        firstIssue.setPriority("LOW");
 
         Issue secondIssue = new Issue();
         secondIssue.setIssueId("TEST-2");
         secondIssue.setTitle("Test title");
         secondIssue.setDescription("Test description");
         secondIssue.setStatus("OPEN");
+        firstIssue.setProjectKey("TEST");
+        firstIssue.setPriority("HIGH");
 
         when(issueService.getIssuesByProjectKey("TEST")).thenReturn(List.of(firstIssue, secondIssue));
         
-        IssueResponseDTO firstIssueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null);
-        IssueResponseDTO secondIssueResponseDTO = new IssueResponseDTO("TEST-2", "Test title", "Test description", null);
+        IssueResponseDTO firstIssueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW");
+        IssueResponseDTO secondIssueResponseDTO = new IssueResponseDTO("TEST-2", "Test title", "Test description", null, null, "TEST", "OPEN", "HIGH");
         when(mapper.toResponseList(List.of(firstIssue, secondIssue))).thenReturn(List.of(firstIssueResponseDTO, secondIssueResponseDTO));
 
         ResponseEntity<List<IssueResponseDTO>> responseEntity = issueController.getAllIssues("TEST");
@@ -86,10 +92,12 @@ class IssueControllerTest {
         issue.setTitle("Test title");
         issue.setDescription("Test description");
         issue.setStatus("OPEN");
+        issue.setProjectKey("TEST");
+        issue.setPriority("LOW");
 
         when(issueService.getIssueByIssueIdAndProjectKey("TEST-1", "TEST")).thenReturn(issue);
         
-        IssueResponseDTO issueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null);
+        IssueResponseDTO issueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW");
         when(mapper.toResponse(issue)).thenReturn(issueResponseDTO);
 
         ResponseEntity<IssueResponseDTO> responseEntity = issueController.getIssue("TEST", "TEST-1");
@@ -109,12 +117,14 @@ class IssueControllerTest {
 
     @Test
     void testUpdateIssue() {
-        IssueRequestDTO request = new IssueRequestDTO("TEST-1", "Test title", "Test description", "OPEN");
+        IssueRequestDTO request = new IssueRequestDTO("TEST-1", "Test title", "Test description", "TEST", "OPEN", "LOW");
         Issue issue = new Issue();
         issue.setIssueId("TEST-1");
         issue.setTitle("Test title");
         issue.setDescription("Test description");
         issue.setStatus("OPEN");
+        issue.setProjectKey("TEST");
+        issue.setPriority("LOW");
         
         when(mapper.toEntity(request)).thenReturn(issue);
         doNothing().when(issueService).updateIssue("TEST-1", issue);
@@ -127,12 +137,14 @@ class IssueControllerTest {
 
     @Test
     void testPartialUpdateIssue() {
-        IssueRequestDTO request = new IssueRequestDTO("TEST-1", "Test title", "Test description", "OPEN");
+        IssueRequestDTO request = new IssueRequestDTO("TEST-1", "Test title", "Test description", "TEST", "OPEN", "LOW");
         Issue issue = new Issue();
         issue.setIssueId("TEST-1");
         issue.setTitle("Test title");
         issue.setDescription("Test description");
         issue.setStatus("OPEN");
+        issue.setProjectKey("TEST");
+        issue.setPriority("LOW");
         
         doNothing().when(issueService).partialUpdateIssue("TEST-1", RecordMapper.toMap(request));
 

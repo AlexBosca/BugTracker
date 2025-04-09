@@ -36,6 +36,7 @@ CREATE TABLE issues(
     description TEXT,
 --    status VARCHAR(50) NOT NULL,
     status VARCHAR(50),
+    priority VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     project_key VARCHAR(50),

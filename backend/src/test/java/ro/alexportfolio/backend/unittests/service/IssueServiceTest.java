@@ -108,6 +108,7 @@ class IssueServiceTest {
         assertThat(capturedIssue.getStatus()).isEqualTo("OPEN");
         assertThat(capturedIssue.getProjectKey()).isEqualTo(projectKey);
         assertThat(capturedIssue.getCreatedAt()).isEqualTo(NOW.toLocalDateTime());
+        assertThat(capturedIssue.getUpdatedAt()).isEqualTo(NOW.toLocalDateTime());
     }
 
     @Test
@@ -314,6 +315,8 @@ class IssueServiceTest {
         existingIssue.setStatus("OPEN");
 
         // when
+        when(clock.instant()).thenReturn(NOW.toInstant());
+        when(clock.getZone()).thenReturn(NOW.getZone());
         when(issueRepository.findIssueByIssueId(issueId)).thenReturn(java.util.Optional.of(existingIssue));
 
         issueService.updateIssue(issueId, issue);
@@ -327,6 +330,7 @@ class IssueServiceTest {
         assertThat(capturedIssue.getTitle()).isEqualTo("Test title");
         assertThat(capturedIssue.getDescription()).isEqualTo("Test description");
         assertThat(capturedIssue.getStatus()).isEqualTo("OPEN");
+        assertThat(capturedIssue.getUpdatedAt()).isEqualTo(NOW.toLocalDateTime());
     }
 
     @Test
@@ -370,6 +374,8 @@ class IssueServiceTest {
         ReflectionTestUtils.setField(issueService, "applicationName", "Issue Tracker");
 
         // when
+        when(clock.instant()).thenReturn(NOW.toInstant());
+        when(clock.getZone()).thenReturn(NOW.getZone());
         when(issueRepository.findIssueByIssueId(issueId)).thenReturn(java.util.Optional.of(existingIssue));
 
         issueService.partialUpdateIssue(issueId, java.util.Map.of("title", "Test title"));
@@ -384,6 +390,7 @@ class IssueServiceTest {
         assertThat(capturedIssue.getTitle()).isEqualTo("Test title");
         assertThat(capturedIssue.getDescription()).isEqualTo("Existing description");
         assertThat(capturedIssue.getStatus()).isEqualTo("OPEN");
+        assertThat(capturedIssue.getUpdatedAt()).isEqualTo(NOW.toLocalDateTime());
 
         EmailData capturedEmailData = emailDataCaptor.getValue();
 

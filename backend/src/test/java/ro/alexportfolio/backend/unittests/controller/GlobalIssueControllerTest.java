@@ -40,17 +40,21 @@ class GlobalIssueControllerTest {
         firstIssue.setTitle("Test title");
         firstIssue.setDescription("Test description");
         firstIssue.setStatus("OPEN");
+        firstIssue.setProjectKey("TEST");
+        firstIssue.setPriority("LOW");
 
         Issue secondIssue = new Issue();
         secondIssue.setIssueId("TEST-2");
         secondIssue.setTitle("Test title");
         secondIssue.setDescription("Test description");
         secondIssue.setStatus("OPEN");
+        firstIssue.setProjectKey("TEST");
+        firstIssue.setPriority("HIGH");
 
         List<Issue> issueList = List.of(firstIssue, secondIssue);
 
-        IssueResponseDTO firstIssueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null);
-        IssueResponseDTO secondIssueResponseDTO = new IssueResponseDTO("TEST-2", "Test title", "Test description", null);
+        IssueResponseDTO firstIssueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW");
+        IssueResponseDTO secondIssueResponseDTO = new IssueResponseDTO("TEST-2", "Test title", "Test description", null, null, "TEST", "OPEN", "HIGH");
 
         List<IssueResponseDTO> issueResponseDTOList = List.of(firstIssueResponseDTO, secondIssueResponseDTO);
         when(issueService.getAllIssues()).thenReturn(issueList);
@@ -69,18 +73,22 @@ class GlobalIssueControllerTest {
         firstIssue.setTitle("Test title");
         firstIssue.setDescription("Test description");
         firstIssue.setStatus("OPEN");
+        firstIssue.setProjectKey("TEST");
+        firstIssue.setPriority("LOW");
 
         Issue secondIssue = new Issue();
         secondIssue.setIssueId("TEST-2");
         secondIssue.setTitle("Test title");
         secondIssue.setDescription("Test description");
         secondIssue.setStatus("OPEN");
+        firstIssue.setProjectKey("TEST");
+        firstIssue.setPriority("HIGH");
 
         List<Issue> issueList = List.of(firstIssue, secondIssue);
         Page<Issue> issuePage = new PageImpl<>(issueList, PageRequest.of(0, 10), 2);
 
-        IssueResponseDTO firstIssueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null);
-        IssueResponseDTO secondIssueResponseDTO = new IssueResponseDTO("TEST-2", "Test title", "Test description", null);
+        IssueResponseDTO firstIssueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW");
+        IssueResponseDTO secondIssueResponseDTO = new IssueResponseDTO("TEST-2", "Test title", "Test description", null, null, "TEST", "OPEN", "HIGH");
 
         List<IssueResponseDTO> issueResponseDTOList = List.of(firstIssueResponseDTO, secondIssueResponseDTO);
         when(issueService.getAllIssues(0, 10)).thenReturn(issuePage);
@@ -100,8 +108,10 @@ class GlobalIssueControllerTest {
         issue.setTitle("Test title");
         issue.setDescription("Test description");
         issue.setStatus("OPEN");
+        issue.setProjectKey("TEST");
+        issue.setPriority("LOW");
 
-        IssueResponseDTO issueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null);
+        IssueResponseDTO issueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW");
         when(issueService.getIssueByIssueId("TEST-1")).thenReturn(issue);
         when(mapper.toResponse(issue)).thenReturn(issueResponseDTO);
         
