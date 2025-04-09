@@ -1,13 +1,11 @@
 package ro.alexportfolio.backend.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.alexportfolio.backend.dto.request.ProjectRequestDTO;
 import ro.alexportfolio.backend.dto.response.ProjectResponseDTO;
 import ro.alexportfolio.backend.mapper.ProjectMapper;
-import ro.alexportfolio.backend.model.Project;
 import ro.alexportfolio.backend.service.ProjectService;
 
 import java.util.List;
@@ -16,11 +14,14 @@ import java.util.List;
 @RequestMapping("/projects")
 public class ProjectController {
 
-    @Autowired
-    private ProjectService projectService;
+    private final ProjectService projectService;
 
-    @Autowired
-    private ProjectMapper mapper;
+    private final ProjectMapper mapper;
+
+    public ProjectController(ProjectService projectService, ProjectMapper mapper) {
+        this.projectService = projectService;
+        this.mapper = mapper;
+    }
 
     @PostMapping
     public ResponseEntity<Void> createProject(@RequestBody ProjectRequestDTO request) {

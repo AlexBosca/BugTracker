@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { Issue } from '../models/issue.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class IssueService {
+  private readonly apiUrl = `${environment.apiUrl}/issues`;
+
   issues: Issue[] = [
     {
       issueId: 'SWD-123',
@@ -35,8 +39,11 @@ export class IssueService {
     }
   ];
 
+  constructor(private http: HttpClient) {}
+
   public getAllIssues(): Observable<Issue[]> {
-    return of(this.issues);
+    // return of(this.issues);
+    return this.http.get<Issue[]>(this.apiUrl);
   }
 
   public createIssue(issue: Issue): Observable<void> {

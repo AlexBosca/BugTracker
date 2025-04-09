@@ -37,6 +37,7 @@ CREATE TABLE issues(
 --    status VARCHAR(50) NOT NULL,
     status VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     project_key VARCHAR(50),
     assigned_user_id VARCHAR(50),
     FOREIGN KEY (project_key) REFERENCES projects(project_key),

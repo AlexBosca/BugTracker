@@ -51,6 +51,7 @@ public class IssueService {
         
         issue.setProjectKey(projectKey);
         issue.setCreatedAt(LocalDateTime.now(clock));
+        issue.setUpdatedAt(LocalDateTime.now(clock));
         issueRepository.save(issue);
     }
 
@@ -87,6 +88,7 @@ public class IssueService {
 
         existingIssue.setTitle(issue.getTitle());
         existingIssue.setDescription(issue.getDescription());
+        issue.setUpdatedAt(LocalDateTime.now(clock));
 
         issueRepository.save(existingIssue);
     }
@@ -97,6 +99,7 @@ public class IssueService {
 
         Patcher.patch(existingIssue, updates);
 
+        existingIssue.setUpdatedAt(LocalDateTime.now(clock));
         issueRepository.save(existingIssue);
 
         EmailData emailData = EmailData.builder()

@@ -11,7 +11,11 @@ public record IssueRequestDTO(
         
         @NotBlank
         String description,
+
+        String projectKey,
         
-        String status
+        String status,
+
+        String priority
 ) {
 }

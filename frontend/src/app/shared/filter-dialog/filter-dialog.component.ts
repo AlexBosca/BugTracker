@@ -11,9 +11,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
     <mat-dialog-content class="mat-typography">
       <mat-form-field>
         <mat-label>Project Name</mat-label>
-        <mat-select [formControl]="projectNames" multiple>
-          @for (projectName of projectNameList; track projectName) {
-            <mat-option [value]="projectName">{{projectName}}</mat-option>
+        <mat-select [formControl]="projectNamesAndKeys" multiple>
+          @for (project of projectNamesAndKeyList; track project) {
+            <mat-option [value]="project.projectKey">{{project.projectName}}</mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -49,8 +49,14 @@ export class FilterDialogComponent {
 
   activeFilters = inject(MAT_DIALOG_DATA).activeFilters;
 
-  projectNames = new FormControl(this.activeFilters.projectNames);
-  projectNameList: string[] = inject(MAT_DIALOG_DATA).projectNameList;
+  projectNamesAndKeys = new FormControl(
+    this.activeFilters.projectNamesAndKeys.map((item: { projectKey: string; projectName: string }) => item.projectKey)
+  );
+
+  projectNamesAndKeyList: {
+    projectKey: string;
+    projectName: string;
+  }[] = inject(MAT_DIALOG_DATA).projectNamesAndKeys
 
   priorities = new FormControl(this.activeFilters.priorities);
   priorityList: string[] = inject(MAT_DIALOG_DATA).priorityList;
@@ -63,7 +69,11 @@ export class FilterDialogComponent {
   }
 
   applyFilter(): void {
-    this.activeFilters.projectNames = this.projectNames.value;
+    const selectedNames = this.projectNamesAndKeys.value ?? [];
+
+    this.activeFilters.projectNamesAndKeys = selectedNames
+      .map((projectKey: string) => this.projectNamesAndKeyList.find(project => project.projectKey === projectKey))
+      .filter((p: unknown): p is { projectKey: string; projectName: string } => !!p);
     this.activeFilters.priorities = this.priorities.value;
     this.activeFilters.assignees = this.assignees.value;
 

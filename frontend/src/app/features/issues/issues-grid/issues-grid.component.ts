@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { SharedModule } from '../../../shared/shared.module';
 import { FilterDialogComponent } from '../../../shared/filter-dialog/filter-dialog.component';
 import { EntityDialogComponent } from '../../../shared/entity-dialog/entity-dialog.component';
+import { ProjectService } from '../../../services/project.service';
 
 @Component({
   selector: 'app-issues-grid',
@@ -145,11 +146,14 @@ export class IssuesGridComponent {
   issues: Issue[] = [];
 
   activeFilters: {
-    projectNames: string[];
+    projectNamesAndKeys: {
+      projectKey: string;
+      projectName: string;
+    } [];
     priorities: string[];
     assignees: string[];
   } = {
-    projectNames: [],
+    projectNamesAndKeys: [],
     priorities: [],
     assignees: []
   };
@@ -158,7 +162,10 @@ export class IssuesGridComponent {
 
   searchQuery = '';
 
-  projectNames: string[] = [];
+  projectNamesAndKeys: {
+    projectKey: string;
+    projectName: string;
+  } [] = []
 
   priorities: string[] = [];
 
@@ -169,19 +176,17 @@ export class IssuesGridComponent {
   readonly entityDialog = inject(MatDialog);
 
   constructor(
-    readonly issueService: IssueService
+    readonly issueService: IssueService,
+    readonly projectService: ProjectService
   ) {
     this.fetchIssues();
+    this.fetchProjectKeys();
   }
 
   fetchIssues() {
     this.issueService.getAllIssues().subscribe((issues) => {
       this.issues = issues;
       this.filteredIssues = issues;
-
-      this.projectNames = issues.map(issue => issue.projectName).filter((value, index, self) => {
-        return self.indexOf(value) === index;
-      });
 
       this.priorities = issues.map(issue => issue.priority).filter((value, index, self) => {
         return self.indexOf(value) === index;
@@ -193,6 +198,17 @@ export class IssuesGridComponent {
     });
   }
 
+  fetchProjectKeys() {
+    this.projectService.getAllProjects().subscribe((projects) => {
+      this.projectNamesAndKeys = projects.map(project => ({
+        projectKey: project.projectKey,
+        projectName: project.name
+      })).filter((value, index, self) =>
+        self.findIndex(v => v.projectKey === value.projectKey) === index
+      );
+    });
+  }
+
   onSearch(query: string): void {
     if(!query) {
       this.filteredIssues = this.issues;
@@ -201,29 +217,33 @@ export class IssuesGridComponent {
         issue.issueId.toLowerCase().includes(query.toLowerCase()) ||
         issue.title.toLowerCase().includes(query.toLowerCase()) ||
         issue.description.toLowerCase().includes(query.toLowerCase()) ||
-        issue.assignee.toLowerCase().includes(query.toLowerCase()) ||
-        issue.projectName.toLowerCase().includes(query.toLowerCase()) ||
-        issue.status.toLowerCase().includes(query.toLowerCase()) ||
-        issue.priority.toLowerCase().includes(query.toLowerCase()) ||
-        issue.updatedBy.toLowerCase().includes(query.toLowerCase())
+        // issue.assignee.toLowerCase().includes(query.toLowerCase()) ||
+        // issue.projectName.toLowerCase().includes(query.toLowerCase()) ||
+        // issue.projectKey.toLowerCase().includes(query.toLowerCase()) ||
+        issue.projectKey.toLowerCase().includes(query.toLowerCase())
+        // issue.status.toLowerCase().includes(query.toLowerCase()) ||
+        // issue.priority.toLowerCase().includes(query.toLowerCase()) ||
+        // issue.updatedBy.toLowerCase().includes(query.toLowerCase())
       );
     }
   }
 
   openFilterDialog(): void {
-    const dialogRef = this.filterDialog.open(FilterDialogComponent,{
+    this.filterDialog.open(FilterDialogComponent,{
       data: {
-        projectNameList: this.projectNames,
+        projectNamesAndKeys: this.projectNamesAndKeys,
         priorityList: this.priorities,
         assigneeList: this.assineeList,
         activeFilters: this.activeFilters
       }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+    }).afterClosed().subscribe(result => {
       if(result !== undefined) {
+        const selectedProjectKeys = result.projectNamesAndKeys?.map(
+          (item: { projectKey: string; projectName: string }) => item.projectKey
+        ) ?? [];
+
         this.filteredIssues = this.issues.filter(issue => {
-          return (result.projectNames.length === 0 || result.projectNames.includes(issue.projectName)) &&
+          return (selectedProjectKeys.length === 0 || selectedProjectKeys.includes(issue.projectKey)) &&
             (result.priorities.length === 0 || result.priorities.includes(issue.priority)) &&
             (result.assignees.length === 0 || result.assignees.includes(issue.assignee));
         });
@@ -245,15 +265,15 @@ export class IssuesGridComponent {
           { name: 'updatedBy', label: 'Updated By', type: 'text' },
           { name: 'createdAt', label: 'Created At', type: 'date' },
           { name: 'updatedAt', label: 'Updated At', type: 'date' },
-          { name: 'projectName', label: 'Project', type: 'select', options: this.projectNames },
+          { name: 'projectName', label: 'Project', type: 'select', options: this.projectNamesAndKeys },
           { name: 'projectKey', label: 'Project Key', type: 'text' },
           { name: 'description', label: 'Description', type: 'text-area' }
         ],
         type: 'Create'
       },
       disableClose: true,
-      height: '600px',
-      width: '400px'
+      height: '800px',
+      width: '500px'
     }).afterClosed().subscribe(issue => {
       if (issue) {
         console.log('Issue created:', issue);
@@ -278,7 +298,7 @@ export class IssuesGridComponent {
           { name: 'updatedBy', label: 'Updated By', type: 'text' },
           { name: 'createdAt', label: 'Created At', type: 'date' },
           { name: 'updatedAt', label: 'Updated At', type: 'date' },
-          { name: 'projectName', label: 'Project', type: 'select', options: this.projectNames },
+          { name: 'projectName', label: 'Project', type: 'select', options: this.projectNamesAndKeys },
           { name: 'projectKey', label: 'Project Key', type: 'text' },
           { name: 'description', label: 'Description', type: 'text-area' }
         ],
@@ -286,8 +306,8 @@ export class IssuesGridComponent {
         type: 'Edit'
       },
       disableClose: true,
-      height: '600px',
-      width: '400px'
+      height: '800px',
+      width: '500px'
     }).afterClosed().subscribe(issue => {
       if (issue) {
         console.log('Issue created:', issue);
