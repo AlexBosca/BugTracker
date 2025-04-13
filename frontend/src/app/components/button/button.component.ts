@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { ProjectService } from '../../services/project.service';
-import { IssueService } from '../../services/issue.service';
+import { IssueService } from '../../core/services/issue.service';
 
 @Component({
   selector: 'app-button',

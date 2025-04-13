@@ -24,8 +24,14 @@ public class Issue {
     @Column(nullable = false, length = 50)
     private String status;
 
+    @Column(nullable = false, length = 50)
+    private String priority;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false, updatable = false)
+    private LocalDateTime updatedAt;
 
     @Column(name = "project_key", nullable = false, length = 50)
     private String projectKey;
@@ -81,12 +87,28 @@ public class Issue {
         this.status = status;
     }
 
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public String getProjectKey() {

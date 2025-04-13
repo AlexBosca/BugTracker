@@ -8,15 +8,15 @@ export const routes: Routes = [
   // },
   {
     path: 'dashboard',
-    loadChildren: () => import('./features/dashboard/dashboard.module').then(m => m.DashboardModule)
+    loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.routes)
   },
   {
     path: 'projects',
-    loadChildren: () => import('./features/projects/projects.module').then(m => m.ProjectsModule)
+    loadChildren: () => import('./features/projects/projects.routes').then(m => m.routes)
   },
   {
     path: 'issues',
-    loadChildren: () => import('./features/issues/issues.module').then(m => m.IssuesModule)
+    loadChildren: () => import('./features/issues/issues.routes').then(m => m.routes)
   },
   {
     path: '**',

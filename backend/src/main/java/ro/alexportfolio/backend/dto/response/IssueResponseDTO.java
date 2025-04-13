@@ -6,6 +6,10 @@ public record IssueResponseDTO(
         String issueId,
         String title,
         String description,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
+        String projectKey,
+        String status,
+        String priority
 ) {
 }

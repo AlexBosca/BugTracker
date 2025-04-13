@@ -15,4 +15,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Transactional
     @Modifying
     void deleteByProjectKey(String projectKey);
+
+    boolean existsByProjectKey(String projectKey);
 }
