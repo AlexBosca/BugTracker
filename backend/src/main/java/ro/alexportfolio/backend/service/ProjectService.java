@@ -6,6 +6,7 @@ import ro.alexportfolio.backend.dao.ProjectRepository;
 import ro.alexportfolio.backend.dto.request.ProjectRequestDTO;
 import ro.alexportfolio.backend.model.Project;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,13 +14,16 @@ import java.util.List;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final Clock clock;
 
-    public ProjectService(ProjectRepository projectRepository) {
+    public ProjectService(ProjectRepository projectRepository,
+                          Clock clock) {
         this.projectRepository = projectRepository;
+        this.clock = clock;
     }
 
     public void createProject(Project project) {
-        project.setCreatedAt(LocalDateTime.now());
+        project.setCreatedAt(LocalDateTime.now(clock));
 
         projectRepository.save(project);
     }
