@@ -1,9 +1,8 @@
 package ro.alexportfolio.backend.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ro.alexportfolio.backend.dao.ProjectRepository;
-import ro.alexportfolio.backend.dto.request.ProjectRequestDTO;
+import ro.alexportfolio.backend.exception.ProjectNotFoundException;
 import ro.alexportfolio.backend.model.Project;
 
 import java.time.Clock;
@@ -34,12 +33,12 @@ public class ProjectService {
 
     public Project getProjectByProjectKey(String projectKey) {
         return projectRepository.findByProjectKey(projectKey)
-                .orElseThrow(() -> new IllegalStateException("Project not found"));
+                .orElseThrow(ProjectNotFoundException::new);
     }
 
     public void updateProject(String projectKey, Project project) {
         Project existingProject = projectRepository.findByProjectKey(projectKey)
-                .orElseThrow(() -> new IllegalStateException("Project not found"));
+                .orElseThrow(ProjectNotFoundException::new);
 
         existingProject.setName(project.getName());
         existingProject.setDescription(project.getDescription());

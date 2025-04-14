@@ -19,10 +19,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import ro.alexportfolio.backend.dao.ProjectRepository;
+import ro.alexportfolio.backend.exception.ExceptionMessages;
+import ro.alexportfolio.backend.exception.ProjectNotFoundException;
 import ro.alexportfolio.backend.model.Project;
 import ro.alexportfolio.backend.service.ProjectService;
 
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -114,8 +115,8 @@ class ProjectServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> projectService.getProjectByProjectKey(projectKey))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Project not found");
+                .isInstanceOf(ProjectNotFoundException.class)
+                .hasMessage(ExceptionMessages.PROJECT_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -149,8 +150,8 @@ class ProjectServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> projectService.updateProject(projectKey, updatedProject))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Project not found");
+                .isInstanceOf(ProjectNotFoundException.class)
+                .hasMessage(ExceptionMessages.PROJECT_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -159,7 +160,6 @@ class ProjectServiceTest {
         String projectKey = "projectKey";
 
         // When
-        // when(projectRepository.existsByProjectKey(projectKey)).thenReturn(true);
 
         projectService.deleteProject(projectKey);
 

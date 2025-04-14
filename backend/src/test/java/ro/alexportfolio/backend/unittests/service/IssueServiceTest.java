@@ -1,6 +1,5 @@
 package ro.alexportfolio.backend.unittests.service;
 
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
