@@ -33,6 +33,7 @@ public class UserProjectRole {
     private Project project;
 
     @ManyToOne
+    @JoinColumn(name = "project_key", referencedColumnName = "project_key", insertable = false, updatable = false)
     @JoinColumn(name = "role_name", referencedColumnName = "role_name", insertable = false, updatable = false)
     private ProjectRole projectRole;
 

@@ -29,16 +29,20 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:db/schema/schema.sql
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/bugtracker
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
-    initialization-mode: always
+  flyway:
+  
+    schemas: public
+    locations: classpath:db/migrations
+    enabled: true
+    validate-on-migrate: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    clean-disabled: false
   mail:
     host: smtp.gmail.com
     port: 587

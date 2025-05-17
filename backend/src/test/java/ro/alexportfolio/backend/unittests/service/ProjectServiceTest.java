@@ -19,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import ro.alexportfolio.backend.dao.ProjectRepository;
+import ro.alexportfolio.backend.dao.UserProjectRoleRepository;
+import ro.alexportfolio.backend.dao.UserRepository;
 import ro.alexportfolio.backend.exception.ExceptionMessages;
 import ro.alexportfolio.backend.exception.ProjectNotFoundException;
 import ro.alexportfolio.backend.model.Project;
@@ -32,6 +34,12 @@ class ProjectServiceTest {
 
     @Mock
     private ProjectRepository projectRepository;
+
+    @Mock
+    private UserProjectRoleRepository userProjectRoleRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     @Mock
     private Clock clock;
@@ -52,7 +60,7 @@ class ProjectServiceTest {
 
     @BeforeEach
     void setUp() {
-        this.projectService = new ProjectService(projectRepository, clock);
+        this.projectService = new ProjectService(projectRepository, userProjectRoleRepository, userRepository, clock);
     }
 
     @Test

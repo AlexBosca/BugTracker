@@ -15,6 +15,8 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTableModule } from '@angular/material/table';
 
 export const MATERIAL_IMPORTS = [
   MatCardModule,
@@ -32,7 +34,9 @@ export const MATERIAL_IMPORTS = [
   MatGridListModule,
   MatDialogModule,
   MatSelectModule,
-  MatDatepickerModule
+  MatDatepickerModule,
+  MatCheckboxModule,
+  MatTableModule
 ];
 
 @NgModule({
