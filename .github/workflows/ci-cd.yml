@@ -158,7 +158,7 @@ jobs:
         working-directory: ./frontend
 
       - name: Run Unit Tests
-        run: npm test -- --watch=false --browsers=ChromeHeadless --code-coverage
+        run: npm run test:coverage
         working-directory: frontend
 
       - name: Publish Frontend Unit Tests Report
