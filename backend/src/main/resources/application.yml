@@ -35,7 +35,6 @@ spring:
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
   flyway:
-  
     schemas: public
     locations: classpath:db/migrations
     enabled: true

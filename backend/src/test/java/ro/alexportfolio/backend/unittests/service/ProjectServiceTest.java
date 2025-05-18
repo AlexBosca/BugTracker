@@ -8,6 +8,7 @@ import java.time.Clock;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -173,5 +174,37 @@ class ProjectServiceTest {
 
         // Then
         verify(projectRepository, times(1)).deleteByProjectKey(projectKey);
+    }
+
+    @Test
+    void partialUpdateProject_ExistingProject() {
+        // Given
+        String projectKey = "projectKey";
+        Project existingProject = new Project(projectKey, "Old Name", "Old Description");
+
+        when(projectRepository.findByProjectKey(projectKey)).thenReturn(java.util.Optional.of(existingProject));
+
+        // When
+        projectService.partialUpdateProject(projectKey, Map.of("name", "New Name"));
+
+        // Then
+        verify(projectRepository, times(1)).save(projectCaptor.capture());
+
+        Project capturedProject = projectCaptor.getValue();
+
+        assertThat(capturedProject.getName()).isEqualTo("New Name");
+    }
+
+    @Test
+    void partialUpdateProject_NonExistingProject() {
+        // Given
+        String projectKey = "nonExistingProjectKey";
+
+        when(projectRepository.findByProjectKey(projectKey)).thenReturn(java.util.Optional.empty());
+
+        // When & Then
+        assertThatThrownBy(() -> projectService.partialUpdateProject(projectKey, Map.of("name", "New Name")))
+                .isInstanceOf(ProjectNotFoundException.class)
+                .hasMessage(ExceptionMessages.PROJECT_NOT_FOUND.getMessage());
     }
 }
