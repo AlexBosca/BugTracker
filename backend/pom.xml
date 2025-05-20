@@ -56,6 +56,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<version>9.22.0</version> <!-- ✅ Use the latest compatible version -->
+		</dependency>
+		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
@@ -85,6 +90,11 @@
 			<artifactId>mapstruct-processor</artifactId>
 			<version>1.6.3</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.5.0</version> <!-- ✅ Match Spring Boot 3.3.x -->
 		</dependency>
 	</dependencies>
 
@@ -142,6 +152,23 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<version>9.22.0</version> <!-- ✅ Use the latest compatible version -->
+				<configuration>
+				  <url>jdbc:postgresql://localhost:5432/bugtracker</url>
+				  <user>${env.POSTGRES_USER}</user>
+				  <password>${env.POSTGRES_PASSWORD}</password>
+				  <schemas>
+					<schema>public</schema>
+				  </schemas>
+				  <locations>
+					<location>filesystem:src/main/resources/db/migrations</location>
+				  </locations>
+				  <cleanDisabled>false</cleanDisabled>
+				</configuration>
+			  </plugin>
 		</plugins>
 	</build>
 

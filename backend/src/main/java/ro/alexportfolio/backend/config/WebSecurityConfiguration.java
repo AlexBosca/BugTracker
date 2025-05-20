@@ -20,6 +20,12 @@ public class WebSecurityConfiguration {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers(
+                        "/v3/api-docs/**",    // Allow access to OpenAPI docs
+                        "/swagger-ui/**",     // Allow access to Swagger UI
+                        "/swagger-ui.html" ,
+                        "/api/v1/users"
+                    ).permitAll()
                     .requestMatchers("/users/**").permitAll()
                     .requestMatchers("/issues/**").permitAll()
                     .requestMatchers("/projects/**").permitAll())

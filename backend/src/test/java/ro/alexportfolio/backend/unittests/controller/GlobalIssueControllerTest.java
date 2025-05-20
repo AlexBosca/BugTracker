@@ -53,8 +53,8 @@ class GlobalIssueControllerTest {
 
         List<Issue> issueList = List.of(firstIssue, secondIssue);
 
-        IssueResponseDTO firstIssueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW");
-        IssueResponseDTO secondIssueResponseDTO = new IssueResponseDTO("TEST-2", "Test title", "Test description", null, null, "TEST", "OPEN", "HIGH");
+        IssueResponseDTO firstIssueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW", null);
+        IssueResponseDTO secondIssueResponseDTO = new IssueResponseDTO("TEST-2", "Test title", "Test description", null, null, "TEST", "OPEN", "HIGH", null);
 
         List<IssueResponseDTO> issueResponseDTOList = List.of(firstIssueResponseDTO, secondIssueResponseDTO);
         when(issueService.getAllIssues()).thenReturn(issueList);
@@ -87,8 +87,8 @@ class GlobalIssueControllerTest {
         List<Issue> issueList = List.of(firstIssue, secondIssue);
         Page<Issue> issuePage = new PageImpl<>(issueList, PageRequest.of(0, 10), 2);
 
-        IssueResponseDTO firstIssueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW");
-        IssueResponseDTO secondIssueResponseDTO = new IssueResponseDTO("TEST-2", "Test title", "Test description", null, null, "TEST", "OPEN", "HIGH");
+        IssueResponseDTO firstIssueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW", null);
+        IssueResponseDTO secondIssueResponseDTO = new IssueResponseDTO("TEST-2", "Test title", "Test description", null, null, "TEST", "OPEN", "HIGH", null);
 
         List<IssueResponseDTO> issueResponseDTOList = List.of(firstIssueResponseDTO, secondIssueResponseDTO);
         when(issueService.getAllIssues(0, 10)).thenReturn(issuePage);
@@ -111,7 +111,7 @@ class GlobalIssueControllerTest {
         issue.setProjectKey("TEST");
         issue.setPriority("LOW");
 
-        IssueResponseDTO issueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW");
+        IssueResponseDTO issueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW", null);
         when(issueService.getIssueByIssueId("TEST-1")).thenReturn(issue);
         when(mapper.toResponse(issue)).thenReturn(issueResponseDTO);
         

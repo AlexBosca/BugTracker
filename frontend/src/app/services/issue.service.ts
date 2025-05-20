@@ -8,7 +8,8 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class IssueService {
-  private readonly apiUrl = `${environment.apiUrl}/issues`;
+  private readonly globalIssuesApiUrl = `${environment.apiUrl}/issues`;
+  private readonly projectIssuesApiUrl = `${environment.apiUrl}/projects`;
 
   issues: Issue[] = [
     {
@@ -21,8 +22,10 @@ export class IssueService {
       status: 'Open',
       priority: 'High',
       updatedAt: new Date('2024-07-01'),
+      deadline: new Date('2024-08-01'),
       description: 'Description of Issue 1',
-      createdAt: new Date('2024-06-01')
+      createdAt: new Date('2024-06-01'),
+      assignedUserId: 'user-a-id'
     },
     {
       issueId: 'SWD-456',
@@ -34,8 +37,10 @@ export class IssueService {
       status: 'Closed',
       priority: 'Low',
       updatedAt: new Date('2024-08-01'),
+      deadline: new Date('2024-09-01'),
       description: 'Description of Issue 2',
-      createdAt: new Date('2024-07-01')
+      createdAt: new Date('2024-07-01'),
+      assignedUserId: 'user-c-id'
     }
   ];
 
@@ -43,7 +48,7 @@ export class IssueService {
 
   public getAllIssues(): Observable<Issue[]> {
     // return of(this.issues);
-    return this.http.get<Issue[]>(this.apiUrl);
+    return this.http.get<Issue[]>(this.globalIssuesApiUrl);
   }
 
   public createIssue(issue: Issue): Observable<void> {
@@ -57,5 +62,17 @@ export class IssueService {
       this.issues[index] = { ...this.issues[index], ...issue };
     }
     return of(undefined);
+  }
+
+  public getIssuesOnProject(projectKey: string): Observable<Issue[]> {
+    return this.http.get<Issue[]>(`${this.projectIssuesApiUrl}/${projectKey}/issues`);
+  }
+
+  public createIssueOnProject(projectKey: string, issue: Issue): Observable<void> {
+    return this.http.post<void>(`${this.projectIssuesApiUrl}/${projectKey}/issues`, issue);
+  }
+
+  public partiallyUpdateIssueOnProject(projectKey: string, issueId: string, issue: Partial<Issue>): Observable<void> {
+    return this.http.patch<void>(`${this.projectIssuesApiUrl}/${projectKey}/issues/${issueId}`, issue);
   }
 }

@@ -8,6 +8,8 @@
     "build": "ng build --prod",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:headless": "ng test --watch=false --browsers=ChromeHeadless",
+    "test:coverage": "ng test --watch=false --browsers=ChromeHeadless --code-coverage",
     "format": "prettier --write .",
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs"
   },

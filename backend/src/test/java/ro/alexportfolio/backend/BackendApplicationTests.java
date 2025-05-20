@@ -8,6 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import ro.alexportfolio.backend.dao.IssueRepository;
 import ro.alexportfolio.backend.dao.ProjectRepository;
+import ro.alexportfolio.backend.dao.UserProjectRoleRepository;
 import ro.alexportfolio.backend.dao.UserRepository;
 
 @Profile("test")
@@ -23,6 +24,9 @@ class BackendApplicationTests {
 
 	@MockBean
     private UserRepository userRepository;
+
+	@MockBean
+	private UserProjectRoleRepository userProjectRoleRepository;
 
 	@Test
 	void contextLoads() {

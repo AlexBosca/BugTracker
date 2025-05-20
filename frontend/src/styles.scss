@@ -13,4 +13,10 @@
       content-background-color: transparent
     ));
   }
+
+  app-project-details {
+    @include mat.button-overrides((
+      text-label-text-color: none
+    ));
+  }
 }

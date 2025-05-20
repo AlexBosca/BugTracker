@@ -10,6 +10,7 @@ public record IssueResponseDTO(
         LocalDateTime updatedAt,
         String projectKey,
         String status,
-        String priority
+        String priority,
+        String assignedUserId
 ) {
 }

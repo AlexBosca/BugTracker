@@ -12,7 +12,7 @@ public class ProjectRole {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "role_name", unique = true, nullable = false, length = 50)
+    @Column(name = "role_name", unique = false, nullable = false, length = 50)
     private String roleName;
 
     @Column(name = "project_key", nullable = false, length = 50)

@@ -8,6 +8,8 @@ export interface Issue {
   status: string;
   priority: string;
   updatedAt: Date;
+  deadline: Date;
   description: string;
   createdAt: Date;
+  assignedUserId: string;
 }

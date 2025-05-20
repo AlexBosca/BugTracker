@@ -75,8 +75,8 @@ class IssueControllerTest {
 
         when(issueService.getIssuesByProjectKey("TEST")).thenReturn(List.of(firstIssue, secondIssue));
         
-        IssueResponseDTO firstIssueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW");
-        IssueResponseDTO secondIssueResponseDTO = new IssueResponseDTO("TEST-2", "Test title", "Test description", null, null, "TEST", "OPEN", "HIGH");
+        IssueResponseDTO firstIssueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW", null);
+        IssueResponseDTO secondIssueResponseDTO = new IssueResponseDTO("TEST-2", "Test title", "Test description", null, null, "TEST", "OPEN", "HIGH", null);
         when(mapper.toResponseList(List.of(firstIssue, secondIssue))).thenReturn(List.of(firstIssueResponseDTO, secondIssueResponseDTO));
 
         ResponseEntity<List<IssueResponseDTO>> responseEntity = issueController.getAllIssues("TEST");
@@ -97,7 +97,7 @@ class IssueControllerTest {
 
         when(issueService.getIssueByIssueIdAndProjectKey("TEST-1", "TEST")).thenReturn(issue);
         
-        IssueResponseDTO issueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW");
+        IssueResponseDTO issueResponseDTO = new IssueResponseDTO("TEST-1", "Test title", "Test description", null, null, "TEST", "OPEN", "LOW", null);
         when(mapper.toResponse(issue)).thenReturn(issueResponseDTO);
 
         ResponseEntity<IssueResponseDTO> responseEntity = issueController.getIssue("TEST", "TEST-1");

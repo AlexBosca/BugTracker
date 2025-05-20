@@ -92,7 +92,7 @@ import { ProjectService } from '../../../services/project.service';
     mat-form-field {
       width: 100%;
       margin: 0;
-      height: 40px; /* ✅ Matches button and toolbar height */
+      height: 40px;
     }
     mat-icon.avatar {
       font-size: 3rem;
@@ -111,7 +111,7 @@ import { ProjectService } from '../../../services/project.service';
       justify-content: space-between;
     }
     input {
-      padding: 0.5rem; /* ✅ Adjusts spacing inside input */
+      padding: 0.5rem;
     }
     .footer-item {
       padding: 1.5rem;
@@ -165,7 +165,7 @@ export class IssuesGridComponent {
   projectNamesAndKeys: {
     projectKey: string;
     projectName: string;
-  } [] = []
+  } [] = [];
 
   priorities: string[] = [];
 
