@@ -3,11 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Project } from '../models/project.model';
 import { User } from '../models/user.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectService {
+  private readonly projectIssuesApiUrl = `${environment.apiUrl}/projects`;
 
   constructor(readonly http: HttpClient) { }
 
