@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from '../../shared/material.import';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -28,7 +29,7 @@ import { MaterialModule } from '../../shared/material.import';
 
           <div class="spacer"></div>
 
-          <a mat-list-item routerLink="/logout" class="nav-item">
+          <a mat-list-item (click)="onLogout($event)" (keydown)="onKeyDown($event)" tabindex="0" class="nav-item">
             <mat-icon class="menu-icon">logout</mat-icon>
             <span class="menu-text">Logout</span>
           </a>
@@ -103,7 +104,17 @@ export class SidebarComponent {
     }
   ];
 
-  onLogout() {
-    // Handle logout logic here
+  constructor(private authService: AuthService) {}
+
+  onLogout(event: Event): void {
+    event.preventDefault();
+    this.authService.logout();
   }
+
+  onKeyDown(event: KeyboardEvent) {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    this.onLogout(event);
+  }
+}
 }

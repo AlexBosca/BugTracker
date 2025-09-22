@@ -37,6 +37,14 @@ public class UserProjectRole {
     @JoinColumn(name = "role_name", referencedColumnName = "role_name", insertable = false, updatable = false)
     private ProjectRole projectRole;
 
+    public UserProjectRole() {}
+
+    public UserProjectRole(String userId, String projectKey, String roleName) {
+        this.userId = userId;
+        this.projectKey = projectKey;
+        this.roleName = roleName;
+    }
+
     public Long getId() {
         return id;
     }

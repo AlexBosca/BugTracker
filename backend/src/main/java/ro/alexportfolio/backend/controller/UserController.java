@@ -16,11 +16,13 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final UserMapper mapper;
 
-    @Autowired
-    private UserMapper mapper;
+    public UserController(UserService userService, UserMapper mapper) {
+        this.userService = userService;
+        this.mapper = mapper;
+    }
 
     @PostMapping
     public ResponseEntity<Void> createUser(@RequestBody UserRequestDTO request) {

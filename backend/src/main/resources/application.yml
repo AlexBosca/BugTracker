@@ -21,6 +21,10 @@ server:
       - '{'
       - '|'
       - '}'
+  ssl:
+    enabled: true
+    key-store: file:target/certs/keystore.p12
+    key-store-password: changeit
 
 application:
   name: Bug Tracker System
@@ -53,3 +57,7 @@ spring:
           auth: auth
           starttls:
             enable: true
+
+jwt:
+  secret: your_secret_key_here
+  expiration: 3600000

@@ -181,6 +181,9 @@ export class ProjectsGridComponent {
       next: (projects) => {
         console.log('Projects:', projects);
         this.projects = projects;
+      },
+      error: (error) => {
+        console.error('Error fetching projects:', error);
       }
     });
   }

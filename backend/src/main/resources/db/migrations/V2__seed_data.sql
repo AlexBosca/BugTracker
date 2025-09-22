@@ -1,9 +1,9 @@
 -- USERS
-INSERT INTO users (user_id, first_name, last_name, email, password, global_role)
+INSERT INTO users (user_id, first_name, last_name, email, password, global_role, enabled)
 VALUES
-  ('john.doe', 'John', 'Doe', 'john.doe@example.com', 'password123', 'ADMIN'),
-  ('jane.smith', 'Jane', 'Smith', 'jane.smith@example.com', 'password123', 'USER'),
-  ('alex.dev', 'Alex', 'Developer', 'alex.dev@example.com', 'password123', 'USER');
+  ('john.doe', 'John', 'Doe', 'john.doe@example.com', 'password123', 'ADMIN', 'true'),
+  ('jane.smith', 'Jane', 'Smith', 'jane.smith@example.com', 'password123', 'USER', 'true'),
+  ('alex.dev', 'Alex', 'Developer', 'alex.dev@example.com', 'password123', 'USER', 'true');
 
 -- PROJECTS
 INSERT INTO projects (project_key, name, description)

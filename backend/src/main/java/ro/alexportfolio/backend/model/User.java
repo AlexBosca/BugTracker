@@ -4,10 +4,16 @@ package ro.alexportfolio.backend.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Set;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +41,9 @@ public class User {
     @Column(name = "created_at", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled;
+
     public User() {
     }
 
@@ -45,6 +54,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.globalRole = globalRole;
+        this.enabled = false;
     }
 
     public Long getId() {
@@ -113,5 +123,24 @@ public class User {
 
     public String getFullName() {
         return firstName + " " + lastName;
+    }
+
+    public void enableAccount() {
+        this.enabled = true;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Set.of(new SimpleGrantedAuthority(this.getGlobalRole().name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
     }
 }

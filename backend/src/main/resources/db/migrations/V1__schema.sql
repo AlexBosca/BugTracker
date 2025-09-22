@@ -7,7 +7,8 @@ CREATE TABLE users (
     email VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     global_role VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    enabled BOOLEAN NOT NULL
 );
 
 -- PROJECTS
@@ -55,4 +56,24 @@ CREATE TABLE user_project_roles (
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (project_key) REFERENCES projects(project_key),
     FOREIGN KEY (project_key, role_name) REFERENCES project_roles(project_key, role_name)
+);
+
+-- REFRESH TOKENS
+CREATE TABLE refresh_tokens (
+    id SERIAL PRIMARY KEY,
+    token VARCHAR(500) NOT NULL UNIQUE,
+    user_id VArCHAR(50) NOT NULL,
+    -- expires_at TIMESTAMP NOT NULL,
+    revoked BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+-- EMAIL CONFIRMATION TOKENS
+CREATE TABLE email_confirmation_tokens (
+    id SERIAL PRIMARY KEY,
+    token VARCHAR(36) NOT NULL UNIQUE,
+    user_id VARCHAR(50) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );

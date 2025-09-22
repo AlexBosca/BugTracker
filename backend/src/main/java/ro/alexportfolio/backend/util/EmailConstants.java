@@ -3,6 +3,8 @@ package ro.alexportfolio.backend.util;
 public enum EmailConstants {
     EMAIL_ACCOUNT_CONFIRMATION_SUBJECT("Email confirmation", false),
     EMAIL_ACCOUNT_CONFIRMATION_TITLE("Confirm your email address", false),
+    EMAIL_ACCOUNT_CONFIRMATION_CONTENT("Ready to get started? First, verify your email address:", false),
+    EMAIL_ACCOUNT_CONFIRMATION_LINK("https://localhost:8081/api/v1/bug-tracker/auth/confirm?token=%s", true),
 
     EMAIL_ISSUE_ASSIGNATION_SUBJECT("Issue assignation", false),
     EMAIL_ISSUE_ASSIGNATION_TITLE("Issue assignation notification", false),
