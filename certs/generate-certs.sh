@@ -1,57 +1,59 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-set -e
+# === Config ===
+OPENSSL="openssl"
 
-# Extract Windows output directory from arguments
-while getopts "o:" opt; do
-  case $opt in
-    o)
-      WINDOWS_PATH="$OPTARG"
-      ;;
-    *)
-      echo "Usage: $0 -o <output_directory>"
-      exit 1
-      ;;
-  esac
-done
+# === Check input argument ===
+if [ $# -lt 1 ]; then
+  echo "❌ ERROR: Output directory not provided."
+  echo "Usage: $0 <output-directory>"
+  exit 1
+fi
 
-# Convert Windows path to Linux path
-convert_windows_path_to_linux() {
-  local windows_path="$1"
-  local linux_path
-  linux_path=$(echo "$windows_path" | sed 's|^C:\\|/c/|;s|\\|/|g') # Something is not working !!!!
-  echo "$linux_path"
-}
+OUTPUT_DIR="$1"
+KEY_FILE="$OUTPUT_DIR/key.pem"
+CERT_FILE="$OUTPUT_DIR/cert.pem"
+P12_FILE="$OUTPUT_DIR/keystore.p12"
+PRIVATE_KEY="$OUTPUT_DIR/private.pem"
+PUBLIC_KEY="$OUTPUT_DIR/public.pem"
 
-# Convert the provided Windows path to Linux format
-OUTPUT_DIR=$(convert_windows_path_to_linux "$WINDOWS_PATH")
-echo "windows path: $WINDOWS_PATH"
-echo "Output directory: $OUTPUT_DIR"
-
-
+# === Create output directory if it doesn't exist ===
 mkdir -p "$OUTPUT_DIR"
 
-# Common names and password
-COMMON_NAME="localhost"
-P12_PASSWORD="changeit"
+echo "🔐 Generating RSA private key..."
+$OPENSSL genpkey -algorithm RSA -out "$PRIVATE_KEY" -pkeyopt rsa_keygen_bits:2048
 
-echo "🔑 Generating private key..."
-openssl genpkey -algorithm RSA -out "$OUTPUT_DIR/private.key" -pkeyopt rsa_keygen_bits:2048
+echo "🔓 Extracting public key..."
+if ! $OPENSSL rsa -pubout -in "$PRIVATE_KEY" -out "$PUBLIC_KEY"; then
+  echo "❌ Failed to extract public key"
+  exit 1
+fi
 
-echo "📄 Generating public certificate signing request..."
-openssl req -new -key "$OUTPUT_DIR/private.key" -out "$OUTPUT_DIR/request.csr" \
-  -subj "/C=US/ST=Dev/L=Local/O=Test/CN=$COMMON_NAME"
+echo "✅ RSA key pair generated:"
+echo "   • $PRIVATE_KEY"
+echo "   • $PUBLIC_KEY"
 
-echo "📜 Generating self-signed certificate..."
-openssl x509 -req -days 365 -in "$OUTPUT_DIR/request.csr" -signkey "$OUTPUT_DIR/private.key" -out "$OUTPUT_DIR/selfsigned.crt"
+echo "🔐 Generating key and certificate in $OUTPUT_DIR..."
 
-echo "📦 Creating PKCS#12 (.p12) keystore..."
-openssl pkcs12 -export \
-  -inkey "$OUTPUT_DIR/private.key" \
-  -in "$OUTPUT_DIR/selfsigned.crt" \
-  -out "$OUTPUT_DIR/keystore.p12" \
-  -name "$COMMON_NAME" \
-  -passout pass:$P12_PASSWORD
+# === Generate key and self-signed cert ===
+if ! $OPENSSL req -x509 -newkey rsa:2048 -nodes -days 365 \
+  -keyout "$KEY_FILE" -out "$CERT_FILE" \
+  -subj "/CN=localhost"; then
+  echo "❌ ERROR: Failed to generate cert/key."
+  exit 1
+fi
 
-echo "✅ Generated files:"
-ls -l "$OUTPUT_DIR"
+# === Convert to PKCS#12 (.p12) ===
+if ! $OPENSSL pkcs12 -export \
+  -inkey "$KEY_FILE" -in "$CERT_FILE" \
+  -out "$P12_FILE" -name "selfsigned" \
+  -passout pass:changeit; then
+  echo "❌ ERROR: Failed to create keystore.p12"
+  exit 1
+fi
+
+echo "✅ Done! Files generated:"
+echo "   • $KEY_FILE"
+echo "   • $CERT_FILE"
+echo "   • $P12_FILE"
