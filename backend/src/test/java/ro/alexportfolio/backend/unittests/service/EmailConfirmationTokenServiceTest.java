@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,15 +27,17 @@ class EmailConfirmationTokenServiceTest {
 
     private EmailConfirmationTokenService confirmationTokenService;
 
+    private String token;
+
     @BeforeEach
     void setUp() {
+        token = UUID.randomUUID().toString();
         confirmationTokenService = new EmailConfirmationTokenService(confirmationTokenRepository);
     }
 
     @Test
     void getConfirmationTokenByToken_Success() {
         // Given
-        String token = "sample-token";
         User user = new User("userId", "Firstname", "Lastname", "firstname.lastname@email.com", "password", null);
         EmailConfirmationToken confirmationToken = new EmailConfirmationToken(token, user, null, false);
 
@@ -48,8 +52,6 @@ class EmailConfirmationTokenServiceTest {
     @Test
     void getConfirmationTokenByToken_TokenNotFound() {
         // Given
-        String token = "sample-token";
-
         // When
         when(confirmationTokenRepository.findByToken(token)).thenReturn(empty());
 
@@ -62,7 +64,6 @@ class EmailConfirmationTokenServiceTest {
     @Test
     void createEmailConfirmationToken_Success() {
         // Given
-        String token = "sample-token";
         User user = new User("userId", "Firstname", "Lastname", "firstname.lastname@email.com", "password", null);
         EmailConfirmationToken confirmationToken = new EmailConfirmationToken(token, user, null, false);
 

@@ -41,7 +41,11 @@ public class AuthController {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
 
-    public AuthController(UserService userService, UserMapper mapper, AuthenticationManager authenticationManager, JwtService jwtService, RefreshTokenService refreshTokenService) {
+    public AuthController(final UserService userService,
+                          final UserMapper mapper,
+                          final AuthenticationManager authenticationManager,
+                          final JwtService jwtService,
+                          final RefreshTokenService refreshTokenService) {
         this.userService = userService;
         this.mapper = mapper;
         this.authenticationManager = authenticationManager;
@@ -50,7 +54,7 @@ public class AuthController {
     }
 
     @PostMapping(path = "/login")
-    public ResponseEntity<JwtResponseDTO> login(@RequestBody LoginRequestDTO loginRequest) throws Exception {
+    public ResponseEntity<JwtResponseDTO> login(final @RequestBody LoginRequestDTO loginRequest) throws Exception {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
         
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -74,7 +78,7 @@ public class AuthController {
     }
 
     @PostMapping(path = "/logout")
-    public ResponseEntity<Void> logout(@CookieValue("refreshToken") String refreshToken) {
+    public ResponseEntity<Void> logout(final @CookieValue("refreshToken") String refreshToken) {
         refreshTokenService.deleteRefreshToken(refreshToken);
 
         ResponseCookie cookie = clearRefreshTokenCookie();
@@ -85,7 +89,7 @@ public class AuthController {
     }
     
     @PostMapping(path = "/register")
-    public ResponseEntity<Void> register(@RequestBody RegistrationRequestDTO request) {
+    public ResponseEntity<Void> register(final @RequestBody RegistrationRequestDTO request) {
         User user = mapper.toEntity(request);
         user.setUserId(UserIdGenerator.generateUserId(
                 request.firstName(),
@@ -98,21 +102,21 @@ public class AuthController {
     }
 
     @GetMapping(path = "/confirm")
-    public ResponseEntity<String> confirm(@RequestParam("token") String token) {
+    public ResponseEntity<String> confirm(final @RequestParam("token") String token) {
         String response = userService.confirmEmail(token);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(path = "/refresh")
-    public ResponseEntity<String> refreshAccessToken(@CookieValue("refreshToken") String refreshToken) throws Exception {
+    public ResponseEntity<String> refreshAccessToken(final @CookieValue("refreshToken") String refreshToken) throws Exception {
         String username = jwtService.extractSubject(refreshToken);
         String newAccessToken = jwtService.generateAccessToken(username);
         
         return new ResponseEntity<>(newAccessToken, HttpStatus.OK);
     }
 
-    private ResponseCookie createRefreshTokenCookie(String refreshToken) {
+    private ResponseCookie createRefreshTokenCookie(final String refreshToken) {
         return ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(true)
