@@ -85,12 +85,12 @@ public class WebSecurityConfiguration {
     }
 
     @Bean
-    public final PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public final AuthenticationManager authManager(final HttpSecurity http) {
+    public AuthenticationManager authManager(final HttpSecurity http) {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         AuthenticationManager authenticationManager = null;
 
