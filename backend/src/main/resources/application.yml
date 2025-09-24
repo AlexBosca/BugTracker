@@ -24,7 +24,7 @@ server:
   ssl:
     enabled: true
     key-store: file:target/certs/keystore.p12
-    key-store-password: changeit
+    key-store-password: {KEY_STORE_PASS}
 
 application:
   name: Bug Tracker System
