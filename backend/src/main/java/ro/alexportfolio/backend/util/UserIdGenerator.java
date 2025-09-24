@@ -13,6 +13,7 @@ public class UserIdGenerator {
         return firstPart + lastPart + randomPart;
     }
 
+    @SuppressWarnings("java:S2245") // Not security-sensitive: random user IDs are cosmetic only
     private static String generateRandomString(int length) {
         String characters = "abcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder result = new StringBuilder(length);
