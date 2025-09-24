@@ -48,7 +48,7 @@ fi
 if ! $OPENSSL pkcs12 -export \
   -inkey "$KEY_FILE" -in "$CERT_FILE" \
   -out "$P12_FILE" -name "selfsigned" \
-  -passout pass:changeit; then
+  -passout pass:"$KEY_STORE_PASS"; then
   echo "❌ ERROR: Failed to create keystore.p12"
   exit 1
 fi

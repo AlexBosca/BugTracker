@@ -44,6 +44,7 @@ jobs:
       - name: Build and Test
         working-directory: ./backend
         env:
+          KEY_STORE_PASS: ${{ secrets.KEY_STORE_PASS }}
           MAIL_CREDS_USR: ${{ secrets.MAIL_CREDS_USR }}
           MAIL_CREDS_PSW: ${{ secrets.MAIL_CREDS_PSW }}
         run: mvn clean test package verify

@@ -53,7 +53,7 @@ if errorlevel 1 (
 "%OPENSSL%" pkcs12 -export ^
     -inkey "%KEY_FILE%" -in "%CERT_FILE%" ^
     -out "%P12_FILE%" -name "selfsigned" ^
-    -passout pass:changeit
+    -passout pass:"%KEY_STORE_PASS%"
 
 if errorlevel 1 (
     echo ❌ ERROR: Failed to create keystore.p12
