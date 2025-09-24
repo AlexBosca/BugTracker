@@ -1,13 +1,11 @@
 package ro.alexportfolio.backend.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.alexportfolio.backend.dto.request.UserRequestDTO;
 import ro.alexportfolio.backend.dto.response.UserResponseDTO;
 import ro.alexportfolio.backend.mapper.UserMapper;
-import ro.alexportfolio.backend.model.User;
 import ro.alexportfolio.backend.service.UserService;
 
 import java.util.List;
@@ -19,9 +17,10 @@ public class UserController {
     private final UserService userService;
     private final UserMapper mapper;
 
-    public UserController(UserService userService, UserMapper mapper) {
-        this.userService = userService;
-        this.mapper = mapper;
+    public UserController(final UserService userServiceParam,
+                          final UserMapper mapperParam) {
+        this.userService = userServiceParam;
+        this.mapper = mapperParam;
     }
 
     @PostMapping

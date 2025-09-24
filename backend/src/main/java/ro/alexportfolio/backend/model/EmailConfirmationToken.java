@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "email_confirmation_tokens")
 public class EmailConfirmationToken {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,11 +37,14 @@ public class EmailConfirmationToken {
 
     public EmailConfirmationToken() {   }
 
-    public EmailConfirmationToken(String token, User user, Instant expiresAt, boolean used) {
-        this.token = token;
-        this.user = user;
-        this.expiresAt = expiresAt;
-        this.used = used;
+    public EmailConfirmationToken(final String tokenParam,
+                                  final User userParam,
+                                  final Instant expiresAtParam,
+                                  final boolean usedParam) {
+        this.token = tokenParam;
+        this.user = userParam;
+        this.expiresAt = expiresAtParam;
+        this.used = usedParam;
         this.userId = this.user.getUserId();
     }
 
@@ -49,49 +52,47 @@ public class EmailConfirmationToken {
         return token;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setToken(final String tokenParam) {
+        this.token = tokenParam;
     }
 
     public String getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserId(final String userIdParam) {
+        this.userId = userIdParam;
     }
 
     public Instant getExpiresAt() {
         return expiresAt;
     }
 
-    public void setExpiresAt(Instant expiresAt) {
-        this.expiresAt = expiresAt;
+    public void setExpiresAt(final Instant expiresAtParam) {
+        this.expiresAt = expiresAtParam;
     }
 
     public boolean isUsed() {
         return used;
     }
-    
-    public void setUsed(boolean used) {
-        this.used = used;
+
+    public void setUsed(final boolean usedParam) {
+        this.used = usedParam;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId(final Long idParam) {
+        this.id = idParam;
     }
 
     public User getUser() {
         return user;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(final User userParam) {
+        this.user = userParam;
     }
-
-    
 }

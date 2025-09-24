@@ -41,28 +41,33 @@ public class AuthController {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
 
-    public AuthController(final UserService userService,
-                          final UserMapper mapper,
-                          final AuthenticationManager authenticationManager,
-                          final JwtService jwtService,
-                          final RefreshTokenService refreshTokenService) {
-        this.userService = userService;
-        this.mapper = mapper;
-        this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
-        this.refreshTokenService = refreshTokenService;
+    public AuthController(final UserService userServiceParam,
+                          final UserMapper mapperParam,
+                          final AuthenticationManager authenticationManagerParam,
+                          final JwtService jwtServiceParam,
+                          final RefreshTokenService refreshTokenServiceParam) {
+        this.userService = userServiceParam;
+        this.mapper = mapperParam;
+        this.authenticationManager = authenticationManagerParam;
+        this.jwtService = jwtServiceParam;
+        this.refreshTokenService = refreshTokenServiceParam;
     }
 
     @PostMapping(path = "/login")
     public ResponseEntity<JwtResponseDTO> login(final @RequestBody LoginRequestDTO loginRequest) throws Exception {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
-        
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         User user = (User) authentication.getPrincipal();
 
         String accessToken = jwtService.generateAccessToken(loginRequest.username());
-        Set<String> roles = user.getAuthorities().stream().map(Object::toString).collect(Collectors.toSet());
+
+        Set<String> roles = user.getAuthorities()
+            .stream()
+            .map(Object::toString)
+            .collect(Collectors.toSet());
+
         String refreshToken = jwtService.generateRefreshToken(loginRequest.username());
 
         this.refreshTokenService.createRefreshToken(refreshToken, false, user);
@@ -87,7 +92,7 @@ public class AuthController {
 
         return new ResponseEntity<>(headers, HttpStatus.OK);
     }
-    
+
     @PostMapping(path = "/register")
     public ResponseEntity<Void> register(final @RequestBody RegistrationRequestDTO request) {
         User user = mapper.toEntity(request);
@@ -97,7 +102,7 @@ public class AuthController {
         ));
         user.setGlobalRole(GlobalRole.USER);
         userService.createUser(user);
-        
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -112,7 +117,7 @@ public class AuthController {
     public ResponseEntity<String> refreshAccessToken(final @CookieValue("refreshToken") String refreshToken) throws Exception {
         String username = jwtService.extractSubject(refreshToken);
         String newAccessToken = jwtService.generateAccessToken(username);
-        
+
         return new ResponseEntity<>(newAccessToken, HttpStatus.OK);
     }
 

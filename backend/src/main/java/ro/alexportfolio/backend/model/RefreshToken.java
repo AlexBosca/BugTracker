@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "refresh_tokens")
 public class RefreshToken {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,10 +30,12 @@ public class RefreshToken {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
     private User user;
 
-    public RefreshToken(String token, boolean revoked, User user) {
-        this.token = token;
-        this.revoked = revoked;
-        this.user = user;
+    public RefreshToken(final String tokenParam,
+                        final boolean revokedParam,
+                        final User userParam) {
+        this.token = tokenParam;
+        this.revoked = revokedParam;
+        this.user = userParam;
         this.userId = this.user.getUserId();
     }
 

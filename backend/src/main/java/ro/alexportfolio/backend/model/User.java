@@ -47,13 +47,18 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String userId, String firstName, String lastName, String email, String password, GlobalRole globalRole) {
-        this.userId = userId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.globalRole = globalRole;
+    public User(final String userIdParam,
+                final String firstNameParam,
+                final String lastNameParam,
+                final String emailParam,
+                final String passwordParam,
+                final GlobalRole globalRoleParam) {
+        this.userId = userIdParam;
+        this.firstName = firstNameParam;
+        this.lastName = lastNameParam;
+        this.email = emailParam;
+        this.password = passwordParam;
+        this.globalRole = globalRoleParam;
         this.enabled = false;
     }
 
@@ -61,64 +66,64 @@ public class User implements UserDetails {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId(final Long idParam) {
+        this.id = idParam;
     }
 
     public String getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserId(final String userIdParam) {
+        this.userId = userIdParam;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFirstName(final String firstNameParam) {
+        this.firstName = firstNameParam;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setLastName(final String lastNameParam) {
+        this.lastName = lastNameParam;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmail(final String emailParam) {
+        this.email = emailParam;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(final String passwordParam) {
+        this.password = passwordParam;
     }
 
     public GlobalRole getGlobalRole() {
         return globalRole;
     }
 
-    public void setGlobalRole(GlobalRole globalRole) {
-        this.globalRole = globalRole;
+    public void setGlobalRole(final GlobalRole globalRoleParam) {
+        this.globalRole = globalRoleParam;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setCreatedAt(final LocalDateTime createdAtParam) {
+        this.createdAt = createdAtParam;
     }
 
     public String getFullName() {

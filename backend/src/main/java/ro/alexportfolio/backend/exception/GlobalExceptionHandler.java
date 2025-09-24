@@ -15,17 +15,23 @@ public class GlobalExceptionHandler {
 
     private final Clock clock;
 
-    public GlobalExceptionHandler(Clock clock) {
-        this.clock = clock;
+    public GlobalExceptionHandler(final Clock clockParam) {
+        this.clock = clockParam;
     }
     
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<ErrorResponseDTO> handleApplicationExceptions(ApplicationException e) {
-        return ResponseEntity.status(e.getHttpStatus()).body(new ErrorResponseDTO(e.getHttpStatus().value(), e.getMessage(), Instant.now(clock)));
+        return ResponseEntity.status(e.getHttpStatus())
+            .body(new ErrorResponseDTO(e.getHttpStatus().value(),
+                                       e.getMessage(),
+                                       Instant.now(clock)));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), Instant.now(clock)));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                       e.getMessage(),
+                                       Instant.now(clock)));
     }
 }

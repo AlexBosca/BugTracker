@@ -24,4 +24,4 @@ public record RegistrationRequestDTO(
     @NotBlank(message = "Confirmed password is mandatory")
     @Size(min = 8, message = "Confirmed password must be at least 8 characters long")
     String confirmPassword
-) {}
+) { }
