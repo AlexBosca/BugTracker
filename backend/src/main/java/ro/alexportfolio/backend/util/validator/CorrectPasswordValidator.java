@@ -15,19 +15,20 @@ public class CorrectPasswordValidator implements ConstraintValidator<CorrectPass
 
     private final UserRepository userRepository;
 
-    public CorrectPasswordValidator(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CorrectPasswordValidator(final UserRepository userRepositoryParam) {
+        this.userRepository = userRepositoryParam;
     }
 
     @Override
-    public void initialize(CorrectPassword constraintAnnotation) {
+    public void initialize(final CorrectPassword constraintAnnotation) {
         this.keyCheck = constraintAnnotation.keyCheck();
         this.valueCheck = constraintAnnotation.valueCheck();
         this.message = constraintAnnotation.message();
     }
 
     @Override
-    public boolean isValid(Object value, ConstraintValidatorContext context) {
+    public boolean isValid(final Object value,
+                           final ConstraintValidatorContext context) {
         String email = (String) new BeanWrapperImpl(value).getPropertyValue(keyCheck);
         String password = (String) new BeanWrapperImpl(value).getPropertyValue(valueCheck);
 

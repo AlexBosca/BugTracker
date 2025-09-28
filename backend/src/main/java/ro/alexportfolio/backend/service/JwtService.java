@@ -13,35 +13,39 @@ import ro.alexportfolio.backend.util.RsaKeyUtil;
 
 @Component
 public class JwtService {
+    private static final long ACCESS_TOKEN_EXPIRATION_MINUTES = 15;
+    private static final long REFRESH_TOKEN_EXPIRATION_DAYS = 30;
+
     private final RsaKeyUtil rsaKeyUtil;
     private final Clock clock;
 
-    public JwtService(RsaKeyUtil rsaKeyUtil, Clock clock) {
-        this.rsaKeyUtil = rsaKeyUtil;
-        this.clock = clock;
+    public JwtService(final RsaKeyUtil rsaKeyUtilParam,
+                      final Clock clockParam) {
+        this.rsaKeyUtil = rsaKeyUtilParam;
+        this.clock = clockParam;
     }
 
-    public String generateAccessToken(String username) throws Exception {
+    public String generateAccessToken(final String username) throws Exception {
         return Jwts.builder()
             .setSubject(username)
             .setIssuer("Bug-Tracker")
             .setIssuedAt(Date.from(Instant.now(clock)))
-            .setExpiration(Date.from(Instant.now(clock).plus(15, ChronoUnit.SECONDS)))
+            .setExpiration(Date.from(Instant.now(clock).plus(ACCESS_TOKEN_EXPIRATION_MINUTES, ChronoUnit.SECONDS)))
             .signWith(rsaKeyUtil.getPrivateKey(), SignatureAlgorithm.RS256)
             .compact();
     }
 
-    public String generateRefreshToken(String username) throws Exception {
+    public String generateRefreshToken(final String username) throws Exception {
         return Jwts.builder()
             .setSubject(username)
             .setIssuer("Bug-Tracker")
             .setIssuedAt(Date.from(Instant.now(clock)))
-            .setExpiration(Date.from(Instant.now(clock).plus(30, ChronoUnit.DAYS)))
+            .setExpiration(Date.from(Instant.now(clock).plus(REFRESH_TOKEN_EXPIRATION_DAYS, ChronoUnit.DAYS)))
             .signWith(rsaKeyUtil.getPrivateKey(), SignatureAlgorithm.RS256)
             .compact();
     }
 
-    public String extractSubject(String token) throws Exception  {
+    public String extractSubject(final String token) throws Exception  {
         return Jwts.parserBuilder()
             .setSigningKey(rsaKeyUtil.getPublicKey())
             .build()

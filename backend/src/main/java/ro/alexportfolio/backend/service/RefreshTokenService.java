@@ -10,20 +10,20 @@ import ro.alexportfolio.backend.model.User;
 public class RefreshTokenService {
     private final RefreshTokensRepository refreshTokensRepository;
 
-    public RefreshTokenService(RefreshTokensRepository refreshTokensRepository) {
-        this.refreshTokensRepository = refreshTokensRepository;
+    public RefreshTokenService(final RefreshTokensRepository tokensRepositoryParam) {
+        this.refreshTokensRepository = tokensRepositoryParam;
     }
 
-    public RefreshToken getRefreshToken(String token) {
+    public RefreshToken getRefreshToken(final String token) {
         return this.refreshTokensRepository.findByToken(token).orElseThrow(() -> new RuntimeException("No token found"));
     }
 
-    public void createRefreshToken(String token, boolean revoked, User user) {
+    public void createRefreshToken(final String token, final boolean revoked, final User user) {
         RefreshToken refreshToken = new RefreshToken(token, revoked, user);
         refreshTokensRepository.save(refreshToken);
     }
 
-    public void deleteRefreshToken(String token) {
+    public void deleteRefreshToken(final String token) {
         RefreshToken refreshToken = this.refreshTokensRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("No token found"));
 

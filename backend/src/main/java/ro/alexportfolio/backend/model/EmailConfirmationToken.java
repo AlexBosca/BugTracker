@@ -19,20 +19,29 @@ public class EmailConfirmationToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "token", nullable = false, unique = true)
+    @Column(name = "token",
+            nullable = false,
+            unique = true)
     private String token;
 
-    @Column(name = "user_id", nullable = false, length = 50)
+    @Column(name = "user_id",
+            nullable = false,
+            length = 50)
     private String userId;
 
-    @Column(name = "expires_at", nullable = false)
+    @Column(name = "expires_at",
+            nullable = false)
     private Instant expiresAt;
 
-    @Column(name = "used", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "used",
+            columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean used;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id",
+                referencedColumnName = "user_id",
+                insertable = false,
+                updatable = false)
     private User user;
 
     public EmailConfirmationToken() {   }

@@ -14,15 +14,17 @@ import ro.alexportfolio.backend.util.EmailTemplateConstans;
 public class RegistrationEmailSenderService implements EmailSenderService {
     private final EmailSenderUtil emailSender;
 
-    public RegistrationEmailSenderService(EmailSenderUtil emailSender) {
-        this.emailSender = emailSender;
+    public RegistrationEmailSenderService(EmailSenderUtil emailSenderParam) {
+        this.emailSender = emailSenderParam;
     }
 
     @Override
     @Transactional
     @Async
-    public void sendEmail(EmailData emailData) {
-        emailSender.sendEmail(emailData, EmailTemplateConstans.REGISTRATION_EMAIL_TEMPLATE_PATH.getValue());
+    public void sendEmail(final EmailData emailData) {
+        emailSender.sendEmail(
+            emailData, 
+            EmailTemplateConstans.REGISTRATION_EMAIL_TEMPLATE_PATH.getValue()
+        );
     }
-    
 }

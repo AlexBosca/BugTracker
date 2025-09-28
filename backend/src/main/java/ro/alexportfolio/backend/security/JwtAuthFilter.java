@@ -1,10 +1,11 @@
 package ro.alexportfolio.backend.security;
 
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
+
 import java.io.IOException;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,24 +24,31 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserService userService;
 
-    public JwtAuthFilter(JwtService jwtService, @Lazy UserService userService) {
-        this.jwtService = jwtService;
-        this.userService = userService;
+    public JwtAuthFilter(final JwtService jwtServiceParam,
+                         final @Lazy UserService userServiceParam) {
+        this.jwtService = jwtServiceParam;
+        this.userService = userServiceParam;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(final HttpServletRequest request,
+                                    final HttpServletResponse response,
+                                    final FilterChain filterChain) throws ServletException, IOException {
         
         String header = request.getHeader("Authorization");
-        if((header != null) && (header.startsWith("Bearer "))) {
+        if ((header != null) && (header.startsWith("Bearer "))) {
             String token = header.substring(7);
 
             try {
                 String username = jwtService.extractSubject(token);
                 User user = userService.getUserByEamil(username);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    user,
+                    null,
+                    user.getAuthorities()
+                );
+
+                getContext().setAuthentication(authentication);
 
             } catch (ExpiredJwtException e) {
 
@@ -51,5 +59,4 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-    
 }

@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
     }
     
     @ExceptionHandler(ApplicationException.class)
-    public ResponseEntity<ErrorResponseDTO> handleApplicationExceptions(ApplicationException e) {
+    public ResponseEntity<ErrorResponseDTO> handleApplicationExceptions(final ApplicationException e) {
         return ResponseEntity.status(e.getHttpStatus())
             .body(new ErrorResponseDTO(e.getHttpStatus().value(),
                                        e.getMessage(),
@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception e) {
+    public ResponseEntity<ErrorResponseDTO> handleGenericException(final Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                                        e.getMessage(),

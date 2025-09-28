@@ -21,6 +21,8 @@ import java.util.UUID;
 @Service
 public class UserService {
 
+    private static final int CONFIRMATION_TOKEN_EXPIRATION_HOURS = 24;
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final Clock clock;
@@ -30,23 +32,23 @@ public class UserService {
     @Value("${application.name}")
     private String applicationName;
 
-    public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder,
-                       Clock clock,
-                       @Qualifier("registration") EmailSenderService emailSenderService,
-                       EmailConfirmationTokenService confirmationTokenService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.clock = clock;
-        this.emailSenderService = emailSenderService;
-        this.confirmationTokenService = confirmationTokenService;
+    public UserService(final UserRepository userRepositoryParam,
+                       final PasswordEncoder passwordEncoderParam,
+                       final Clock clockParam,
+                       final @Qualifier("registration") EmailSenderService emailSenderServiceParam,
+                       final EmailConfirmationTokenService tokenServiceParam) {
+        this.userRepository = userRepositoryParam;
+        this.passwordEncoder = passwordEncoderParam;
+        this.clock = clockParam;
+        this.emailSenderService = emailSenderServiceParam;
+        this.confirmationTokenService = tokenServiceParam;
     }
 
-    public void createUser(User user) {
+    public void createUser(final User user) {
         if(userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalStateException("Email already in use");
         }
-        
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         user.setCreatedAt(LocalDateTime.now(clock));
@@ -54,7 +56,13 @@ public class UserService {
         userRepository.save(user);
 
         String token = UUID.randomUUID().toString();
-        EmailConfirmationToken confirmationToken = new EmailConfirmationToken(token, user, Instant.now(clock).plus(Duration.ofHours(24)), false);
+        EmailConfirmationToken confirmationToken = new EmailConfirmationToken(
+            token,
+            user,
+            Instant.now(clock).plus(Duration.ofHours(CONFIRMATION_TOKEN_EXPIRATION_HOURS)),
+            false
+        );
+
         confirmationTokenService.createEmailConfirmationToken(confirmationToken);
 
         EmailData emailData = EmailData.builder()
@@ -92,17 +100,18 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User getUserByUserId(String userId) {
+    public User getUserByUserId(final String userId) {
         return userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
     }
 
-    public User getUserByEamil(String email) {
+    public User getUserByEamil(final String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
     }
 
-    public void updateUser(String userId, User user) {
+    public void updateUser(final String userId,
+                           final User user) {
         User existingUser = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
 
@@ -113,7 +122,7 @@ public class UserService {
         userRepository.save(existingUser);
     }
 
-    public void deleteUser(String userId) {
+    public void deleteUser(final String userId) {
         userRepository.deleteByUserId(userId);
     }
 }

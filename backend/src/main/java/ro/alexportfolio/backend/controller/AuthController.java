@@ -35,6 +35,8 @@ import ro.alexportfolio.backend.util.UserIdGenerator;
 @RequestMapping("/auth")
 public class AuthController {
 
+    private static final int MAX_AGE = 30;
+
     private final UserService userService;
     private final UserMapper mapper;
     private final AuthenticationManager authenticationManager;
@@ -43,19 +45,23 @@ public class AuthController {
 
     public AuthController(final UserService userServiceParam,
                           final UserMapper mapperParam,
-                          final AuthenticationManager authenticationManagerParam,
+                          final AuthenticationManager authManagerParam,
                           final JwtService jwtServiceParam,
                           final RefreshTokenService refreshTokenServiceParam) {
         this.userService = userServiceParam;
         this.mapper = mapperParam;
-        this.authenticationManager = authenticationManagerParam;
+        this.authenticationManager = authManagerParam;
         this.jwtService = jwtServiceParam;
         this.refreshTokenService = refreshTokenServiceParam;
     }
 
     @PostMapping(path = "/login")
     public ResponseEntity<JwtResponseDTO> login(final @RequestBody LoginRequestDTO loginRequest) throws Exception {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
+        Authentication authentication = authenticationManager
+            .authenticate(new UsernamePasswordAuthenticationToken(
+                loginRequest.username(),
+                loginRequest.password()
+            ));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -72,7 +78,12 @@ public class AuthController {
 
         this.refreshTokenService.createRefreshToken(refreshToken, false, user);
 
-        JwtResponseDTO response = new JwtResponseDTO(accessToken, user.getUserId(), user.getEmail(), roles);
+        JwtResponseDTO response = new JwtResponseDTO(
+            accessToken,
+            user.getUserId(),
+            user.getEmail(),
+            roles
+        );
 
         ResponseCookie refreshTokenCookie = createRefreshTokenCookie(refreshToken);
 
@@ -127,7 +138,7 @@ public class AuthController {
                 .secure(true)
                 .sameSite("Strict")
                 .path("/api/v1/bug-tracker/auth")
-                .maxAge(Duration.ofDays(30))
+                .maxAge(Duration.ofDays(MAX_AGE))
                 .build();
     }
 

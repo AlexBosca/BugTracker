@@ -17,17 +17,26 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "token", nullable = false, length = 500, unique = true)
+    @Column(name = "token",
+            nullable = false,
+            length = 500,
+            unique = true)
     private String token;
 
-    @Column(name = "user_id", nullable = false, length = 50)
+    @Column(name = "user_id",
+            nullable = false,
+            length = 50)
     private String userId;
 
-    @Column(name = "revoked", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "revoked",
+            columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean revoked;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id",
+                referencedColumnName = "user_id",
+                insertable = false,
+                updatable = false)
     private User user;
 
     public RefreshToken(final String tokenParam,

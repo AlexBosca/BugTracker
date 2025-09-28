@@ -12,32 +12,52 @@ public class UserProjectRole {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false, length = 50)
+    @Column(name = "user_id",
+            nullable = false,
+            length = 50)
     private String userId;
 
-    @Column(name = "project_key", nullable = false, length = 50)
+    @Column(name = "project_key",
+            nullable = false,
+            length = 50)
     private String projectKey;
 
-    @Column(name = "role_name", nullable = false, length = 50)
+    @Column(name = "role_name",
+            nullable = false,
+            length = 50)
     private String roleName;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at",
+            nullable = false,
+            updatable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id",
+                referencedColumnName = "user_id",
+                insertable = false,
+                updatable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "project_key", referencedColumnName = "project_key", insertable = false, updatable = false)
+    @JoinColumn(name = "project_key",
+                referencedColumnName = "project_key",
+                insertable = false,
+                updatable = false)
     private Project project;
 
     @ManyToOne
-    @JoinColumn(name = "project_key", referencedColumnName = "project_key", insertable = false, updatable = false)
-    @JoinColumn(name = "role_name", referencedColumnName = "role_name", insertable = false, updatable = false)
+    @JoinColumn(name = "project_key",
+                referencedColumnName = "project_key",
+                insertable = false,
+                updatable = false)
+    @JoinColumn(name = "role_name",
+                referencedColumnName = "role_name",
+                insertable = false,
+                updatable = false)
     private ProjectRole projectRole;
 
-    public UserProjectRole() {}
+    public UserProjectRole() { }
 
     public UserProjectRole(final String userIdParam,
                            final String projectKeyParam,

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+//TODO: Created utility class to declare common regex patterns, messages, etc. and use them in all DTOs
 public record RegistrationRequestDTO(
     @NotBlank(message = "Firstname is mandatory")
     String firstName,
