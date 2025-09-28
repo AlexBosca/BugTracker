@@ -1,4 +1,9 @@
 package ro.alexportfolio.backend.dto.response;
 
-public record ErrorResponseDTO(int status, String message) {
-}
+import java.time.Instant;
+
+public record ErrorResponseDTO(
+    int status,
+    String message,
+    Instant timeInstant
+) { }

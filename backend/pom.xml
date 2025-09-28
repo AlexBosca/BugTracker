@@ -63,6 +63,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<version>42.7.3</version> <!-- Updated to latest secure version -->
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -95,6 +96,23 @@
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.5.0</version> <!-- ✅ Match Spring Boot 3.3.x -->
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.11.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.5</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson, jjwt-orgjson -->
+			<version>0.11.5</version>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 
@@ -147,6 +165,8 @@
 							<outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
 							<excludes>
 								<exclude>**/mapper/**/*Impl.class</exclude>
+								<exclude>**/*Test*.class</exclude>
+    							<exclude>**/test/**</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -157,20 +177,114 @@
 				<artifactId>flyway-maven-plugin</artifactId>
 				<version>9.22.0</version> <!-- ✅ Use the latest compatible version -->
 				<configuration>
-				  <url>jdbc:postgresql://localhost:5432/bugtracker</url>
-				  <user>${env.POSTGRES_USER}</user>
-				  <password>${env.POSTGRES_PASSWORD}</password>
-				  <schemas>
-					<schema>public</schema>
-				  </schemas>
-				  <locations>
-					<location>filesystem:src/main/resources/db/migrations</location>
-				  </locations>
-				  <cleanDisabled>false</cleanDisabled>
+					<url>jdbc:postgresql://localhost:5432/bugtracker</url>
+					<user>${env.POSTGRES_USER}</user>
+					<password>${env.POSTGRES_PASSWORD}</password>
+					<schemas>
+						<schema>public</schema>
+					</schemas>
+					<locations>
+						<location>filesystem:src/main/resources/db/migrations</location>
+					</locations>
+					<cleanDisabled>false</cleanDisabled>
 				</configuration>
-			  </plugin>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>generate-certs</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>cmd</executable>
+							<arguments>
+								<argument>/c</argument>
+								<argument>${project.basedir}\..\certs\generate-certs.bat</argument>
+								<argument>${project.build.directory}\certs</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>windows</id>
+			<activation>
+				<os>
+					<family>Windows</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>3.1.0</version>
+						<executions>
+							<execution>
+								<id>generate-certs</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>cmd</executable>
+									<arguments>
+										<argument>/c</argument>
+										<argument>${project.basedir}\..\certs\generate-certs.bat</argument>
+										<argument>${project.build.directory}\certs</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>linux</id>
+			<activation>
+				<os>
+					<family>unix</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>3.1.0</version>
+						<executions>
+							<execution>
+								<id>generate-certs</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>bash</executable>
+									<arguments>
+										<argument>${project.basedir}/../certs/generate-certs.sh</argument>
+										<argument>${project.build.directory}/certs</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 
 	<reporting>
 		<plugins>

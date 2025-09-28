@@ -1,6 +1,7 @@
 package ro.alexportfolio.backend.exception;
 
-import java.util.Map;
+import java.time.Clock;
+import java.time.Instant;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,15 +13,25 @@ import ro.alexportfolio.backend.dto.response.ErrorResponseDTO;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Map<Class<? extends RuntimeException>, HttpStatus> EXCEPTION_STATUS_MAP = Map.of(
-            IssueNotFoundException.class, HttpStatus.NOT_FOUND,
-            ProjectNotFoundException.class, HttpStatus.NOT_FOUND,
-            IssueOrProjectNotFoundException.class, HttpStatus.NOT_FOUND
-    );
+    private final Clock clock;
+
+    public GlobalExceptionHandler(final Clock clockParam) {
+        this.clock = clockParam;
+    }
     
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponseDTO> handleRuntimeException(RuntimeException e) {
-        HttpStatus status = EXCEPTION_STATUS_MAP.getOrDefault(e.getClass(), HttpStatus.INTERNAL_SERVER_ERROR);
-        return ResponseEntity.status(status).body(new ErrorResponseDTO(status.value(), e.getMessage()));
+    @ExceptionHandler(ApplicationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleApplicationExceptions(final ApplicationException e) {
+        return ResponseEntity.status(e.getHttpStatus())
+            .body(new ErrorResponseDTO(e.getHttpStatus().value(),
+                                       e.getMessage(),
+                                       Instant.now(clock)));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDTO> handleGenericException(final Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                       e.getMessage(),
+                                       Instant.now(clock)));
     }
 }

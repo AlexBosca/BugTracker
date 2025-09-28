@@ -1,9 +1,11 @@
 package ro.alexportfolio.backend.exception;
 
-public class IssueOrProjectNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class IssueOrProjectNotFoundException extends ApplicationException {
 
     public IssueOrProjectNotFoundException() {
-        super(ExceptionMessages.ISSUE_OR_PROJECT_NOT_FOUND.getMessage());
+        super(ExceptionMessages.ISSUE_OR_PROJECT_NOT_FOUND.getMessage(),
+              HttpStatus.NOT_FOUND);
     }
-    
 }

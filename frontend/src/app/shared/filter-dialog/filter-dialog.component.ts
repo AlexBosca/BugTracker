@@ -44,7 +44,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
     </mat-dialog-content>
     <mat-dialog-actions>
       <button mat-button mat-dialog-close>Cancel</button>
-      <button mat-button (click)="applyFilter()" cdkFocusInitial>Install</button>
+      <button mat-button (click)="applyFilter()" cdkFocusInitial>Apply</button>
     </mat-dialog-actions>
   `,
   styleUrl: './filter-dialog.component.css',

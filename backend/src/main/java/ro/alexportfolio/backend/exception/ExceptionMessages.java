@@ -1,6 +1,7 @@
 package ro.alexportfolio.backend.exception;
 
 public enum ExceptionMessages {
+    USER_NOT_FOUND("User not found"),
     PROJECT_NOT_FOUND("Project not found"),
     ISSUE_NOT_FOUND("Issue not found"),
     ISSUE_OR_PROJECT_NOT_FOUND("Issue or project not found"),

@@ -6,8 +6,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 
+import ro.alexportfolio.backend.dao.EmailConfirmationTokenRepository;
 import ro.alexportfolio.backend.dao.IssueRepository;
 import ro.alexportfolio.backend.dao.ProjectRepository;
+import ro.alexportfolio.backend.dao.RefreshTokensRepository;
 import ro.alexportfolio.backend.dao.UserProjectRoleRepository;
 import ro.alexportfolio.backend.dao.UserRepository;
 
@@ -27,6 +29,12 @@ class BackendApplicationTests {
 
 	@MockBean
 	private UserProjectRoleRepository userProjectRoleRepository;
+
+	@MockBean
+	private EmailConfirmationTokenRepository emailConfirmationTokenRepository;
+
+	@MockBean
+	private RefreshTokensRepository refreshTokensRepository;
 
 	@Test
 	void contextLoads() {
