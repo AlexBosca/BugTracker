@@ -129,6 +129,7 @@ jobs:
             -Dsonar.token=$SONAR_TOKEN
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
             -Dsonar.java.binaries=target/classes
+            -Dsonar.coverage.exclusions=**/*Test*.java,**/test/**
 
       - name: SonarCloud Quality Gate
         uses: ./.github/actions/check-quality-gate

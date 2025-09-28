@@ -165,6 +165,8 @@
 							<outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
 							<excludes>
 								<exclude>**/mapper/**/*Impl.class</exclude>
+								<exclude>**/*Test*.class</exclude>
+    							<exclude>**/test/**</exclude>
 							</excludes>
 						</configuration>
 					</execution>
