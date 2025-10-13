@@ -21,12 +21,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ro.alexportfolio.backend.dto.request.LoginRequestDTO;
+import ro.alexportfolio.backend.dto.request.PasswordResetRequestDTO;
 import ro.alexportfolio.backend.dto.request.RegistrationRequestDTO;
+import ro.alexportfolio.backend.dto.request.ResetRequestDTO;
 import ro.alexportfolio.backend.dto.response.JwtResponseDTO;
 import ro.alexportfolio.backend.mapper.UserMapper;
 import ro.alexportfolio.backend.model.GlobalRole;
 import ro.alexportfolio.backend.model.User;
 import ro.alexportfolio.backend.service.JwtService;
+import ro.alexportfolio.backend.service.PasswordResetService;
 import ro.alexportfolio.backend.service.RefreshTokenService;
 import ro.alexportfolio.backend.service.UserService;
 import ro.alexportfolio.backend.util.UserIdGenerator;
@@ -42,17 +45,20 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final PasswordResetService passwordResetService;
 
     public AuthController(final UserService userServiceParam,
                           final UserMapper mapperParam,
                           final AuthenticationManager authManagerParam,
                           final JwtService jwtServiceParam,
-                          final RefreshTokenService refreshTokenServiceParam) {
+                          final RefreshTokenService refreshTokenServiceParam,
+                          final PasswordResetService passwordResetServiceParam) {
         this.userService = userServiceParam;
         this.mapper = mapperParam;
         this.authenticationManager = authManagerParam;
         this.jwtService = jwtServiceParam;
         this.refreshTokenService = refreshTokenServiceParam;
+        this.passwordResetService = passwordResetServiceParam;
     }
 
     @PostMapping(path = "/login")
@@ -130,6 +136,27 @@ public class AuthController {
         String newAccessToken = jwtService.generateAccessToken(username);
 
         return new ResponseEntity<>(newAccessToken, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/password-reset-request")
+    public ResponseEntity<Void> passwordResetRequest(final @RequestBody ResetRequestDTO request) {
+        passwordResetService.initiatePasswordReset(request.email());
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/password-reset")
+    public ResponseEntity<Void> validatePasswordResetToken(final @RequestParam("token") String token) {
+        passwordResetService.validatePasswordResetToken(token);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/password-reset")
+    public ResponseEntity<Void> resetPassword(final @RequestBody PasswordResetRequestDTO request) {
+        passwordResetService.resetPassword(request.token(), request.newPassword());
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private ResponseCookie createRefreshTokenCookie(final String refreshToken) {

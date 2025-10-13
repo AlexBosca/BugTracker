@@ -77,3 +77,12 @@ CREATE TABLE email_confirmation_tokens (
     used BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
+-- PASSWORD RESET TOKENS
+CREATE TABLE password_reset_tokens (
+    id SERIAL PRIMARY KEY,
+    token VARCHAR(50) NOT NULL UNIQUE,
+    user_id VARCHAR(50) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);

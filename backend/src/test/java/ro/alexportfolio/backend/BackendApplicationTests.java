@@ -8,6 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import ro.alexportfolio.backend.dao.EmailConfirmationTokenRepository;
 import ro.alexportfolio.backend.dao.IssueRepository;
+import ro.alexportfolio.backend.dao.PasswordResetTokenRepository;
 import ro.alexportfolio.backend.dao.ProjectRepository;
 import ro.alexportfolio.backend.dao.RefreshTokensRepository;
 import ro.alexportfolio.backend.dao.UserProjectRoleRepository;
@@ -35,6 +36,9 @@ class BackendApplicationTests {
 
 	@MockBean
 	private RefreshTokensRepository refreshTokensRepository;
+
+	@MockBean
+	private PasswordResetTokenRepository passwordResetTokenRepository;
 
 	@Test
 	void contextLoads() {

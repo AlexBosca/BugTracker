@@ -6,6 +6,15 @@ public enum EmailConstants {
     EMAIL_ACCOUNT_CONFIRMATION_CONTENT("Ready to get started? First, verify your email address:", false),
     EMAIL_ACCOUNT_CONFIRMATION_LINK("https://localhost:8081/api/v1/bug-tracker/auth/confirm?token=%s", true),
 
+    EMAIL_PASSWORD_RESET_SUBJECT("Password reset", false),
+    EMAIL_PASSWORD_RESET_TITLE("Reset your password", false),
+    EMAIL_PASSWORD_RESET_CONTENT("You have requested to reset your password. Click the link below to proceed:", false),
+    EMAIL_PASSWORD_RESET_LINK("http://localhost:4200/auth/reset-password?token=%s", true),
+
+    EMAIL_PASSWORD_RESET_CONFIRMATION_SUBJECT("Password successfully reset", false),
+    EMAIL_PASSWORD_RESET_CONFIRMATION_TITLE("Your password has been reset", false),
+    EMAIL_PASSWORD_RESET_CONFIRMATION_CONTENT("Your password has been successfully reset. If you did not perform this action, please contact support immediately.", false),
+
     EMAIL_ISSUE_ASSIGNATION_SUBJECT("Issue assignation", false),
     EMAIL_ISSUE_ASSIGNATION_TITLE("Issue assignation notification", false),
     EMAIL_ISSUE_ASSIGNATION_CONTENT("You have been assigned on issue", false),
