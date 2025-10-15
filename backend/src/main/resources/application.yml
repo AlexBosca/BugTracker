@@ -28,6 +28,8 @@ server:
 
 application:
   name: Bug Tracker System
+  frontend:
+    url: http://localhost:4200
 
 spring:
   jpa:

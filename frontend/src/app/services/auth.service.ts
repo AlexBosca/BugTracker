@@ -44,6 +44,18 @@ export class AuthService {
     // this.router.navigate(['/auth']);
   }
 
+  public passwordReset(email: string): Observable<any> {
+    return this.http.post(`${this.authenticationUrl}/password-reset-request`, { email });
+  }
+
+  public validateResetToken(token: string): Observable<any> {
+    return this.http.get(`${this.authenticationUrl}/password-reset`, { params: { token } });
+  }
+
+  public passwordUpdate(token: string, newPassword: string): Observable<any> {
+    return this.http.post(`${this.authenticationUrl}/password-reset`, { token, newPassword });
+  }
+
   public isAuthenticated(): boolean {
     const isAuthenticated = (typeof window !== 'undefined') ? sessionStorage.getItem('isAuthenticated') : null;
     return isAuthenticated === 'true';

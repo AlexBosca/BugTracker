@@ -48,6 +48,7 @@ public class JwtService {
     public String extractSubject(final String token) throws Exception  {
         return Jwts.parserBuilder()
             .setSigningKey(rsaKeyUtil.getPublicKey())
+            .setClock(() -> Date.from(Instant.now(clock)))
             .build()
             .parseClaimsJws(token)
             .getBody()
