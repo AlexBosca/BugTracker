@@ -4,14 +4,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.alexportfolio.backend.dto.request.ProjectRequestDTO;
-import ro.alexportfolio.backend.dto.request.UserProjectAssignmentRequest;
 import ro.alexportfolio.backend.dto.request.UserProjectBatchAssignmentRequest;
 import ro.alexportfolio.backend.dto.response.ProjectResponseDTO;
 import ro.alexportfolio.backend.dto.response.UserResponseDTO;
 import ro.alexportfolio.backend.mapper.ProjectMapper;
 import ro.alexportfolio.backend.mapper.RecordMapper;
 import ro.alexportfolio.backend.mapper.UserMapper;
-import ro.alexportfolio.backend.model.User;
 import ro.alexportfolio.backend.service.ProjectService;
 
 import java.util.List;
