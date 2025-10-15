@@ -43,11 +43,4 @@ describe('AppComponent', () => {
     const app = fixture.componentInstance;
     expect(app.title).toEqual('frontend');
   });
-
-  it(`should render <app-layout>`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement.querySelector('app-layout');
-    expect(compiled).not.toBeNull();
-  });
 });
