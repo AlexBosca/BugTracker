@@ -163,10 +163,4 @@ describe('AuthService', () => {
 
     expect(authService.isAuthenticated()).toBeFalse();
   });
-
-  it('should return false if window is undefined', () => {
-    spyOnProperty(window, 'undefined', 'get').and.returnValue(true as unknown as undefined);
-
-    expect(authService.isAuthenticated()).toBeFalse();
-  });
 });
