@@ -137,7 +137,6 @@ jobs:
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-project-key: ro.alexportfolio:backend
-          if: ${{ github.event.pull_request.number != '' }}
           pull_request: ${{ github.event.pull_request.number }}
 
   frontend:
@@ -215,5 +214,4 @@ jobs:
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-project-key: bugtracker_frontend
-          if: ${{ github.event.pull_request.number != '' }}
           pull_request: ${{ github.event.pull_request.number }}

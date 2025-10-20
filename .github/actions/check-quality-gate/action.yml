@@ -22,7 +22,16 @@ runs:
       shell: bash
       run: |
         echo "Waiting for Quality Gate result..."
-        RESPONSE=$(curl -s -u ${{ inputs.sonar-token }}: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.sonar-project-key }}&pullRequest=${{ inputs.pull_request }}")
+
+        if [ -z "${{ inputs.pull_request }}" ]; then
+          PULL_REQUEST_PARAM=""
+        else
+          PULL_REQUEST_PARAM="&pullRequest=${{ inputs.pull_request }}"
+        fi
+
+        SONAR_URL="https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.sonar-project-key }}${PULL_REQUEST_PARAM}"
+        
+        RESPONSE=$(curl -s -u ${{ inputs.sonar-token }}: $SONAR_URL)
         STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')
           if [ "$STATUS" == "OK" ]; then
             echo "Quality Gate passed!"
