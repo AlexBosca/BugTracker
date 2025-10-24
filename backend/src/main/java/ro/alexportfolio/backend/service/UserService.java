@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ro.alexportfolio.backend.dao.UserRepository;
+import ro.alexportfolio.backend.exception.UserNotFoundException;
 import ro.alexportfolio.backend.model.EmailConfirmationToken;
 import ro.alexportfolio.backend.model.EmailData;
 import ro.alexportfolio.backend.model.User;
@@ -102,18 +103,18 @@ public class UserService {
 
     public User getUserByUserId(final String userId) {
         return userRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalStateException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     public User getUserByEamil(final String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     public void updateUser(final String userId,
                            final User user) {
         User existingUser = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalStateException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
 
         existingUser.setEmail(user.getEmail());
         existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
