@@ -24,14 +24,16 @@ public class ProjectController {
 
     private final UserMapper userMapper;
 
-    public ProjectController(ProjectService projectService, ProjectMapper projectMapper, UserMapper userMapper) {
-        this.projectService = projectService;
-        this.projectMapper = projectMapper;
-        this.userMapper = userMapper;
+    public ProjectController(final ProjectService projectServiceParam,
+                             final ProjectMapper projectMapperParam,
+                             final UserMapper userMapperParam) {
+        this.projectService = projectServiceParam;
+        this.projectMapper = projectMapperParam;
+        this.userMapper = userMapperParam;
     }
 
     @PostMapping
-    public ResponseEntity<Void> createProject(@RequestBody ProjectRequestDTO request) {
+    public ResponseEntity<Void> createProject(final @RequestBody ProjectRequestDTO request) {
         projectService.createProject(projectMapper.toEntity(request));
 
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -46,7 +48,7 @@ public class ProjectController {
     }
 
     @GetMapping(path = "/{projectKey}")
-    public ResponseEntity<ProjectResponseDTO> getProject(@PathVariable(name = "projectKey") String projectKey) {
+    public ResponseEntity<ProjectResponseDTO> getProject(final @PathVariable(name = "projectKey") String projectKey) {
         return new ResponseEntity<>(
                 projectMapper.toResponse(projectService.getProjectByProjectKey(projectKey)),
                 HttpStatus.OK
@@ -54,30 +56,30 @@ public class ProjectController {
     }
 
     @PutMapping(path = "/{projectKey}")
-    public ResponseEntity<Void> updateProject(@PathVariable(name = "projectKey") String projectKey,
-                                              @RequestBody ProjectRequestDTO request) {
+    public ResponseEntity<Void> updateProject(final @PathVariable(name = "projectKey") String projectKey,
+                                              final @RequestBody ProjectRequestDTO request) {
         projectService.updateProject(projectKey, projectMapper.toEntity(request));
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping(path = "/{projectKey}")
-    public ResponseEntity<Void> patchProject(@PathVariable(name = "projectKey") String projectKey,
-                                             @RequestBody ProjectRequestDTO request) {
+    public ResponseEntity<Void> patchProject(final @PathVariable(name = "projectKey") String projectKey,
+                                             final @RequestBody ProjectRequestDTO request) {
         projectService.partialUpdateProject(projectKey, RecordMapper.toMap(request));
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/{projectKey}")
-    public ResponseEntity<Void> deleteProject(@PathVariable(name = "projectKey") String projectKey) {
+    public ResponseEntity<Void> deleteProject(final @PathVariable(name = "projectKey") String projectKey) {
         projectService.deleteProject(projectKey);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(path = "/{projectKey}/users")
-    public ResponseEntity<List<UserResponseDTO>> getProjectUsers(@PathVariable(name = "projectKey") String projectKey) {
+    public ResponseEntity<List<UserResponseDTO>> getProjectUsers(final @PathVariable(name = "projectKey") String projectKey) {
         return new ResponseEntity<>(
                 userMapper.toResponseList(projectService.getUsersAssignedToProject(projectKey)),
                 HttpStatus.OK
@@ -85,15 +87,15 @@ public class ProjectController {
     }
 
     @PostMapping(path = "/{projectKey}/users")
-    public ResponseEntity<Void> assignUserToProject(@PathVariable(name = "projectKey") String projectKey,
-                                                    @RequestBody UserProjectBatchAssignmentRequest request) {
+    public ResponseEntity<Void> assignUserToProject(final @PathVariable(name = "projectKey") String projectKey,
+                                                    final @RequestBody UserProjectBatchAssignmentRequest request) {
         this.projectService.assignUsersToProject(request.userProjectAssignments(), projectKey);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(path = "/{projectKey}/users/unassigned")
-    public ResponseEntity<List<UserResponseDTO>> getUnassignedUsers(@PathVariable(name = "projectKey") String projectKey) {
+    public ResponseEntity<List<UserResponseDTO>> getUnassignedUsers(final @PathVariable(name = "projectKey") String projectKey) {
         return new ResponseEntity<>(
                 userMapper.toResponseList(projectService.getUnassignedUsers(projectKey)),
                 HttpStatus.OK
@@ -101,7 +103,7 @@ public class ProjectController {
     }
 
     @GetMapping(path = "/{projectKey}/roles")
-    public ResponseEntity<List<String>> getProjectUserRoles(@PathVariable(name = "projectKey") String projectKey) {
+    public ResponseEntity<List<String>> getProjectUserRoles(final @PathVariable(name = "projectKey") String projectKey) {
         return new ResponseEntity<>(
                 projectService.getProjectUserRoles(projectKey),
                 HttpStatus.OK

@@ -1,6 +1,9 @@
 package ro.alexportfolio.backend.util;
 
+import java.util.Random;
+
 public class UserIdGenerator {
+    private static Random random = new Random();
 
     private UserIdGenerator() {
         throw new IllegalStateException("Utility class");
@@ -20,7 +23,7 @@ public class UserIdGenerator {
         StringBuilder result = new StringBuilder(length);
 
         for (int i = 0; i < length; i++) {
-            int index = (int) (Math.random() * characters.length());
+            int index = random.nextInt() * characters.length();
             result.append(characters.charAt(index));
         }
 

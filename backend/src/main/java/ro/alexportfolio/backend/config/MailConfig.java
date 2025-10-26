@@ -16,7 +16,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 @Configuration
 public class MailConfig {
-    
+
     @Bean
     public JavaMailSenderImpl javaMailSender(Environment environment) {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -32,7 +32,7 @@ public class MailConfig {
 
         return mailSender;
     }
-    
+
     @Bean
     @Primary
     public TemplateEngine emailTemplateEngine() {
