@@ -44,6 +44,8 @@ frontend/yarn-error.log
 frontend/tmp
 frontend/out-tsc
 frontend/bazel-out
+frontend/test-results
+frontend/eslint-report.json
 
 ### NetBeans ###
 /nbproject/private/
