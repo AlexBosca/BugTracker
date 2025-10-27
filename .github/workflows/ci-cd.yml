@@ -207,7 +207,7 @@ jobs:
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info 
             -Dsonar.token=$SONAR_TOKEN
             -Dsonar.eslint.reportPaths=eslint-report.json
-            -Dsonar.exclusions=**/*.spec.ts
+            -Dsonar.coverage.exclusions=**/*.spec.ts
         
       - name: SonarCloud Quality Gate
         uses: ./.github/actions/check-quality-gate
