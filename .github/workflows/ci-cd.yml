@@ -131,6 +131,7 @@ jobs:
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.java.binaries=target/classes
             -Dsonar.coverage.exclusions=**/*Test*.java,**/test/**
+            -Dsonar.branch.name=${{ github.head_ref || github.ref_name }}
 
       - name: SonarCloud Quality Gate
         uses: ./.github/actions/check-quality-gate
@@ -208,6 +209,7 @@ jobs:
             -Dsonar.token=$SONAR_TOKEN
             -Dsonar.eslint.reportPaths=eslint-report.json
             -Dsonar.coverage.exclusions=**/*.spec.ts
+            -Dsonar.branch.name=${{ github.head_ref || github.ref_name }}
         
       - name: SonarCloud Quality Gate
         uses: ./.github/actions/check-quality-gate
