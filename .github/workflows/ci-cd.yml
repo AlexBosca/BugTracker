@@ -118,6 +118,9 @@ jobs:
           report-name: Backend Unit Tests
           report-path: 'backend/target/surefire-reports/TEST*.xml'
 
+      - name: Debug Step
+        run: echo $SONAR_TOKEN
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
