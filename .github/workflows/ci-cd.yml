@@ -32,6 +32,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Java 17
         uses: ./.github/actions/checkout-and-setup
@@ -116,8 +118,13 @@ jobs:
           report-name: Backend Unit Tests
           report-path: 'backend/target/surefire-reports/TEST*.xml'
 
+      - name: Debug Step
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: echo $SONAR_TOKEN
+
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v4
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
@@ -126,11 +133,11 @@ jobs:
             -Dsonar.projectKey=ro.alexportfolio:backend
             -Dsonar.organization=bugtracker
             -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.token=$SONAR_TOKEN
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.java.binaries=target/classes
             -Dsonar.coverage.exclusions=**/*Test*.java,**/test/**
+            -Dsonar.branch.name=${{ github.head_ref || github.ref_name }}
 
       - name: SonarCloud Quality Gate
         uses: ./.github/actions/check-quality-gate
@@ -146,6 +153,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
   
       - name: Setup Node
         uses: ./.github/actions/checkout-and-setup
@@ -195,7 +204,7 @@ jobs:
           report-path: 'frontend/test-results/unit-test-results.xml'
       
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v4
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
@@ -205,9 +214,9 @@ jobs:
             -Dsonar.organization=bugtracker 
             -Dsonar.host.url=https://sonarcloud.io 
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info 
-            -Dsonar.token=$SONAR_TOKEN
             -Dsonar.eslint.reportPaths=eslint-report.json
-            -Dsonar.exclusions=**/*.spec.ts
+            -Dsonar.coverage.exclusions=**/*.spec.ts
+            -Dsonar.branch.name=${{ github.head_ref || github.ref_name }}
         
       - name: SonarCloud Quality Gate
         uses: ./.github/actions/check-quality-gate

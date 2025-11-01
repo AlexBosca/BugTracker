@@ -50,8 +50,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 getContext().setAuthentication(authentication);
 
-            } catch (ExpiredJwtException e) {
-
             } catch (Exception e) {
 
             }

@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import ro.alexportfolio.backend.dao.UserRepository;
+import ro.alexportfolio.backend.exception.UserNotFoundException;
 import ro.alexportfolio.backend.model.EmailConfirmationToken;
 import ro.alexportfolio.backend.model.User;
 import ro.alexportfolio.backend.service.EmailConfirmationTokenService;
@@ -219,7 +220,7 @@ class UserServiceTest {
 
         // Then
         assertThatThrownBy(() -> userService.getUserByUserId(userId))
-            .isInstanceOf(IllegalStateException.class)
+            .isInstanceOf(UserNotFoundException.class)
             .hasMessageContaining("User not found");
     }
 
@@ -263,7 +264,7 @@ class UserServiceTest {
 
         // Then
         assertThatThrownBy(() -> userService.getUserByEamil(email))
-            .isInstanceOf(IllegalStateException.class)
+            .isInstanceOf(UserNotFoundException.class)
             .hasMessageContaining("User not found");
     }
 
@@ -299,7 +300,7 @@ class UserServiceTest {
         
         // Then
         assertThatThrownBy(() -> userService.updateUser(userId, updatedInfo))
-            .isInstanceOf(IllegalStateException.class)
+            .isInstanceOf(UserNotFoundException.class)
             .hasMessageContaining("User not found");
 
         verify(userRepository, never()).save(any());

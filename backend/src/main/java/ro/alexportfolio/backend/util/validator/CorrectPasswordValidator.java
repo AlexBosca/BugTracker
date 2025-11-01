@@ -38,8 +38,6 @@ public class CorrectPasswordValidator implements ConstraintValidator<CorrectPass
             return true;
         }
 
-        boolean isValid = user.getPassword().equals(password);
-
-        return isValid;
+        return user.getPassword().equals(password);
     }
 }

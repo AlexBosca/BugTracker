@@ -18,13 +18,14 @@ import ro.alexportfolio.backend.service.IssueService;
 @RestController
 @RequestMapping("/issues")
 public class GlobalIssueController {
-    
+
     private final IssueService issueService;
     private final IssueMapper mapper;
 
-    public GlobalIssueController(IssueService issueService, IssueMapper mapper) {
-        this.issueService = issueService;
-        this.mapper = mapper;
+    public GlobalIssueController(final IssueService issueServiceParam,
+                                 final IssueMapper mapperParam) {
+        this.issueService = issueServiceParam;
+        this.mapper = mapperParam;
     }
 
     @GetMapping
@@ -36,8 +37,8 @@ public class GlobalIssueController {
     }
 
     @GetMapping(path = "/page")
-    public ResponseEntity<PageResponse<IssueResponseDTO>> getAllIssues(@RequestParam(name = "pageNo") int pageNo,
-                                                                       @RequestParam(name = "pageSize") int pageSize) {
+    public ResponseEntity<PageResponse<IssueResponseDTO>> getAllIssues(final @RequestParam(name = "pageNo") int pageNo,
+                                                                       final @RequestParam(name = "pageSize") int pageSize) {
         return new ResponseEntity<>(
                 PageResponse.fromPage(issueService.getAllIssues(pageNo, pageSize).map(mapper::toResponse)),
                 HttpStatus.OK
@@ -45,7 +46,7 @@ public class GlobalIssueController {
     }
 
     @GetMapping(path = "/{issueId}")
-    public ResponseEntity<IssueResponseDTO> getIssue(@PathVariable(name = "issueId") String issueId) {
+    public ResponseEntity<IssueResponseDTO> getIssue(final @PathVariable(name = "issueId") String issueId) {
         return new ResponseEntity<>(
                 mapper.toResponse(issueService.getIssueByIssueId(issueId)),
                 HttpStatus.OK
