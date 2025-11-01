@@ -119,6 +119,8 @@ jobs:
           report-path: 'backend/target/surefire-reports/TEST*.xml'
 
       - name: Debug Step
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: echo $SONAR_TOKEN
 
       - name: SonarQube Scan
