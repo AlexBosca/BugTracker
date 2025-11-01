@@ -119,7 +119,7 @@ jobs:
           report-path: 'backend/target/surefire-reports/TEST*.xml'
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v4
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
@@ -200,7 +200,7 @@ jobs:
           report-path: 'frontend/test-results/unit-test-results.xml'
       
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v4
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
