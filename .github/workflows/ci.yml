@@ -91,6 +91,10 @@ jobs:
           report-name: Backend Unit Tests
           report-path: 'backend/target/surefire-reports/TEST*.xml'
 
+      - name: Run Checkstyle
+        working-directory: ./backend
+        run: mvn checkstyle:checkstyle
+
       - name: SonarCloud Scan (backend full analysis)
         working-directory: backend
         env:
@@ -109,10 +113,6 @@ jobs:
             -Dsonar.exclusions=**/target/**,**/static/**,**/db/migration/**,**/*.sql,**/application*.yml,**/application*.properties
             -Dsonar.branch.name=${{ github.head_ref || github.ref_name }} \
             -Dsonar.scm.revision=${{ github.sha }}
-
-      - name: Run Checkstyle
-        working-directory: ./backend
-        run: mvn checkstyle:checkstyle
 
       # - name: Wait for SonarCloud Quality Gate
       #   env:
