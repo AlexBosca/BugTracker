@@ -110,7 +110,7 @@ jobs:
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml  \
             -Dsonar.java.binaries=target/classes  \
             -Dsonar.coverage.exclusions=**/*Test*.java,**/test/** \
-            -Dsonar.exclusions=**/target/**,**/static/**,**/db/migration/**,**/*.sql,**/application*.yml,**/application*.properties
+            -Dsonar.exclusions=**/target/**,**/static/**,**/db/migration/**,**/*.sql,**/application*.yml,**/application*.properties \
             -Dsonar.branch.name=${{ github.head_ref || github.ref_name }} \
             -Dsonar.scm.revision=${{ github.sha }}
 
