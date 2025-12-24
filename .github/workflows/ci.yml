@@ -101,6 +101,12 @@ jobs:
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_BACKEND }} \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.sources=src/main/java,src/main/resources \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml  \
+            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml  \
+            -Dsonar.java.binaries=target/classes  \
+            -Dsonar.coverage.exclusions=**/*Test*.java,**/test/** \
+            -Dsonar.exclusions=**/target/**,**/static/**,**/db/migration/**,**/*.sql,**/application*.yml,**/application*.properties
             -Dsonar.branch.name=${{ github.head_ref || github.ref_name }} \
             -Dsonar.scm.revision=${{ github.sha }}
 
@@ -206,7 +212,13 @@ jobs:
             -Dsonar.branch.name=${{ github.head_ref || github.ref_name }} \
             -Dsonar.scm.revision=${{ github.sha }} \
             -Dsonar.sources=src \
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.tests=src \
+            -Dsonar.test.inclusions=**/*.spec.ts \
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info  \
+            -Dsonar.sourceEncoding=UTF-8  \
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/coverage/**,**/*.spec.ts,**/environments/**,**/*.module.ts,**/main.ts,**/polyfills.ts,**/test.ts,**/setup-jest.ts,**/index.ts,**/app-routing.module.ts,**/assets/**,**/*.config.ts,**/jest.config.ts,**/karma.conf.js,**/tailwind.config.js,**/vite.config.ts,**/*.mock.ts  \
+            -Dsonar.coverage.exclusions=**/main.ts,**/polyfills.ts,**/environments/**,**/*.module.ts,**/app-routing.module.ts,**/test.ts,**/index.ts  \
+            -Dsonar.sourceEncoding=UTF-8
 
       - name: SonarCloud Quality Gate
         uses: ./.github/actions/check-quality-gate
