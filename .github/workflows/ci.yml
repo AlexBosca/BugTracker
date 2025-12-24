@@ -1,0 +1,216 @@
+name: CI - Verify, Lint, SonarCloud
+
+on:
+  pull_request:
+    branches: ["master"]
+  push:
+    branches:
+      - "feature/**"
+      - "master"
+
+# permissions:
+#   contents: read
+
+jobs:
+  backend:
+    name: Backend CI
+    runs-on: ubuntu-latest
+
+    # services:
+    #   postgres:
+    #     image: postgres:latest
+    #     env:
+    #       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+    #       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+    #       POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+    #       POSTGRES_PORT: ${{ secrets.POSTGRES_PORT}}
+    #     ports:
+    #       - 5432:5432
+    #     options: >-
+    #       --health-cmd "pg_isready -U postgres -d bugtracker" 
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fix shallow clone warning
+        run: |
+          git fetch --unshallow || true
+          git fetch --tags || true
+
+      - name: Set up Java 17
+        uses: ./.github/actions/checkout-and-setup
+        with:
+          tool-name: 'java'
+          tool-version: '17'
+          distribution: 'oracle'
+          working-directory: './backend'
+
+      - name: Build and Test
+        working-directory: ./backend
+        env:
+          KEY_STORE_PASS: ${{ secrets.KEY_STORE_PASS }}
+          MAIL_CREDS_USR: ${{ secrets.MAIL_CREDS_USR }}
+          MAIL_CREDS_PSW: ${{ secrets.MAIL_CREDS_PSW }}
+        run: mvn clean test package verify
+
+      - name: Publish Backend Unit Test Report
+        uses: turing85/publish-report@v2
+        with:
+          comment-header: 🧪 Backend Unit Test Report
+          comment-message-success: |
+            <details>
+              <summary><h3>🎉 {0} passed</h3></summary>
+
+              <h4>🧪 Unit Tests Results </h4>
+
+              | Passed | Failed | Skipped |
+              |--------|--------|---------|
+              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+
+              You can see the report [here]({4}).
+            </details>
+          comment-message-failure: |
+            <details>
+              <summary><h3>⛈️ {0} failed</h3></summary>
+
+              <h4>🧪 Unit Tests Results </h4>
+
+              | Passed | Failed | Skipped |
+              |--------|--------|---------|
+              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+
+              You can see the report [here]({4}).
+            </details>
+          report-fail-on-error: true
+          report-name: Backend Unit Tests
+          report-path: 'backend/target/surefire-reports/TEST*.xml'
+
+      - name: SonarCloud Scan (backend full analysis)
+        working-directory: backend
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          ./mvnw -B sonar:sonar \
+            -Dsonar.organization=${{ secrets.SONAR_ORG }} \
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_BACKEND }} \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.branch.name=${{ github.head_ref || github.ref_name }} \
+            -Dsonar.scm.revision=${{ github.sha }}
+
+      - name: Run Checkstyle
+        working-directory: ./backend
+        run: mvn checkstyle:checkstyle
+
+      # - name: Wait for SonarCloud Quality Gate
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #     PROJECT_KEY: ${{ secrets.SONAR_PROJECT_BACKEND }}
+      #   run: |
+      #     for i in {1..40}; do
+      #       sleep 5
+      #       STATUS=$(curl -s -u $SONAR_TOKEN: \
+      #         "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${PROJECT_KEY}&branch=${{ github.head_ref || github.ref_name }}" \
+      #         | jq -r '.projectStatus.status')
+      #       echo "Status: $STATUS"
+      #       if [[ "$STATUS" == "OK" ]]; then exit 0; fi
+      #       if [[ "$STATUS" != "OK" && "$STATUS" != "IN_PROGRESS" && "$STATUS" != "PENDING" ]]; then exit 1; fi
+      #     done
+      #     exit 1
+
+      - name: SonarCloud Quality Gate
+        uses: ./.github/actions/check-quality-gate
+        with:
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-project-key: ro.alexportfolio:backend
+          pull_request: ${{ github.event.pull_request.number }}
+
+  frontend:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fix shallow clone warning
+        run: |
+          git fetch --unshallow || true
+          git fetch --tags || true
+
+      - name: Setup Node
+        uses: ./.github/actions/checkout-and-setup
+        with:
+          tool-name: 'node'
+          tool-version: '22.12.0'
+          working-directory: './frontend'
+
+      - name: ESLint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Test + Coverage
+        working-directory: frontend
+        run: npm run test:coverage
+
+      - name: Publish Frontend Unit Tests Report
+        uses: turing85/publish-report@v2
+        with:
+          comment-header: 🧪 Frontend Unit Test Report
+          comment-message-success: |
+            <details>
+              <summary><h3>🎉 {0} passed</h3></summary>
+
+              <h4>🧪 Unit Tests Results </h4>
+
+              | Passed | Failed | Skipped |
+              |--------|--------|---------|
+              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+
+              You can see the report [here]({4}).
+            </details>
+          comment-message-failure: |
+            <details>
+              <summary><h3>⛈️ {0} failed</h3></summary>
+
+              <h4>🧪 Unit Tests Results </h4>
+
+              | Passed | Failed | Skipped |
+              |--------|--------|---------|
+              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+
+              You can see the report [here]({4}).
+            </details>
+          report-fail-on-error: true
+          report-name: Frontend Unit Tests
+          report-path: 'frontend/test-results/unit-test-results.xml'
+
+      - name: SonarCloud Scan (frontend full analysis)
+        working-directory: frontend
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          npx sonar-scanner \
+            -Dsonar.organization=${{ secrets.SONAR_ORG }} \
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_FRONTEND }} \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.branch.name=${{ github.head_ref || github.ref_name }} \
+            -Dsonar.scm.revision=${{ github.sha }} \
+            -Dsonar.sources=src \
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+
+      - name: SonarCloud Quality Gate
+        uses: ./.github/actions/check-quality-gate
+        with:
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-project-key: bugtracker_frontend
+          pull_request: ${{ github.event.pull_request.number }}
