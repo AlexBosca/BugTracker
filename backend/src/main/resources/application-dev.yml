@@ -1,0 +1,55 @@
+application:
+  frontend:
+    url: http://localhost:4200
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/bugtracker
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+  flyway:
+    schemas: public
+    locations: classpath:db/migrations
+    enabled: true
+    validate-on-migrate: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    clean-disabled: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_CREDS_USR}
+    password: ${MAIL_CREDS_PSW}
+    properties:
+      mail:
+        smtp:
+          auth: auth
+          starttls:
+            enable: true
+
+jwt:
+  private-key-path: classpath:jwt/private_key.pem
+  public-key-path: classpath:jwt/public_key.pem
+  expiration: 3600000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ["health", "info", "metrics", "prometheus"]
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true

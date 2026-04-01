@@ -1,5 +1,8 @@
+application:
+  name: Bug Tracker System
+
 server:
-  port: 8081
+  port: 8082
   servlet:
     context-path: /api/v1/bug-tracker
   tomcat:
@@ -21,45 +24,7 @@ server:
       - '{'
       - '|'
       - '}'
-  ssl:
-    enabled: true
-    key-store: file:target/certs/keystore.p12
-    key-store-password: ${KEY_STORE_PASS}
-
-application:
-  name: Bug Tracker System
-  frontend:
-    url: http://localhost:4200
 
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: none
-  datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/bugtracker
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-  flyway:
-    schemas: public
-    locations: classpath:db/migrations
-    enabled: true
-    validate-on-migrate: true
-    baseline-on-migrate: true
-    baseline-version: 0
-    clean-disabled: false
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_CREDS_USR}
-    password: ${MAIL_CREDS_PSW}
-    properties:
-      mail:
-        smtp:
-          auth: auth
-          starttls:
-            enable: true
-
-jwt:
-  secret: your_secret_key_here
-  expiration: 3600000
+  profiles:
+    active: dev
