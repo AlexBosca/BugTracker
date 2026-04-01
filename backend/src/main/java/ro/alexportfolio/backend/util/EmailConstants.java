@@ -4,7 +4,7 @@ public enum EmailConstants {
     EMAIL_ACCOUNT_CONFIRMATION_SUBJECT("Email confirmation", false),
     EMAIL_ACCOUNT_CONFIRMATION_TITLE("Confirm your email address", false),
     EMAIL_ACCOUNT_CONFIRMATION_CONTENT("Ready to get started? First, verify your email address:", false),
-    EMAIL_ACCOUNT_CONFIRMATION_LINK("https://localhost:8081/api/v1/bug-tracker/auth/confirm?token=%s", true),
+    EMAIL_ACCOUNT_CONFIRMATION_LINK("http://localhost:8082/api/v1/bug-tracker/auth/confirm?token=%s", true),
 
     EMAIL_PASSWORD_RESET_SUBJECT("Password reset", false),
     EMAIL_PASSWORD_RESET_TITLE("Reset your password", false),

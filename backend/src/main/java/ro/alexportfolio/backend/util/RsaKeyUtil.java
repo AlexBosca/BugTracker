@@ -18,7 +18,8 @@ public class RsaKeyUtil {
     public RSAPublicKey getPublicKey() throws Exception {
         Path path = Paths.get("target/certs/public.pem");
         String key = Files.readString(path, StandardCharsets.UTF_8)
-            .replaceAll("-----\\w+ PUBLIC KEY-----", "")
+            .replace("-----BEGIN PUBLIC KEY-----", "")
+            .replace("-----END PUBLIC KEY-----", "")
             .replaceAll("\\s", "");
 
         byte[] decoded = Base64.getDecoder().decode(key);
@@ -29,9 +30,10 @@ public class RsaKeyUtil {
     public RSAPrivateKey getPrivateKey() throws Exception {
         Path path = Paths.get("target/certs/private.pem");
         String key = Files.readString(path, StandardCharsets.UTF_8)
-            .replaceAll("-----\\w+ PRIVATE KEY-----", "")
+            .replace("-----BEGIN PRIVATE KEY-----", "")
+            .replace("-----END PRIVATE KEY-----", "")
             .replaceAll("\\s", "");
-            
+
         byte[] decoded = Base64.getDecoder().decode(key);
         KeyFactory kf = KeyFactory.getInstance("RSA");
         return (RSAPrivateKey) kf.generatePrivate(new PKCS8EncodedKeySpec(decoded));
