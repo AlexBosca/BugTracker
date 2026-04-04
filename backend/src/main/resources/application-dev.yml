@@ -41,15 +41,3 @@ jwt:
   private-key-path: classpath:jwt/private_key.pem
   public-key-path: classpath:jwt/public_key.pem
   expiration: 3600000
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: ["health", "info", "metrics", "prometheus"]
-    prometheus:
-      enabled: true
-  metrics:
-    export:
-      prometheus:
-        enabled: true
