@@ -38,7 +38,22 @@ spring:
             enable: true
 
 management:
+  endpoints:
+    web:
+      exposure:
+        include: "health"
+    prometheus:
+      enabled: true
+  endpoint:
+    metrics:
+      enabled: true
   metrics:
+    binders:
+      processor:
+        enabled: false
+    export:
+      prometheus:
+        enabled: true
     enable:
       process:
         files: false
