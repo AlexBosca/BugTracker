@@ -7,6 +7,7 @@ spring:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
       - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
+      - org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration
 
   datasource:
     url: none
@@ -15,7 +16,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-
   data:
     jpa:
       repositories:
@@ -36,30 +36,3 @@ spring:
           auth: auth
           starttls:
             enable: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "health"
-    prometheus:
-      enabled: true
-  endpoint:
-    metrics:
-      enabled: true
-  metrics:
-    binders:
-      processor:
-        enabled: false
-    export:
-      prometheus:
-        enabled: true
-    enable:
-      process:
-        files: false
-      jvm:
-        threads: true
-        memory: true
-    system:
-      cpu:
-        enabled: false
