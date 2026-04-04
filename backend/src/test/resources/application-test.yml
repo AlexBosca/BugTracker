@@ -36,3 +36,12 @@ spring:
           auth: auth
           starttls:
             enable: true
+
+management:
+  metrics:
+    enable:
+      process:
+        files: false
+      jvm:
+        threads: true
+        memory: true
