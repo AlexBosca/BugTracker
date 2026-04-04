@@ -60,3 +60,6 @@ management:
       jvm:
         threads: true
         memory: true
+    system:
+      cpu:
+        enabled: false
