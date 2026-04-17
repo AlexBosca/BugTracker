@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { AuthService } from './auth.service';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -35,7 +36,7 @@ describe('AuthService', () => {
       called = true;
     });
 
-    const req = httpTesting.expectOne('https://localhost:8081/api/v1/bug-tracker/auth/login');
+    const req = httpTesting.expectOne(`${environment.apiUrl}/auth/login`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({
       username: 'testuser',
@@ -60,7 +61,7 @@ describe('AuthService', () => {
       called = true;
     });
 
-    const req = httpTesting.expectOne('https://localhost:8081/api/v1/bug-tracker/auth/register');
+    const req = httpTesting.expectOne(`${environment.apiUrl}/auth/register`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(registerRequest);
 
@@ -74,7 +75,7 @@ describe('AuthService', () => {
 
     authService.logout();
 
-    const req = httpTesting.expectOne('https://localhost:8081/api/v1/bug-tracker/auth/logout');
+    const req = httpTesting.expectOne(`${environment.apiUrl}/auth/logout`);
     expect(req.request.method).toBe('POST');
 
     req.flush(null, { status: 200, statusText: 'OK' });
@@ -87,7 +88,7 @@ describe('AuthService', () => {
 
     authService.logout();
 
-    const req = httpTesting.expectOne('https://localhost:8081/api/v1/bug-tracker/auth/logout');
+    const req = httpTesting.expectOne(`${environment.apiUrl}/auth/logout`);
     expect(req.request.method).toBe('POST');
 
     req.flush('Logout failed', { status: 500, statusText: 'Server Error' });
@@ -102,7 +103,7 @@ describe('AuthService', () => {
       called = true;
     });
 
-    const req = httpTesting.expectOne('https://localhost:8081/api/v1/bug-tracker/auth/password-reset-request');
+    const req = httpTesting.expectOne(`${environment.apiUrl}/auth/password-reset-request`);
 
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ email: 'user.name@email.com' });
@@ -120,7 +121,7 @@ describe('AuthService', () => {
       called = true;
     });
 
-    const req = httpTesting.expectOne(`https://localhost:8081/api/v1/bug-tracker/auth/password-reset?token=${token}`);
+    const req = httpTesting.expectOne(`${environment.apiUrl}/auth/password-reset?token=${token}`);
 
     expect(req.request.method).toBe('GET');
 
@@ -138,7 +139,7 @@ describe('AuthService', () => {
       called = true;
     });
 
-    const req = httpTesting.expectOne('https://localhost:8081/api/v1/bug-tracker/auth/password-reset');
+    const req = httpTesting.expectOne(`${environment.apiUrl}/auth/password-reset`);
 
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ token, newPassword });
