@@ -8,11 +8,6 @@ on:
       - "feature/**"
       - "master"
 
-permissions:
-    contents: write
-    pages: write
-    id-token: write
-
 jobs:
   backend:
     name: Backend CI
