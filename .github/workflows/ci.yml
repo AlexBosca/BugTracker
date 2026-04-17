@@ -145,7 +145,6 @@ jobs:
     name: Frontend CI
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       pages: write
       id-token: write
 
