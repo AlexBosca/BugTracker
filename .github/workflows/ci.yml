@@ -167,6 +167,11 @@ jobs:
         working-directory: frontend
         run: npm run build
 
+      - name: Fix index file for GitHub Pages
+        working-directory: frontend
+        run: |
+          cp dist/frontend/index.csr.html dist/frontend/index.html
+
       - name: ESLint
         working-directory: frontend
         run: npm run lint
