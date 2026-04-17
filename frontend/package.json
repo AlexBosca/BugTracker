@@ -5,7 +5,7 @@
     "ng": "ng",
     "lint": "ng lint --format=json --silent=true --force=true",
     "start": "ng serve",
-    "build": "ng build --prod",
+    "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:headless": "ng test --watch=false --browsers=ChromeHeadless",
