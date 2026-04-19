@@ -165,7 +165,7 @@ jobs:
 
       - name: Build Frontend
         working-directory: frontend
-        run: npm run build
+        run: npm run build -- --base-href /BugTracker/frontend/
 
       - name: Fix index file for GitHub Pages
         working-directory: frontend
