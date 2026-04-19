@@ -163,6 +163,11 @@ jobs:
           tool-version: '22.12.0'
           working-directory: './frontend'
 
+      - name: Inject API URL
+        working-directory: frontend
+        run: |
+          sed -i "s|__API_URL__|${{ secrets.API_URL }}|g" src/environments/environment.ts
+
       - name: Build Frontend
         working-directory: frontend
         run: npm run build -- --base-href /BugTracker/
@@ -239,11 +244,6 @@ jobs:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-project-key: bugtracker_frontend
           pull_request: ${{ github.event.pull_request.number }}
-
-      - name: Inject API URL
-        working-directory: frontend
-        run: |
-          sed -i "s|__API_URL__|${{ secrets.API_URL }}|g" src/environments/environment.ts
 
       - name: Setup GH Pages
         uses: actions/configure-pages@v4
