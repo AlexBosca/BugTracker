@@ -1,6 +1,6 @@
 application:
   frontend:
-    url: https://alexbosca.github.io/BugTracker
+    url: https://alexbosca.github.io
   backend:
     baseUrl: https://bugtracker-xtnz.onrender.com
 

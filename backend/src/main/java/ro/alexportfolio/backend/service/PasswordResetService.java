@@ -72,7 +72,7 @@ public class PasswordResetService {
             .subject(EmailConstants.EMAIL_PASSWORD_RESET_SUBJECT.getValue())
             .title(EmailConstants.EMAIL_PASSWORD_RESET_TITLE.getValue())
             .applicationName(applicationName)
-            .confirmationLink(Optional.of(EmailConstants.EMAIL_PASSWORD_RESET_LINK.getValue(appConfig.getFrontend().getUrl(), token)))
+            .confirmationLink(Optional.of(EmailConstants.EMAIL_PASSWORD_RESET_LINK.getValue(appConfig.getFrontend().getUrl(), "BugTracker", token)))
             .notificationContent(Optional.empty())
             .build();
 

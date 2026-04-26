@@ -9,7 +9,7 @@ public enum EmailConstants {
     EMAIL_PASSWORD_RESET_SUBJECT("Password reset", false),
     EMAIL_PASSWORD_RESET_TITLE("Reset your password", false),
     EMAIL_PASSWORD_RESET_CONTENT("You have requested to reset your password. Click the link below to proceed:", false),
-    EMAIL_PASSWORD_RESET_LINK("%s/auth/reset-password?token=%s", true),
+    EMAIL_PASSWORD_RESET_LINK("%s/%s/auth/reset-password?token=%s", true),
 
     EMAIL_PASSWORD_RESET_CONFIRMATION_SUBJECT("Password successfully reset", false),
     EMAIL_PASSWORD_RESET_CONFIRMATION_TITLE("Your password has been reset", false),
