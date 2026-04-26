@@ -47,6 +47,8 @@ jobs:
           tool-version: '17'
           distribution: 'oracle'
           working-directory: './backend'
+      - name: Run Flyway
+        run: mvn flyway:migrate
 
       - name: Build and Test
         working-directory: ./backend
