@@ -54,7 +54,7 @@ jobs:
           POSTGRES_PORT: ${{secrets.POSTGRES_PORT}}
           POSTGRES_USER: ${{secrets.POSTGRES_USER}}
           POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
-        run: mvn flyway:migrate
+        run: mvn flyway:repair flyway:migrate
 
       - name: Build and Test
         working-directory: ./backend
