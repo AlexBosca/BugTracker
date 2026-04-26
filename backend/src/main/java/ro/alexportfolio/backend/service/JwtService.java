@@ -30,7 +30,7 @@ public class JwtService {
             .setSubject(username)
             .setIssuer("Bug-Tracker")
             .setIssuedAt(Date.from(Instant.now(clock)))
-            .setExpiration(Date.from(Instant.now(clock).plus(ACCESS_TOKEN_EXPIRATION_MINUTES, ChronoUnit.SECONDS)))
+            .setExpiration(Date.from(Instant.now(clock).plus(ACCESS_TOKEN_EXPIRATION_MINUTES, ChronoUnit.MINUTES)))
             .signWith(rsaKeyUtil.getPrivateKey(), SignatureAlgorithm.RS256)
             .compact();
     }

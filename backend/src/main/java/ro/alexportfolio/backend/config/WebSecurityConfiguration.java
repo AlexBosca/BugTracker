@@ -27,11 +27,14 @@ public class WebSecurityConfiguration {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsServiceImpl userDetailsService;
+    private final AppConfig appConfig;
 
     public WebSecurityConfiguration(final @Lazy UserDetailsServiceImpl service,
-                                    final JwtAuthFilter filter) {
+                                    final JwtAuthFilter filter,
+                                    final AppConfig appConfig) {
         this.userDetailsService = service;
         this.jwtAuthFilter = filter;
+        this.appConfig = appConfig;
     }
 
     @Bean
@@ -59,7 +62,8 @@ public class WebSecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200", "https://alexbosca.github.io"));
+        String frontendUrl = appConfig.getFrontend().getUrl();
+        configuration.setAllowedOrigins(List.of(frontendUrl));
 
         configuration.setAllowedMethods(List.of("GET",
                                                 "POST",

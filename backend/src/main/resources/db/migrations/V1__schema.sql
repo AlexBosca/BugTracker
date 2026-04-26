@@ -1,6 +1,6 @@
 -- USERS
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     user_id VARCHAR(50) UNIQUE NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE users (
 
 -- PROJECTS
 CREATE TABLE projects (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     project_key VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(100) NOT NULL,
     description TEXT,
@@ -22,7 +22,7 @@ CREATE TABLE projects (
 
 -- ISSUES
 CREATE TABLE issues (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     issue_id VARCHAR(50) UNIQUE NOT NULL,
     title VARCHAR(100) NOT NULL,
     description TEXT,
@@ -38,7 +38,7 @@ CREATE TABLE issues (
 
 -- PROJECT ROLES
 CREATE TABLE project_roles (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     role_name VARCHAR(50) NOT NULL,
     project_key VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -48,7 +48,7 @@ CREATE TABLE project_roles (
 
 -- USER PROJECT ROLES
 CREATE TABLE user_project_roles (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     user_id VARCHAR(50) NOT NULL,
     project_key VARCHAR(50) NOT NULL,
     role_name VARCHAR(50) NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE user_project_roles (
 
 -- REFRESH TOKENS
 CREATE TABLE refresh_tokens (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     token VARCHAR(500) NOT NULL UNIQUE,
     user_id VArCHAR(50) NOT NULL,
     -- expires_at TIMESTAMP NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE refresh_tokens (
 
 -- EMAIL CONFIRMATION TOKENS
 CREATE TABLE email_confirmation_tokens (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     token VARCHAR(36) NOT NULL UNIQUE,
     user_id VARCHAR(50) NOT NULL,
     expires_at TIMESTAMP NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE email_confirmation_tokens (
 
 -- PASSWORD RESET TOKENS
 CREATE TABLE password_reset_tokens (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     token VARCHAR(50) NOT NULL UNIQUE,
     user_id VARCHAR(50) NOT NULL,
     expires_at TIMESTAMP NOT NULL,

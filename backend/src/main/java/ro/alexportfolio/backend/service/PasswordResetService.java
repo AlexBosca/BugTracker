@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import ro.alexportfolio.backend.config.AppConfig;
 import ro.alexportfolio.backend.dao.PasswordResetTokenRepository;
 import ro.alexportfolio.backend.dao.UserRepository;
 import ro.alexportfolio.backend.exception.TokenNotFoundOrExpiredException;
@@ -28,6 +29,7 @@ public class PasswordResetService {
     private final Clock clock;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AppConfig appConfig;
 
     @Value("${application.name}")
     private String applicationName;
@@ -36,12 +38,14 @@ public class PasswordResetService {
                                 final UserRepository userRepositoryParamParam,
                                 final Clock clockParamParam,
                                 final PasswordResetTokenRepository passwordResetTokenRepositoryParam,
-                                final PasswordEncoder passwordEncoderParam) {
+                                final PasswordEncoder passwordEncoderParam,
+                                final AppConfig appConfigParam) {
         this.emailSenderService = emailSenderServiceParam;
         this.userRepository = userRepositoryParamParam;
         this.clock = clockParamParam;
         this.passwordResetTokenRepository = passwordResetTokenRepositoryParam;
         this.passwordEncoder = passwordEncoderParam;
+        this.appConfig = appConfigParam;
     }
 
     public void initiatePasswordReset(final String email) {
@@ -68,7 +72,7 @@ public class PasswordResetService {
             .subject(EmailConstants.EMAIL_PASSWORD_RESET_SUBJECT.getValue())
             .title(EmailConstants.EMAIL_PASSWORD_RESET_TITLE.getValue())
             .applicationName(applicationName)
-            .confirmationLink(Optional.of(EmailConstants.EMAIL_PASSWORD_RESET_LINK.getValue(token)))
+            .confirmationLink(Optional.of(EmailConstants.EMAIL_PASSWORD_RESET_LINK.getValue(appConfig.getFrontend().getUrl(), token)))
             .notificationContent(Optional.empty())
             .build();
 

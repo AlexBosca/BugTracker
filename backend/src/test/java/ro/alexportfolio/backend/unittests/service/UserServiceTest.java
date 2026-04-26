@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import ro.alexportfolio.backend.config.AppConfig;
 import ro.alexportfolio.backend.dao.UserRepository;
 import ro.alexportfolio.backend.exception.UserNotFoundException;
 import ro.alexportfolio.backend.model.EmailConfirmationToken;
@@ -48,6 +49,9 @@ class UserServiceTest {
     @Mock
     private EmailConfirmationTokenService confirmationTokenService;
 
+    @Mock
+    private AppConfig appConfig;
+
     @Captor
     private ArgumentCaptor<User> userCaptor;
 
@@ -64,7 +68,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(userRepository, passwordEncoder, clock, emailSenderService, confirmationTokenService);
+        userService = new UserService(userRepository, passwordEncoder, clock, emailSenderService, confirmationTokenService, appConfig);
     }
 
     @Test
