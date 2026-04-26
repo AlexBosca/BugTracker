@@ -177,7 +177,7 @@
 				<artifactId>flyway-maven-plugin</artifactId>
 				<version>9.22.0</version> <!-- ✅ Use the latest compatible version -->
 				<configuration>
-					<url>jdbc:postgresql://localhost:5432/bugtracker</url>
+					<url>jdbc:postgresql://${env.POSTGRES_HOST}:${env.POSTGRES_PORT}/bugtracker</url>
 					<user>${env.POSTGRES_USER}</user>
 					<password>${env.POSTGRES_PASSWORD}</password>
 					<schemas>
