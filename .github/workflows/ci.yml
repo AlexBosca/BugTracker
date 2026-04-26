@@ -48,6 +48,7 @@ jobs:
           distribution: 'oracle'
           working-directory: './backend'
       - name: Run Flyway
+        working-directory: ./backend
         run: mvn flyway:migrate
 
       - name: Build and Test
