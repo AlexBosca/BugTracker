@@ -84,7 +84,7 @@ class JwtServiceTest {
         assertThat(claims.getSubject()).isEqualTo(username);
         assertThat(claims.getIssuer()).isEqualTo("Bug-Tracker");
         assertThat(claims.getIssuedAt()).isEqualTo(Date.from(NOW.toInstant()));
-        assertThat(claims.getExpiration()).isEqualTo(Date.from(NOW.plusSeconds(15).toInstant()));
+        assertThat(claims.getExpiration()).isEqualTo(Date.from(NOW.plusMinutes(15).toInstant()));
     }
 
     @Test

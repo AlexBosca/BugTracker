@@ -58,6 +58,9 @@ public class PasswordResetServiceTest {
     @Mock
     private AppConfig appConfig;
 
+    @Mock
+    private AppConfig.Frontend frontend;
+
     @Captor
     private ArgumentCaptor<PasswordResetToken> passwordResetTokenCaptor;
 
@@ -102,6 +105,8 @@ public class PasswordResetServiceTest {
             when(clock.instant()).thenReturn(NOW.toInstant());
             when(userRepository.findByEmail("john.doe@mail.com")).thenReturn(Optional.of(user));
             mockedTokenGenerator.when(TokenGenerator::generateToken).thenReturn("randomTokenString");
+            when(appConfig.getFrontend()).thenReturn(frontend);
+            when(frontend.getUrl()).thenReturn("testUrl");
             
             passwordResetService.initiatePasswordReset("john.doe@mail.com");
 

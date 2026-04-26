@@ -52,6 +52,9 @@ class UserServiceTest {
     @Mock
     private AppConfig appConfig;
 
+    @Mock
+    private AppConfig.Backend backend;
+
     @Captor
     private ArgumentCaptor<User> userCaptor;
 
@@ -81,6 +84,8 @@ class UserServiceTest {
         when(passwordEncoder.encode(user.getPassword())).thenReturn("encodedPassword");
         when(clock.instant()).thenReturn(NOW.toInstant());
         when(clock.getZone()).thenReturn(NOW.getZone());
+        when(appConfig.getBackend()).thenReturn(backend);
+        when(backend.getBaseUrl()).thenReturn("testUrl");
 
         userService.createUser(user);
 
