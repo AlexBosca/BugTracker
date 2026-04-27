@@ -163,7 +163,7 @@ public class AuthController {
         return ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/api/v1/bug-tracker/auth")
                 .maxAge(Duration.ofDays(MAX_AGE))
                 .build();
@@ -173,7 +173,7 @@ public class AuthController {
         return ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .path("/api/v1/bug-tracker/auth")
                 .maxAge(0)
                 .build();
