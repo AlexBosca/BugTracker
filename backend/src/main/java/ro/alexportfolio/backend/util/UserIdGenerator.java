@@ -23,7 +23,7 @@ public class UserIdGenerator {
         StringBuilder result = new StringBuilder(length);
 
         for (int i = 0; i < length; i++) {
-            int index = random.nextInt() * characters.length();
+            int index = (int) (random.nextDouble(1) * characters.length());
             result.append(characters.charAt(index));
         }
 

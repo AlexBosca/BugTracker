@@ -1,14 +1,17 @@
-name: Backend CI/CD
+name: Backend CI Pipeline
 
 on:
-  repository_dispatch:
-    types: [trigger-backend]
   push:
     paths:
       - 'backend/**'
+    branches:
+      - 'feature/**'
+      - 'master'
   pull_request:
     paths:
       - 'backend/**'
+    branches:
+      - 'master'
 
 jobs:
   backend:
@@ -32,32 +35,94 @@ jobs:
     #       --health-retries 5
 
     steps:
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          fetch-depth: 0
+
+      - name: Fix shallow clone warning
+        run: |
+          git fetch --unshallow || true
+          git fetch --tags || true
+
+      - name: Set up Java 17
+        uses: ./.github/actions/checkout-and-setup
+        with:
+          tool-name: 'java'
+          tool-version: '17'
           distribution: 'oracle'
+          working-directory: './backend'
 
-      - name: Cache Maven packages
-        uses: actions/cache@v3
+      - name: Build and Test
+        working-directory: ./backend
+        env:
+          KEY_STORE_PASS: ${{ secrets.KEY_STORE_PASS }}
+          MAIL_CREDS_USR: ${{ secrets.MAIL_CREDS_USR }}
+          MAIL_CREDS_PSW: ${{ secrets.MAIL_CREDS_PSW }}
+        run: mvn clean test package verify
+
+      - name: Publish Backend Unit Test Report
+        uses: turing85/publish-report@v2
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          comment-header: 🧪 Backend Unit Test Report
+          comment-message-success: |
+            <details>
+              <summary><h3>🎉 {0} passed</h3></summary>
 
-      - name: Build with Maven
-        run: mvn -f backend clean install -DskipTests
+              <h4>🧪 Unit Tests Results </h4>
 
-      - name: Run Unit Tests
-        run: mvn -f backend test
+              | Passed | Failed | Skipped |
+              |--------|--------|---------|
+              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+
+              You can see the report [here]({4}).
+            </details>
+          comment-message-failure: |
+            <details>
+              <summary><h3>⛈️ {0} failed</h3></summary>
+
+              <h4>🧪 Unit Tests Results </h4>
+
+              | Passed | Failed | Skipped |
+              |--------|--------|---------|
+              | ✅ {1} | ❌ {2} | ⚠️ {3}   |
+
+              You can see the report [here]({4}).
+            </details>
+          report-fail-on-error: true
+          report-name: Backend Unit Tests
+          report-path: 'backend/target/surefire-reports/TEST*.xml'
+
+      - name: Run Checkstyle
+        working-directory: ./backend
+        run: mvn checkstyle:checkstyle
+
+      - name: SonarCloud Scan
+        working-directory: backend
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.organization=${{ secrets.SONAR_ORG }} \
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_BACKEND }} \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.sources=src/main/java,src/main/resources \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml  \
+            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml  \
+            -Dsonar.java.binaries=target/classes  \
+            -Dsonar.coverage.exclusions=**/*Test*.java,**/test/** \
+            -Dsonar.exclusions=**/target/**,**/static/**,**/db/migration/**,**/*.sql,**/application*.yml,**/application*.properties \
+            -Dsonar.branch.name=${{ github.head_ref || github.ref_name }} \
+            -Dsonar.scm.revision=${{ github.sha }}
 
       # * To be enabled when ITs are implemented
       # - name: Run Integration Tests
       #   run: mvn -f backend failsafe:integration-test failsafe:verify
 
-      - name: SonarCloud Scan
-        run: mvn -f backend sonar:sonar -Dsonar.projectKey=ro.alexportfolio:backend -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+      - name: SonarCloud Quality Gate
+        uses: ./.github/actions/check-quality-gate
+        with:
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-project-key: ro.alexportfolio:backend
+          pull_request: ${{ github.event.pull_request.number }}

@@ -1,3 +1,9 @@
+application:
+  frontend:
+    url: http://localhost:4200
+  backend:
+    baseUrl: http://localhost:8082
+
 spring:
   config:
     activate:
@@ -7,6 +13,7 @@ spring:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
       - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
+      - org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration
 
   datasource:
     url: none
@@ -23,3 +30,15 @@ spring:
   sql:
     init:
       mode: never
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_CREDS_USR}
+    password: ${MAIL_CREDS_PSW}
+    properties:
+      mail:
+        smtp:
+          auth: auth
+          starttls:
+            enable: true

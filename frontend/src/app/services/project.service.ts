@@ -14,12 +14,12 @@ export class ProjectService {
   constructor(readonly http: HttpClient) { }
 
   public createProject(projectRequest: any): Observable<void> {
-    return this.http.post<void>(`https://localhost:8081/api/v1/bug-tracker/projects`, projectRequest);
+    return this.http.post<void>(`${environment.apiUrl}/projects`, projectRequest);
   }
 
   public getAllProjects(): Observable<Project[]> {
     return this.http.get<Project[]>(
-      `https://localhost:8081/api/v1/bug-tracker/projects`,
+      `${environment.apiUrl}/projects`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -32,30 +32,30 @@ export class ProjectService {
   }
 
   public getProject(projectKey: string): Observable<Project> {
-    return this.http.get<Project>(`https://localhost:8081/api/v1/bug-tracker/projects/${projectKey}`);
+    return this.http.get<Project>(`${environment.apiUrl}/projects/${projectKey}`);
   }
 
   public updateProject(projectKey: string, projectRequest: any): Observable<void> {
-    return this.http.put<void>(`https://localhost:8081/api/v1/bug-tracker/projects/${projectKey}`, projectRequest);
+    return this.http.put<void>(`${environment.apiUrl}/projects/${projectKey}`, projectRequest);
   }
 
   public deleteProject(projectKey: string): Observable<void> {
-    return this.http.delete<void>(`https://localhost:8081/api/v1/bug-tracker/projects/${projectKey}`);
+    return this.http.delete<void>(`${environment.apiUrl}/projects/${projectKey}`);
   }
 
   public getUsersOnProject(projectKey: string): Observable<User[]> {
-    return this.http.get<User[]>(`https://localhost:8081/api/v1/bug-tracker/projects/${projectKey}/users`);
+    return this.http.get<User[]>(`${environment.apiUrl}/projects/${projectKey}/users`);
   }
 
   public assignUsersToProject(projectKey: string, request: any): Observable<void> {
-    return this.http.post<void>(`https://localhost:8081/api/v1/bug-tracker/projects/${projectKey}/users`, request);
+    return this.http.post<void>(`${environment.apiUrl}/projects/${projectKey}/users`, request);
   }
 
   public getUnassignedUsers(projectKey: string): Observable<User[]> {
-    return this.http.get<User[]>(`https://localhost:8081/api/v1/bug-tracker/projects/${projectKey}/users/unassigned`);
+    return this.http.get<User[]>(`${environment.apiUrl}/projects/${projectKey}/users/unassigned`);
   }
 
   public getProjectAvailableRoles(projectKey: string): Observable<string[]> {
-    return this.http.get<string[]>(`https://localhost:8081/api/v1/bug-tracker/projects/${projectKey}/roles`);
+    return this.http.get<string[]>(`${environment.apiUrl}/projects/${projectKey}/roles`);
   }
 }

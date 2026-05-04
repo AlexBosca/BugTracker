@@ -14,11 +14,12 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
+@SuppressWarnings("java:S1118")
 @Configuration
 public class MailConfig {
 
     @Bean
-    public JavaMailSenderImpl javaMailSender(Environment environment) {
+    public static JavaMailSenderImpl javaMailSender(Environment environment) {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(environment.getProperty("spring.mail.host"));
         mailSender.setPort(Integer.valueOf(environment.getProperty("spring.mail.port")));
@@ -35,14 +36,14 @@ public class MailConfig {
 
     @Bean
     @Primary
-    public TemplateEngine emailTemplateEngine() {
+    public static TemplateEngine emailTemplateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.addTemplateResolver(htmlTemplateResolver());
 
         return templateEngine;
     }
 
-    private ITemplateResolver htmlTemplateResolver() {
+    private static ITemplateResolver htmlTemplateResolver() {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setOrder(Integer.valueOf(1));
         templateResolver.setResolvablePatterns(Collections.singleton("html/*"));

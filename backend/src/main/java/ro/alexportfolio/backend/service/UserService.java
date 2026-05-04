@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import ro.alexportfolio.backend.config.AppConfig;
 import ro.alexportfolio.backend.dao.UserRepository;
 import ro.alexportfolio.backend.exception.UserNotFoundException;
 import ro.alexportfolio.backend.model.EmailConfirmationToken;
@@ -29,6 +31,7 @@ public class UserService {
     private final Clock clock;
     private final EmailSenderService emailSenderService;
     private final EmailConfirmationTokenService confirmationTokenService;
+    private final AppConfig appConfig;
 
     @Value("${application.name}")
     private String applicationName;
@@ -37,12 +40,14 @@ public class UserService {
                        final PasswordEncoder passwordEncoderParam,
                        final Clock clockParam,
                        final @Qualifier("registration") EmailSenderService emailSenderServiceParam,
-                       final EmailConfirmationTokenService tokenServiceParam) {
+                       final EmailConfirmationTokenService tokenServiceParam,
+                       final AppConfig appConfigParam) {
         this.userRepository = userRepositoryParam;
         this.passwordEncoder = passwordEncoderParam;
         this.clock = clockParam;
         this.emailSenderService = emailSenderServiceParam;
         this.confirmationTokenService = tokenServiceParam;
+        this.appConfig = appConfigParam;
     }
 
     public void createUser(final User user) {
@@ -72,7 +77,7 @@ public class UserService {
             .subject(EmailConstants.EMAIL_ACCOUNT_CONFIRMATION_SUBJECT.getValue())
             .title(EmailConstants.EMAIL_ACCOUNT_CONFIRMATION_TITLE.getValue())
             .applicationName(applicationName)
-            .confirmationLink(Optional.of(EmailConstants.EMAIL_ACCOUNT_CONFIRMATION_LINK.getValue(confirmationToken.getToken())))
+            .confirmationLink(Optional.of(EmailConstants.EMAIL_ACCOUNT_CONFIRMATION_LINK.getValue(appConfig.getBackend().getBaseUrl(), confirmationToken.getToken())))
             .notificationContent(Optional.empty())
             .build();
 

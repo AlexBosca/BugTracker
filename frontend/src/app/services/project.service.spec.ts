@@ -4,6 +4,7 @@ import { ProjectService } from './project.service';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Project } from '../models/project.model';
+import { environment } from '../../environments/environment';
 
 describe('ProjectService', () => {
   let service: ProjectService;
@@ -38,7 +39,7 @@ describe('ProjectService', () => {
       called = true;
     });
 
-    const req = httpTesting.expectOne('https://localhost:8081/api/v1/bug-tracker/projects');
+    const req = httpTesting.expectOne(`${environment.apiUrl}/projects`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(projectRequest);
 
@@ -54,7 +55,7 @@ describe('ProjectService', () => {
       result = projects;
     });
 
-    const req = httpTesting.expectOne('https://localhost:8081/api/v1/bug-tracker/projects');
+    const req = httpTesting.expectOne(`${environment.apiUrl}/projects`);
     expect(req.request.method).toBe('GET');
 
     req.flush([
@@ -84,7 +85,7 @@ describe('ProjectService', () => {
       result = project;
     });
 
-    const req = httpTesting.expectOne(`https://localhost:8081/api/v1/bug-tracker/projects/${projectKey}`);
+    const req = httpTesting.expectOne(`${environment.apiUrl}/projects/${projectKey}`);
     expect(req.request.method).toBe('GET');
 
     req.flush({
@@ -112,7 +113,7 @@ describe('ProjectService', () => {
       called = true;
     });
 
-    const req = httpTesting.expectOne(`https://localhost:8081/api/v1/bug-tracker/projects/${projectKey}`);
+    const req = httpTesting.expectOne(`${environment.apiUrl}/projects/${projectKey}`);
     expect(req.request.method).toBe('PUT');
     expect(req.request.body).toEqual(projectRequest);
 
@@ -130,7 +131,7 @@ describe('ProjectService', () => {
       called = true;
     });
 
-    const req = httpTesting.expectOne(`https://localhost:8081/api/v1/bug-tracker/projects/${projectKey}`);
+    const req = httpTesting.expectOne(`${environment.apiUrl}/projects/${projectKey}`);
     expect(req.request.method).toBe('DELETE');
 
     req.flush(null);
@@ -146,7 +147,7 @@ describe('ProjectService', () => {
       result = members;
     });
 
-    const req = httpTesting.expectOne(`https://localhost:8081/api/v1/bug-tracker/projects/${projectKey}/users`);
+    const req = httpTesting.expectOne(`${environment.apiUrl}/projects/${projectKey}/users`);
     expect(req.request.method).toBe('GET');
 
     req.flush([
@@ -179,7 +180,7 @@ describe('ProjectService', () => {
     service.assignUsersToProject(projectKey, request).subscribe(() => {
       called = true;
     });
-    const req = httpTesting.expectOne(`https://localhost:8081/api/v1/bug-tracker/projects/${projectKey}/users`);
+    const req = httpTesting.expectOne(`${environment.apiUrl}/projects/${projectKey}/users`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(request);
     req.flush(null);
@@ -194,7 +195,7 @@ describe('ProjectService', () => {
       result = users;
     });
 
-    const req = httpTesting.expectOne(`https://localhost:8081/api/v1/bug-tracker/projects/${projectKey}/users/unassigned`);
+    const req = httpTesting.expectOne(`${environment.apiUrl}/projects/${projectKey}/users/unassigned`);
     expect(req.request.method).toBe('GET');
 
     req.flush([
@@ -225,7 +226,7 @@ describe('ProjectService', () => {
     service.getProjectAvailableRoles(projectKey).subscribe((roles) => {
       result = roles;
     });
-    const req = httpTesting.expectOne(`https://localhost:8081/api/v1/bug-tracker/projects/${projectKey}/roles`);
+    const req = httpTesting.expectOne(`${environment.apiUrl}/projects/${projectKey}/roles`);
     expect(req.request.method).toBe('GET');
     req.flush(['Admin', 'Developer', 'Tester']);
     expect(result.length).toBe(3);

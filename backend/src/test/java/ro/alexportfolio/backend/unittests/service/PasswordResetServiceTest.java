@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import ro.alexportfolio.backend.config.AppConfig;
 import ro.alexportfolio.backend.dao.PasswordResetTokenRepository;
 import ro.alexportfolio.backend.dao.UserRepository;
 import ro.alexportfolio.backend.exception.TokenNotFoundOrExpiredException;
@@ -54,6 +55,12 @@ public class PasswordResetServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private AppConfig appConfig;
+
+    @Mock
+    private AppConfig.Frontend frontend;
+
     @Captor
     private ArgumentCaptor<PasswordResetToken> passwordResetTokenCaptor;
 
@@ -77,7 +84,8 @@ public class PasswordResetServiceTest {
                                                               userRepository,
                                                               clock,
                                                               passwordResetTokenRepository,
-                                                              passwordEncoder);
+                                                              passwordEncoder,
+                                                              appConfig);
     }
 
     @Test
@@ -97,6 +105,8 @@ public class PasswordResetServiceTest {
             when(clock.instant()).thenReturn(NOW.toInstant());
             when(userRepository.findByEmail("john.doe@mail.com")).thenReturn(Optional.of(user));
             mockedTokenGenerator.when(TokenGenerator::generateToken).thenReturn("randomTokenString");
+            when(appConfig.getFrontend()).thenReturn(frontend);
+            when(frontend.getUrl()).thenReturn("testUrl");
             
             passwordResetService.initiatePasswordReset("john.doe@mail.com");
 

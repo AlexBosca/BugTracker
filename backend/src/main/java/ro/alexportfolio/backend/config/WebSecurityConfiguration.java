@@ -27,24 +27,25 @@ public class WebSecurityConfiguration {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsServiceImpl userDetailsService;
+    private final AppConfig appConfig;
 
     public WebSecurityConfiguration(final @Lazy UserDetailsServiceImpl service,
-                                    final JwtAuthFilter filter) {
+                                    final JwtAuthFilter filter,
+                                    final AppConfig appConfig) {
         this.userDetailsService = service;
         this.jwtAuthFilter = filter;
+        this.appConfig = appConfig;
     }
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                    .requiresChannel(channel -> channel
-                        .anyRequest().requiresSecure())
                     .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                             "/v3/api-docs/**",
                             "/swagger-ui/**",
                             "/swagger-ui.html",
-                            "/api/v1/users"
+                            "/actuator/**"
                         ).permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/users/**").authenticated()
@@ -61,7 +62,8 @@ public class WebSecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        String frontendUrl = appConfig.getFrontend().getUrl();
+        configuration.setAllowedOrigins(List.of(frontendUrl));
 
         configuration.setAllowedMethods(List.of("GET",
                                                 "POST",

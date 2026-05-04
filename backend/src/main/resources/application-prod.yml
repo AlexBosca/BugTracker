@@ -1,0 +1,16 @@
+application:
+  frontend:
+    url: https://alexbosca.github.io
+  backend:
+    baseUrl: https://bugtracker-xtnz.onrender.com
+
+logging:
+  level:
+    org:
+      springframework:
+        security: INFO
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate

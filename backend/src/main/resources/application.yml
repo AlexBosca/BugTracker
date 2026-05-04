@@ -1,5 +1,8 @@
+application:
+  name: Bug Tracker System
+
 server:
-  port: 8081
+  port: 8082
   servlet:
     context-path: /api/v1/bug-tracker
   tomcat:
@@ -21,20 +24,10 @@ server:
       - '{'
       - '|'
       - '}'
-  ssl:
-    enabled: true
-    key-store: file:target/certs/keystore.p12
-    key-store-password: ${KEY_STORE_PASS}
-
-application:
-  name: Bug Tracker System
-  frontend:
-    url: http://localhost:4200
 
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: none
+  profiles:
+    active: prod
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/bugtracker
     username: ${POSTGRES_USER}
@@ -61,5 +54,6 @@ spring:
             enable: true
 
 jwt:
-  secret: your_secret_key_here
+  private-key-path: classpath:jwt/private_key.pem
+  public-key-path: classpath:jwt/public_key.pem
   expiration: 3600000
