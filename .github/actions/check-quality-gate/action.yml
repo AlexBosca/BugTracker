@@ -29,8 +29,6 @@ runs:
           PULL_REQUEST_PARAM="&pullRequest=${{ inputs.pull_request }}"
         fi
 
-        echo $PULL_REQUEST_PARAM
-
         SONAR_URL="https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.sonar-project-key }}${PULL_REQUEST_PARAM}"
         
         RESPONSE=$(curl -s -u ${{ inputs.sonar-token }}: $SONAR_URL)

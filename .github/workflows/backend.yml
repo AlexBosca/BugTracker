@@ -126,3 +126,7 @@ jobs:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-project-key: ro.alexportfolio:backend
           pull_request: ${{ github.event.pull_request.number }}
+
+      - name: Testing step
+        run: |
+          echo ${{github.event.pull_request.number}}
