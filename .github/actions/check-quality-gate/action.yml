@@ -7,6 +7,9 @@ inputs:
   sonar-project-key:
     description: The SonarCloud project key to use for the scan
     required: true
+  branch_name:
+    description: The branch name
+    required: false
   pull_request:
     description: The pull request number
     required: false
@@ -23,13 +26,23 @@ runs:
       run: |
         echo "Waiting for Quality Gate result..."
 
+        if [ -z "${{ inputs.pull_request }}" ] && [ -z "${{ inputs.branch_name }}"]; then
+          echo "Either PR number or branch name must be provided"
+        fi
+
         if [ -z "${{ inputs.pull_request }}" ]; then
           PULL_REQUEST_PARAM=""
         else
           PULL_REQUEST_PARAM="&pullRequest=${{ inputs.pull_request }}"
         fi
 
-        SONAR_URL="https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.sonar-project-key }}${PULL_REQUEST_PARAM}"
+        if [ -z "${{ inputs.branch_name }}"]; then
+          BRANCH_NAME_PARAM=""
+        else
+          BRANCH_NAME_PARAM="&branch=${{ inputs.branch_name }}"
+        fi
+
+        SONAR_URL="https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ inputs.sonar-project-key }}${PULL_REQUEST_PARAM}${BRANCH_NAME_PARAM}"
         
         RESPONSE=$(curl -s -u ${{ inputs.sonar-token }}: $SONAR_URL)
         STATUS=$(echo $RESPONSE | jq -r '.projectStatus.status')

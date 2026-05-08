@@ -120,13 +120,10 @@ jobs:
       # - name: Run Integration Tests
       #   run: mvn -f backend failsafe:integration-test failsafe:verify
 
-      - name: Testing step
-        run: |
-          echo ${{github.event.pull_request.number}}
-
       - name: SonarCloud Quality Gate
         uses: ./.github/actions/check-quality-gate
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-project-key: ro.alexportfolio:backend
           pull_request: ${{ github.event.pull_request.number }}
+          branch_name: ${{ github.ref_name }}
