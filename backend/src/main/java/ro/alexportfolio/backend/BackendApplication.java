@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class BackendApplication {
 
 	public static void main(String[] args) {
-		// Backend test commit
+		// Backend second test commit
 		SpringApplication.run(BackendApplication.class, args);
 	}
 
