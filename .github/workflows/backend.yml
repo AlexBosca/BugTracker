@@ -98,6 +98,7 @@ jobs:
         run: mvn checkstyle:checkstyle
 
       - name: SonarCloud Scan
+        working-directory: ./backend
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_ORG: ${{ secrets.SONAR_ORG }}
