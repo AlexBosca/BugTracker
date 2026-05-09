@@ -130,7 +130,7 @@ jobs:
             "
           fi
 
-          mvn sonar:sonar $SONAR_ARGS
+          npx sonar-scanner $SONAR_ARGS
 
       - name: SonarCloud Quality Gate
         uses: ./.github/actions/check-quality-gate
