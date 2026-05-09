@@ -98,23 +98,44 @@ jobs:
         run: mvn checkstyle:checkstyle
 
       - name: SonarCloud Scan
-        working-directory: backend
+        working-directory: ./backend
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORG: ${{ secrets.SONAR_ORG }}
+          SONAR_PROJECT: ${{ secrets.SONAR_PROJECT_BACKEND }}
+
         run: |
-          mvn sonar:sonar \
-            -Dsonar.organization=${{ secrets.SONAR_ORG }} \
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_BACKEND }} \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.sources=src/main/java,src/main/resources \
-            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml  \
-            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml  \
-            -Dsonar.java.binaries=target/classes  \
-            -Dsonar.coverage.exclusions=**/*Test*.java,**/test/** \
-            -Dsonar.exclusions=**/target/**,**/static/**,**/db/migration/**,**/*.sql,**/application*.yml,**/application*.properties \
-            -Dsonar.branch.name=${{ github.head_ref || github.ref_name }} \
-            -Dsonar.scm.revision=${{ github.sha }}
+          SONAR_ARGS="
+            -Dsonar.organization=$SONAR_ORG
+            -Dsonar.projectKey=$SONAR_PROJECT
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.token=$SONAR_TOKEN
+            -Dsonar.sources=src/main/java,src/main/resources
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+            -Dsonar.java.binaries=target/classes
+            -Dsonar.coverage.exclusions=**/*Test*.java,**/test/**
+            -Dsonar.exclusions=**/target/**,**/static/**,**/db/migration/**,**/*.sql,**/application*.yml,**/application*.properties
+            -Dsonar.scm.revision=$GITHUB_SHA
+          "
+
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            echo "Running PR analysis"
+
+            SONAR_ARGS="$SONAR_ARGS
+              -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+              -Dsonar.pullrequest.branch=$GITHUB_HEAD_REF
+              -Dsonar.pullrequest.base=${{ github.base_ref }}
+            "
+          else
+            echo "Running branch analysis"
+
+            SONAR_ARGS="$SONAR_ARGS
+              -Dsonar.branch.name=$GITHUB_REF_NAME
+            "
+          fi
+
+          mvn sonar:sonar $SONAR_ARGS
 
       # * To be enabled when ITs are implemented
       # - name: Run Integration Tests
@@ -126,7 +147,4 @@ jobs:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-project-key: ro.alexportfolio:backend
           pull_request: ${{ github.event.pull_request.number }}
-
-      - name: Testing step
-        run: |
-          echo ${{github.event.pull_request.number}}
+          branch_name: ${{ github.ref_name }}
