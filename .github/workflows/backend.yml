@@ -115,6 +115,10 @@ jobs:
             SONAR_BRANCH_PARAM="-Dsonar.branch.name=${{ github.ref_name }} \"
           fi
 
+          echo $SONAR_PR_PARAM
+          
+          echo $SONAR_BRANCH_PARAM
+
           mvn sonar:sonar \
             -Dsonar.organization=${{ secrets.SONAR_ORG }} \
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_BACKEND }} \
@@ -126,8 +130,8 @@ jobs:
             -Dsonar.java.binaries=target/classes  \
             -Dsonar.coverage.exclusions=**/*Test*.java,**/test/** \
             -Dsonar.exclusions=**/target/**,**/static/**,**/db/migration/**,**/*.sql,**/application*.yml,**/application*.properties \
-            ${SONAR_PR_PARAM}
-            ${SONAR_BRANCH_PARAM}
+            $SONAR_PR_PARAM
+            $SONAR_BRANCH_PARAM
             -Dsonar.scm.revision=${{ github.sha }}
 
       # * To be enabled when ITs are implemented
