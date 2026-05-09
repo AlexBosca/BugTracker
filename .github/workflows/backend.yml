@@ -98,41 +98,43 @@ jobs:
         run: mvn checkstyle:checkstyle
 
       - name: SonarCloud Scan
-        working-directory: backend
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORG: ${{ secrets.SONAR_ORG }}
+          SONAR_PROJECT: ${{ secrets.SONAR_PROJECT_BACKEND }}
+
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
+          SONAR_ARGS="
+            -Dsonar.organization=$SONAR_ORG
+            -Dsonar.projectKey=$SONAR_PROJECT
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.token=$SONAR_TOKEN
+            -Dsonar.sources=src/main/java,src/main/resources
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+            -Dsonar.java.binaries=target/classes
+            -Dsonar.coverage.exclusions=**/*Test*.java,**/test/**
+            -Dsonar.exclusions=**/target/**,**/static/**,**/db/migration/**,**/*.sql,**/application*.yml,**/application*.properties
+            -Dsonar.scm.revision=$GITHUB_SHA
+          "
+
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
             echo "Running PR analysis"
-            SONAR_PR_PARAM="-Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-              -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-              -Dsonar.pullrequest.base=${{ github.base_ref }} \"
 
-            SONAR_BRANCH_PARAM=""
+            SONAR_ARGS="$SONAR_ARGS
+              -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+              -Dsonar.pullrequest.branch=$GITHUB_HEAD_REF
+              -Dsonar.pullrequest.base=${{ github.base_ref }}
+            "
           else
-            SONAR_PR_PARAM=""
+            echo "Running branch analysis"
 
-            SONAR_BRANCH_PARAM="-Dsonar.branch.name=${{ github.ref_name }} \"
+            SONAR_ARGS="$SONAR_ARGS
+              -Dsonar.branch.name=$GITHUB_REF_NAME
+            "
           fi
 
-          echo $SONAR_PR_PARAM
-          
-          echo $SONAR_BRANCH_PARAM
-
-          mvn sonar:sonar \
-            -Dsonar.organization=${{ secrets.SONAR_ORG }} \
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_BACKEND }} \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.sources=src/main/java,src/main/resources \
-            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml  \
-            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml  \
-            -Dsonar.java.binaries=target/classes  \
-            -Dsonar.coverage.exclusions=**/*Test*.java,**/test/** \
-            -Dsonar.exclusions=**/target/**,**/static/**,**/db/migration/**,**/*.sql,**/application*.yml,**/application*.properties \
-            $SONAR_PR_PARAM
-            $SONAR_BRANCH_PARAM
-            -Dsonar.scm.revision=${{ github.sha }}
+          mvn sonar:sonar $SONAR_ARGS
 
       # * To be enabled when ITs are implemented
       # - name: Run Integration Tests
