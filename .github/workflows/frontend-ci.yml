@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'frontend/**'
+      - '.github/workflows/frontend-ci.yml'
     branches:
       - 'feature/**'
       - 'master'
@@ -139,3 +140,8 @@ jobs:
           sonar-project-key: bugtracker_frontend
           pull_request: ${{ github.event.pull_request.number }}
           branch_name: ${{ github.ref_name }}
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: frontend/dist/frontend/browser
