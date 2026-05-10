@@ -1,25 +1,42 @@
-name: Fronend CI Pipeline
+name: Backend CI Pipeline
 
 on:
   push:
     paths:
-      - 'frontend/**'
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
     branches:
       - 'feature/**'
       - 'master'
   pull_request:
     paths:
-      - 'frontend/**'
+      - 'backend/**'
     branches:
       - 'master'
 
 jobs:
-  frontend:
-    name: Frontend CI
+  backend:
+    name: Build and Test Backend
     runs-on: ubuntu-latest
 
+    # * To be enabled when ITs are implemented
+    # services:
+    #   postgres:
+    #     image: postgres:latest
+    #     env:
+    #       POSTGRES_USER: ${{ secret.POSTGRES_USER }}
+    #       POSTGRES_PASSWORD: ${{ secret.POSTGRES_PASSWORD }}
+    #       POSTGRES_DATABASE: ${{ secret.POSTGRES_DATABASE }}
+    #     ports:
+    #       - 5432:5432
+    #     options: >-
+    #       --health-cmd "pg_isready -U postgres" 
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+
     steps:
-      - name: Checkout (full history)
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -29,39 +46,26 @@ jobs:
           git fetch --unshallow || true
           git fetch --tags || true
 
-      - name: Setup Node
+      - name: Set up Java 17
         uses: ./.github/actions/checkout-and-setup
         with:
-          tool-name: 'node'
-          tool-version: '22.12.0'
-          working-directory: './frontend'
+          tool-name: 'java'
+          tool-version: '17'
+          distribution: 'oracle'
+          working-directory: './backend'
 
-      - name: Inject API URL
-        working-directory: ./frontend
-        run: |
-          sed -i "s|__API_URL__|${{ secrets.API_URL }}|g" src/environments/environment.ts
+      - name: Build and Test
+        working-directory: ./backend
+        env:
+          KEY_STORE_PASS: ${{ secrets.KEY_STORE_PASS }}
+          MAIL_CREDS_USR: ${{ secrets.MAIL_CREDS_USR }}
+          MAIL_CREDS_PSW: ${{ secrets.MAIL_CREDS_PSW }}
+        run: mvn clean test package verify
 
-      - name: Build Frontend
-        working-directory: ./frontend
-        run: npm run build -- --base-href /BugTracker/
-
-      - name: Fix index file for GitHub Pages
-        working-directory: ./frontend
-        run: |
-          cp dist/frontend/browser/index.csr.html dist/frontend/browser/index.html
-
-      - name: ESLint
-        working-directory: ./frontend
-        run: npm run lint
-
-      - name: Test + Coverage
-        working-directory: ./frontend
-        run: npm run test:coverage
-
-      - name: Publish Frontend Unit Tests Report
+      - name: Publish Backend Unit Test Report
         uses: turing85/publish-report@v2
         with:
-          comment-header: 🧪 Frontend Unit Test Report
+          comment-header: 🧪 Backend Unit Test Report
           comment-message-success: |
             <details>
               <summary><h3>🎉 {0} passed</h3></summary>
@@ -87,30 +91,32 @@ jobs:
               You can see the report [here]({4}).
             </details>
           report-fail-on-error: true
-          report-name: Frontend Unit Tests
-          report-path: 'frontend/test-results/unit-test-results.xml'
+          report-name: Backend Unit Tests
+          report-path: 'backend/target/surefire-reports/TEST*.xml'
+
+      - name: Run Checkstyle
+        working-directory: ./backend
+        run: mvn checkstyle:checkstyle
 
       - name: SonarCloud Scan
-        working-directory: ./frontend
+        working-directory: ./backend
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_ORG: ${{ secrets.SONAR_ORG }}
-          SONAR_PROJECT: ${{ secrets.SONAR_PROJECT_FRONTEND }}
+          SONAR_PROJECT: ${{ secrets.SONAR_PROJECT_BACKEND }}
 
         run: |
           SONAR_ARGS="
             -Dsonar.organization=$SONAR_ORG
             -Dsonar.projectKey=$SONAR_PROJECT
             -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.token=$
-            -Dsonar.sources=src \
-            -Dsonar.tests=src \
-            -Dsonar.test.inclusions=**/*.spec.ts \
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info  \
-            -Dsonar.sourceEncoding=UTF-8  \
-            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/coverage/**,**/*.spec.ts,**/environments/**,**/*.module.ts,**/main.ts,**/polyfills.ts,**/test.ts,**/setup-jest.ts,**/index.ts,**/app-routing.module.ts,**/assets/**,**/*.config.ts,**/jest.config.ts,**/karma.conf.js,**/tailwind.config.js,**/vite.config.ts,**/*.mock.ts  \
-            -Dsonar.coverage.exclusions=**/main.ts,**/polyfills.ts,**/environments/**,**/*.module.ts,**/app-routing.module.ts,**/test.ts,**/index.ts  \
-            -Dsonar.sourceEncoding=UTF-8
+            -Dsonar.token=$SONAR_TOKEN
+            -Dsonar.sources=src/main/java,src/main/resources
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+            -Dsonar.java.binaries=target/classes
+            -Dsonar.coverage.exclusions=**/*Test*.java,**/test/**
+            -Dsonar.exclusions=**/target/**,**/static/**,**/db/migration/**,**/*.sql,**/application*.yml,**/application*.properties
             -Dsonar.scm.revision=$GITHUB_SHA
           "
 
@@ -132,10 +138,14 @@ jobs:
 
           mvn sonar:sonar $SONAR_ARGS
 
+      # * To be enabled when ITs are implemented
+      # - name: Run Integration Tests
+      #   run: mvn -f backend failsafe:integration-test failsafe:verify
+
       - name: SonarCloud Quality Gate
         uses: ./.github/actions/check-quality-gate
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
-          sonar-project-key: bugtracker_frontend
+          sonar-project-key: ro.alexportfolio:backend
           pull_request: ${{ github.event.pull_request.number }}
           branch_name: ${{ github.ref_name }}

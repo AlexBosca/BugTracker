@@ -1,0 +1,44 @@
+name: Frontend CD Pipeline
+
+on:
+  workflow_run:
+    workflows:
+      - Fronend CI Pipeline
+    types:
+      - completed
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    name: Deploy Frontend
+
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'master'
+    
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Frontend Artifact
+        uses: dawidd6/action-download-artifact@v21
+        with:
+          workflow: frontend-ci.yml
+          workflow_conclusion: success
+          branch: master
+          name: frontend-dist
+          path: dist
+
+      - name: Setup GH Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload GitHub Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
