@@ -1,0 +1,69 @@
+name: Check Pull Request Approvals
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - review_requested
+  pull_request_review:
+    types:
+      - submitted
+      - dismissed
+      - edited
+
+jobs:
+  check-approvals:
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: read
+      contents: read
+
+    steps:
+      - name: Check if all reviewers approved
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pull_number = context.payload.pull_request.number;
+
+            // Get requested reviewers
+            const requestedReviewers =
+              context.payload.pull_request.requested_reviewers
+                .map(r => r.login);
+
+            console.log("Requested reviewers:", requestedReviewers);
+
+            // Fetch all reviews
+            const { data: reviews } =
+              await github.rest.pulls.listReviews({
+                owner,
+                repo,
+                pull_number
+              });
+
+            // Keep only latest review per user
+            const latestReviews = {};
+
+            for (const review of reviews) {
+              latestReviews[review.user.login] = review.state;
+            }
+
+            console.log("Latest review states:", latestReviews);
+
+            // Verify every requested reviewer approved
+            const notApproved = requestedReviewers.filter(
+              reviewer => latestReviews[reviewer] !== "APPROVED"
+            );
+
+            if (notApproved.length > 0) {
+              core.setFailed(
+                `Missing approvals from: ${notApproved.join(", ")}`
+              );
+            } else {
+              console.log("All reviewers approved the PR.");
+            }
