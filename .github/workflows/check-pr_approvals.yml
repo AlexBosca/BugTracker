@@ -1,18 +1,11 @@
-name: Check Pull Request Approvals
+name: Pull Request Approval Check
 
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - ready_for_review
-      - review_requested
   pull_request_review:
     types:
       - submitted
-      - dismissed
       - edited
+      - dismissed
 
 jobs:
   check-approvals:
@@ -32,32 +25,38 @@ jobs:
             const pull_number = context.payload.pull_request.number;
 
             // Get requested reviewers
+            const pr = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number
+            });
+
             const requestedReviewers =
-              context.payload.pull_request.requested_reviewers
-                .map(r => r.login);
+              pr.data.requested_reviewers.map(r => r.login);
 
             console.log("Requested reviewers:", requestedReviewers);
 
-            // Fetch all reviews
-            const { data: reviews } =
-              await github.rest.pulls.listReviews({
-                owner,
-                repo,
-                pull_number
-              });
+            // Get all reviews
+            const reviewsResponse = await github.rest.pulls.listReviews({
+              owner,
+              repo,
+              pull_number
+            });
 
-            // Keep only latest review per user
-            const latestReviews = {};
+            const reviews = reviewsResponse.data;
+
+            // Keep latest review state for each reviewer
+            const latestReviewState = {};
 
             for (const review of reviews) {
-              latestReviews[review.user.login] = review.state;
+              latestReviewState[review.user.login] = review.state;
             }
 
-            console.log("Latest review states:", latestReviews);
+            console.log("Latest review states:", latestReviewState);
 
-            // Verify every requested reviewer approved
+            // Check if every requested reviewer approved
             const notApproved = requestedReviewers.filter(
-              reviewer => latestReviews[reviewer] !== "APPROVED"
+              reviewer => latestReviewState[reviewer] !== "APPROVED"
             );
 
             if (notApproved.length > 0) {
@@ -65,5 +64,5 @@ jobs:
                 `Missing approvals from: ${notApproved.join(", ")}`
               );
             } else {
-              console.log("All reviewers approved the PR.");
+              console.log("All reviewers approved the pull request.");
             }
